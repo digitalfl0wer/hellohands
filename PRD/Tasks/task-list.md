@@ -52,11 +52,11 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Palm hold pause (3 s) + tap-to-resume flow with pause overlay and resume control.
 - [x] Telemetry placeholder logs each recognized gesture.
 
-## 7. Voice Input
+## 7. Voice Input ✅
 
-- [ ] Voice toggle behavior with onboarding toast.
-- [ ] Command set: Next, Replay, Slow-mo, Pause, Resume, Help, Continue, Back, Level navigation, Kid Mode toggle, uncertain-intent hint.
-- [ ] Mock recognizer adapter for dev; logging for recognized intents.
+- [x] Voice toggle onboarding toast; listening badge shown in header.
+- [x] Command parser covers Next/Replay/Slow/Pause/Resume/Help + Kid Mode and Level navigation; hint toast on uncertain input.
+- [x] `useVoiceInput` hook wraps Web Speech API with graceful fallback/logging.
 
 ## 8. Progression & Rewards
 
