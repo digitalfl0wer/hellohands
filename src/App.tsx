@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { AppShell } from './components/AppShell';
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
 
 function App(): JSX.Element {
@@ -24,54 +25,60 @@ function App(): JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
-      <div className="rounded-3xl bg-slate-900 px-10 py-12 shadow-xl ring-1 ring-white/10 max-w-lg">
-        <h1 className="text-3xl font-bold tracking-tight text-lime-300">Hello Hands</h1>
-        <p className="mt-4 text-base text-slate-300">
-          Zustand store is live. Kid Mode and input toggles update the shared state so the
-          eventual welcome screen has a single source of truth.
+    <AppShell
+      header={
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-accent-lime">Hello Hands</h1>
+          <span className="text-sm text-text-muted">Prototype shell wired to Zustand</span>
+        </div>
+      }
+    >
+      <section className="rounded-[var(--radius-lg)] border border-white/10 bg-surface-800/70 p-lg shadow-brand ring-1 ring-white/5">
+        <p className="text-base text-text-secondary">
+          Kid Mode and input toggles update the shared store, paving the way for the welcome
+          screen. Tokens flow through Tailwind classes and CSS variables.
         </p>
-        <dl className="mt-6 grid grid-cols-2 gap-4 text-sm text-slate-200">
-          <div className="rounded-xl border border-white/10 p-4">
-            <dt className="text-xs uppercase tracking-widest text-slate-400">Level</dt>
-            <dd className="mt-2 text-2xl font-semibold text-lime-300">{level}</dd>
+        <dl className="mt-lg grid grid-cols-2 gap-md text-sm text-text-secondary">
+          <div className="rounded-[var(--radius-md)] border border-white/10 bg-surface-700/40 p-md">
+            <dt className="text-xs uppercase tracking-widest text-text-muted">Level</dt>
+            <dd className="mt-2 text-2xl font-semibold text-accent-lime">{level}</dd>
           </div>
-          <div className="rounded-xl border border-white/10 p-4">
-            <dt className="text-xs uppercase tracking-widest text-slate-400">Stars</dt>
-            <dd className="mt-2 text-2xl font-semibold text-orange-300">
+          <div className="rounded-[var(--radius-md)] border border-white/10 bg-surface-700/40 p-md">
+            <dt className="text-xs uppercase tracking-widest text-text-muted">Stars</dt>
+            <dd className="mt-2 text-2xl font-semibold text-accent-orange">
               {stars} / {maxStars}
             </dd>
           </div>
         </dl>
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-lg flex flex-wrap gap-sm">
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold transition hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
             onClick={() => setKidMode(!kidMode)}
             type="button"
           >
             Kid Mode: {kidMode ? 'On' : 'Off'}
           </button>
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold transition hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
             onClick={toggleVoice}
             type="button"
           >
             Voice: {voiceOn ? 'On' : 'Off'}
           </button>
           <button
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold transition hover:border-white hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
             onClick={toggleGestures}
             type="button"
           >
             Gestures: {gesturesOn ? 'On' : 'Off'}
           </button>
         </div>
-        <p className="mt-4 text-sm text-slate-400">
-          Manual mode is {manualMode ? 'enabled' : 'disabled'} (voice and gestures toggles
-          control this).
+        <p className="mt-md text-sm text-text-muted">
+          Manual mode is {manualMode ? 'enabled' : 'disabled'} (toggled via store for the
+          upcoming welcome screen).
         </p>
-      </div>
-    </div>
+      </section>
+    </AppShell>
   );
 }
 

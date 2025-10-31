@@ -1,7 +1,7 @@
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { ClipDescriptor, FeedbackState, useLessonStore } from '../useLessonStore';
+import { ClipDescriptor, useLessonStore } from '../useLessonStore';
 
 afterEach(() => {
   const { resetSession, setClips } = useLessonStore.getState();
