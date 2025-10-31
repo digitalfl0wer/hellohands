@@ -32,11 +32,11 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Feedback banner (Pass/Almost/Miss with Kid copy variants) - `src/components/feedback/FeedbackBanner.tsx`.
 - [x] Attribution chip + modal using placeholder metadata - `src/components/attribution/`.
 
-## 4. Welcome & Gate
+## 4. Welcome & Gate ✅
 
-- [ ] Assemble Welcome view with Level cards, Kid Mode toggle, Settings pill.
-- [ ] Locked toast copy: "Keep practicing to unlock Level 2 (earn 5 stars)."
-- [ ] Directions gate sequencing with countdown and manual fallback.
+- [x] Assemble Welcome view with Level cards, Kid Mode toggle, Settings pill (`src/screens/WelcomeScreen.tsx`).
+- [x] Locked toast copy: "Keep practicing to unlock Level 2 (earn 5 stars)."
+- [x] Directions gate sequencing with countdown and manual fallback integrated into `App`.
 
 ## 5. Lesson Loop
 
