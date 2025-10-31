@@ -10,18 +10,16 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] **git hygiene:** Updated `.gitignore` to allow lightweight metadata while excluding media; added `.env.example`.
 - [x] **vercel readiness:** Added `vercel.json` plus `pnpm build` script for deploy; ensured `pnpm dev/build/preview` exist and output to `dist`.
 
-## 1. State & Persistence (next)
+## 1. State & Persistence ✅
 
-- [x] **plan:** Use Zustand with slices for `kidMode`, `voiceOn`, `gesturesOn`, `level`, `stars`, `index`, `clips`, and `feedback`. Persist `level`, `stars`, and toggles to `localStorage` (via `zustand/middleware`). Provide selectors/hooks for progression and manual mode (true when voice & gestures disabled). Add Vitest unit tests for reducers (increment stars, reset, unlock).
-- [ ] **feat:** Implement store in `src/state/useLessonStore.ts`, wire provider, and expose hooks.
-- [ ] **feat:** Hook persistence + hydration guard to avoid mismatch during SSR/Vercel preview.
-- [ ] **test:** Add Vitest suite covering pass/ almost/ miss transitions and unlock reset.
+- [x] **feat:** Zustand store (`src/state/useLessonStore.ts`) tracks kidMode, input toggles, level/stars, clip queue, feedback; persisted via `zustand/middleware` with hydration guard for SSR. Manual mode selector exposed.
+- [x] **test:** Vitest suite (`src/state/__tests__/useLessonStore.test.ts`) covers pass/almost/miss progression, unlock/reset, clip rotation, manual-mode toggling.
 
-## 2. UI Foundations
+## 2. UI Foundations ✅
 
-- [ ] Tailwind design tokens (colors, radii, spacing, typography scale) with documented usage.
-- [ ] App shell with safe-area padding, centered content frame, background surfaces.
-- [ ] Accessibility baseline: contrast >=4.5:1, focus-visible treatments, captions default on.
+- [x] Tailwind tokens + CSS variables (`tailwind.config.ts`, `src/styles/tokens.css`, `src/index.css`) define brand palette, radii, spacing, typography, and focus-visible styles honouring prefers-reduced-motion.
+- [x] App shell (`src/components/AppShell.tsx`) provides safe-area padding, gradient surfaces, and landmark semantics; `src/App.tsx` consumes it while demonstrating token usage.
+- [x] Accessibility baseline: focus outlines, contrast-friendly palette, responsive layout baked into tokens and shell.
 
 ## 3. Core Components
 

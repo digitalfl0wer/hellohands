@@ -56,9 +56,10 @@ Deliver a playful, mobile-first ASL micro-lesson experience that can be demoed e
 ## Visual and Interaction Design
 
 - Tone: bubbly, approachable, inspired by Duolingo and Drops.
-- Tailwind tokens define colors, radii, spacing, and typography scale.
+- Tailwind tokens define colors, radii, spacing, spacing rhythm, and typography scale; tokens live in `tailwind.config.ts` and `src/styles/tokens.css` so React and plain CSS stay in sync.
+- App shell centralizes safe-area padding, gradient surfaces, and landmark semantics (`AppShell` component). Subsequent screens slot content into this frame for consistency.
 - Core components: Level Card, Settings pill, Kid/Adult buttons, Toast, Directions sheet, Help sheet, Feedback banner, Attribution chip/modal, Gesture confirmations.
-- Responsive layout optimized for mobile screens, with tablet support.
+- Responsive layout optimized for mobile screens, with tablet support and ≥4.5:1 contrast baked into token choices.
 
 ## Technology and Architecture
 
