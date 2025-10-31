@@ -1,0 +1,63 @@
+version: "1.0.0"
+title: "ASLBaseline_EvalPlanner"
+description: "Verify artifacts and emit exact commands to evaluate a trained checkpoint and save metrics."
+
+instructions: |
+  You are planning evaluation for a trained baseline.
+  Work from these repo paths (read-only):
+    - Labels:  {{ recipe_dir }}/../../data/processed/msasl/labels.jsonl
+    - Clips:   {{ recipe_dir }}/../../data/processed/msasl/clips
+    - Checkpoints: {{ recipe_dir }}/../../artifacts/checkpoints (expected)
+    - Eval script (preferred): {{ recipe_dir }}/../../tools/train/eval_baseline.py
+    - TS fallback: {{ recipe_dir }}/../../scripts/eval_baseline.ts
+
+  Tasks:
+  1) Confirm labels.jsonl exists and the provided checkpoint path looks valid; if a default path is missing, propose likely paths under artifacts/checkpoints.
+  2) If eval_baseline.py exists → output a Python eval command that reports top-1/top-5 accuracy and writes:
+        - artifacts/eval/{{ run_name }}/metrics.json
+        - artifacts/eval/{{ run_name }}/confusion_matrix.png
+     Else, if scripts/eval_baseline.ts exists → output the pnpm/ts-node command to do similar.
+     Else, output a minimal scaffold for eval including where to write metrics.
+  3) Include a tiny “sanity sample” command to evaluate on 10 random clips for a smoke test.
+  4) Finish with a bullet list describing where to find results and how to compare multiple runs.
+
+prompt: |
+  Evaluate:
+  ckpt={{ ckpt }}
+  split={{ split }}
+  subset={{ subset }}
+  top_k={{ top_k }}
+
+  Output:
+  - Validation notes (files present/missing)
+  - Exact eval command(s) + a 10-sample smoke test command
+  - Paths for metrics.json and confusion_matrix.png
+  - 3 bullet points on interpreting results
+
+parameters:
+  - key: ckpt
+    input_type: string
+    requirement: optional
+    default: ""
+    description: "Path to checkpoint (e.g., artifacts/checkpoints/run_YYYYMMDD_HHMM/best.pt). If empty, suggest likely paths."
+  - key: split
+    input_type: string
+    requirement: optional
+    default: "val"
+    description: "Dataset split to evaluate (val | test)."
+  - key: subset
+    input_type: string
+    requirement: optional
+    default: "100"
+    description: "Optional cap on number of samples for faster runs (100|200|500|1000)."
+  - key: top_k
+    input_type: string
+    requirement: optional
+    default: "5"
+    description: "Report up to top-K accuracy (e.g., 1 or 5)."
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

@@ -64,11 +64,11 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [ ] Unlock Level 2 at five stars with confetti/sticker once per session; update Welcome.
 - [ ] Respect reduced-motion (subtle confetti alternative); unlock toast accessible.
 
-## 9. Content & Attribution
+## 9. Content & Attribution ✅
 
-- [ ] Review Level 1 copy vs dataset metadata; sync with MS-ASL outputs.
-- [ ] Wire attribution chip/modal to real metadata.
-- [ ] Keyboard + screen reader access to attribution surfaces.
+- [x] Review Level 1 copy vs dataset metadata; sync with MS-ASL outputs.
+- [x] Wire attribution chip/modal to real metadata.
+- [x] Keyboard + screen reader access to attribution surfaces.
 
 ## 10. Observability & QA
 

@@ -1,19 +1,81 @@
-title: "ASL MVP Orchestrator"
-vars:
-  subset: { type: string, default: "100" }
-  fps:    { type: string, default: "30" }
-  size:   { type: string, default: "256" }
-  phases: { type: string, default: "prep,practice,train,eval" }
-activities:
-  - name: Prep
-    when: "{{ 'prep' in vars.phases }}"
-    run: { subrecipe: "./asl_prep.sub.yaml", with: { subset: "{{ vars.subset }}", fps: "{{ vars.fps }}", size: "{{ vars.size }}" } }
-  - name: Practice
-    when: "{{ 'practice' in vars.phases }}"
-    run: { subrecipe: "./asl_practice.sub.yaml", with: { subset: "{{ vars.subset }}" } }
-  - name: Train
-    when: "{{ 'train' in vars.phases }}"
-    run: { subrecipe: "./asl_train.sub.yaml", with: { subset: "{{ vars.subset }}" } }
-  - name: Eval
-    when: "{{ 'eval' in vars.phases }}"
-    run: { subrecipe: "./asl_eval.sub.yaml", with: { subset: "{{ vars.subset }}" } }
+version: "1.0.0"
+title: "HelloHands_ASLMVPConductor"
+description: "Plan and coordinate MS-ASL prep + one-handed practice packs for the demo."
+
+instructions: |
+  You are the conductor for the HelloHands MVP. Work strictly from files in this repo:
+  - Practice config: {{ recipe_dir }}/../../practice
+  - Labels/artifacts: {{ recipe_dir }}/../../data/processed/msasl
+  - Scripts: {{ recipe_dir }}/../../scripts
+  - Env: {{ recipe_dir }}/../../.env
+
+  Your job:
+  1) Verify folders and key files exist (whitelist.json, packs.manual.json, labels.jsonl when available).
+  2) Produce a short, precise operator plan with shell commands (pnpm…) for the selected subset/fps/size.
+  3) Confirm the requested category/pack is valid; if not, suggest the closest valid pack.
+  4) End with a compact “Demo Steps” checklist (≤10 steps) that I can follow on stage.
+
+prompt: |
+  Data subset: {{ subset }}
+  FPS: {{ fps }}
+  Size: {{ size }}
+  Category: {{ category }}
+  Pack ID: {{ pack_id }}
+
+  Output:
+  - Paths verified / missing.
+  - Exact commands to prepare data and generate practice packs.
+  - Coverage summary for the chosen pack (count found vs missing).
+  - “Demo Steps” checklist.
+
+parameters:
+  - key: subset
+    input_type: string
+    requirement: required
+    default: "100"
+    description: "One of 100, 200, 500, 1000"
+  - key: fps
+    input_type: string
+    requirement: optional
+    default: "30"
+    description: "Video FPS for extracted clips"
+  - key: size
+    input_type: string
+    requirement: optional
+    default: "256"
+    description: "Output video width in px (height auto)"
+  - key: category
+    input_type: string
+    requirement: required
+    description: "Category key (essentials | social_basics)"
+  - key: pack_id
+    input_type: string
+    requirement: required
+    description: "Pack ID (e.g., L1-ESSENTIALS or L1-SOCIAL-BASICS)"
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300
+
+sub_recipes:
+  - name: "Prep_Planner"
+    path: "./asl_prep.yaml"
+    values:
+      subset: "{{ subset }}"
+      fps: "{{ fps }}"
+      size: "{{ size }}"
+
+  - name: "Practice_Verifier"
+    path: "./asl_practice.yaml"
+    values:
+      category: "{{ category }}"
+      pack_id: "{{ pack_id }}"
+
+  - name: "Demo_Scriptifier"
+    path: "./asl_demo.yaml"
+    values:
+      category: "{{ category }}"
+      pack_id: "{{ pack_id }}"
+      subset: "{{ subset }}"

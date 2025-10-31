@@ -1,0 +1,79 @@
+version: "1.0.0"
+title: "ASLBaseline_TrainPlanner"
+description: "Verify artifacts and emit exact commands to train a simple baseline on labels.jsonl."
+
+instructions: |
+  You are planning a baseline training run for HelloHands.
+  Work from these repo paths (read-only):
+    - Labels: {{ recipe_dir }}/../../data/processed/msasl/labels.jsonl
+    - Clips:  {{ recipe_dir }}/../../data/processed/msasl/clips
+    - Scripts (TS/Python): {{ recipe_dir }}/../../scripts and {{ recipe_dir }}/../../tools/train
+    - Env:    {{ recipe_dir }}/../../.env
+
+  Tasks:
+  1) Verify that labels.jsonl exists and at least one mp4 exists under clips/. If missing, instruct to run the prep pipeline first (pnpm msasl:prep100).
+  2) Detect preferred trainer: 
+     - If {{ recipe_dir }}/../../tools/train/train_baseline.py exists → propose Python flow (conda env create, pip install -r tools/train/requirements.txt).
+     - Else if {{ recipe_dir }}/../../scripts/train_baseline.ts exists → propose TS flow (pnpm ts-node scripts/train_baseline.ts …).
+     - If neither is present, output a minimal scaffold: file tree and stub commands to create/train with Python.
+  3) Produce an operator-ready command block to launch training **today** with the requested parameters (model, subset, epochs, batch_size, lr, seed, device).
+  4) Include resume-from-checkpoint and where artifacts will be written (e.g., artifacts/checkpoints/{{ run_name }}).
+
+prompt: |
+  Plan training with:
+  model={{ model }}
+  subset={{ subset }}
+  epochs={{ epochs }}
+  batch_size={{ batch_size }}
+  lr={{ lr }}
+  seed={{ seed }}
+  device={{ device }}
+
+  Output:
+  - Validation of required files (labels.jsonl, clips)
+  - Exact, copy-paste command block (env setup + train launch)
+  - Resume command and expected artifact paths
+  - A short note on estimated disk/time and how to stop safely
+
+parameters:
+  - key: model
+    input_type: string
+    requirement: optional
+    default: "timesformer"
+    description: "Model family to train (timesformer | i3d | cnn3d). Planner-only hint."
+  - key: subset
+    input_type: string
+    requirement: optional
+    default: "100"
+    description: "Optional cap on sample count for speed (100|200|500|1000)."
+  - key: epochs
+    input_type: string
+    requirement: optional
+    default: "5"
+    description: "Number of training epochs for this baseline run."
+  - key: batch_size
+    input_type: string
+    requirement: optional
+    default: "8"
+    description: "Batch size used during training."
+  - key: lr
+    input_type: string
+    requirement: optional
+    default: "1e-4"
+    description: "Learning rate for the optimizer."
+  - key: seed
+    input_type: string
+    requirement: optional
+    default: "42"
+    description: "Random seed for reproducibility."
+  - key: device
+    input_type: string
+    requirement: optional
+    default: "cpu"
+    description: "Target device (cpu or cuda:0 if available)."
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

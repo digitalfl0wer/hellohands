@@ -1,6 +1,12 @@
 {
-  "signer": "TBD",
-  "source": "Placeholder",
-  "licenseText": "For demo only",
-  "link": "https://example.com"
+  "clipId": "msasl_train_000003",
+  "className": "MORE",
+  "dataset": "MS-ASL",
+  "subset": "MS-ASL100",
+  "split": "train",
+  "signerId": "S008",
+  "signerLabel": "MS-ASL contributor S008",
+  "source": "Basic ASL Vocabulary for Babies (YouTube)",
+  "licenseText": "MS-ASL dataset — academic research license",
+  "link": "https://www.youtube.com/watch?v=htsdwxJ-fTo"
 }

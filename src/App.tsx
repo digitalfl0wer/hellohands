@@ -12,6 +12,7 @@ import { DirectionsSheet } from './components/sheets/DirectionsSheet';
 import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
+import { ConfettiOverlay } from './components/ConfettiOverlay';
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
@@ -38,6 +39,7 @@ function App(): JSX.Element | null {
   const stars = useLessonStore((state) => state.stars);
   const maxStars = useLessonStore((state) => state.maxStars);
   const manualMode = useLessonStore(selectManualMode);
+  const registerResult = useLessonStore((state) => state.registerResult);
 
   useEffect(() => {
     setHydrated(true);
@@ -49,9 +51,7 @@ function App(): JSX.Element | null {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  if (!hydrated) {
-    return null;
-  }
+  // hydration guard moved below custom hooks to keep hook order stable across renders
 
   const triggerToast = (
     message: string,
@@ -112,7 +112,10 @@ function App(): JSX.Element | null {
       case 'kidMode':
         if (command.enabled !== kidMode) {
           setKidMode(command.enabled);
-          triggerToast(`Kid Mode ${command.enabled ? 'enabled' : 'disabled'}.`, 'success');
+          triggerToast(
+            `Kid Mode ${command.enabled ? 'enabled' : 'disabled'}.`,
+            'success',
+          );
         }
         break;
       case 'level':
@@ -156,6 +159,21 @@ function App(): JSX.Element | null {
       triggerToast('Tip: quiet background gives the best results.', 'info');
     }
   }, [voiceOn]);
+
+  // Celebrate level unlocks once per session per level
+  const celebratedLevelsRef = useRef<Set<number>>(new Set());
+  const prevLevelRef = useRef<number>(level);
+  useEffect(() => {
+    if (level > prevLevelRef.current && !celebratedLevelsRef.current.has(level)) {
+      celebratedLevelsRef.current.add(level);
+      triggerToast(`Level ${level} unlocked!`, 'success', 2800);
+      setShowCelebration(true);
+      // auto-hide handled inside ConfettiOverlay
+    }
+    prevLevelRef.current = level;
+  }, [level]);
+
+  const [showCelebration, setShowCelebration] = useState(false);
   useVoiceInput({
     enabled: view === 'lesson' && voiceOn && !showCountdown,
     paused: lessonPaused,
@@ -211,6 +229,10 @@ function App(): JSX.Element | null {
     },
   });
 
+  if (!hydrated) {
+    return null;
+  }
+
   const welcomeView = (
     <WelcomeScreen
       kidMode={kidMode}
@@ -243,8 +265,14 @@ function App(): JSX.Element | null {
       gesturesOn={gesturesOn}
       kidMode={kidMode}
       manualMode={manualMode}
-      onHint={() => triggerToast('Slow-mo replay coming soon.', 'info')}
-      onNextClip={() => triggerToast('Next sign queued.', 'success')}
+      onHint={() => {
+        registerResult('almost');
+        triggerToast('Slow-mo replay coming soon.', 'info');
+      }}
+      onNextClip={() => {
+        registerResult('pass');
+        triggerToast('Next sign queued.', 'success');
+      }}
       onPauseChange={setLessonPaused}
       onToggleGestures={toggleGestures}
       onToggleVoice={toggleVoice}
@@ -278,6 +306,13 @@ function App(): JSX.Element | null {
       {view === 'welcome' && welcomeView}
       {view === 'directions' && directionsView}
       {view === 'lesson' && lessonView}
+
+      {showCelebration && (
+        <ConfettiOverlay
+          message={`Level ${level} unlocked!`}
+          onEnd={() => setShowCelebration(false)}
+        />
+      )}
 
       {showCountdown && <CountdownOverlay onComplete={handleCountdownComplete} />}
       {gestureCue && (

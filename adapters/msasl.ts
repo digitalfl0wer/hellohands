@@ -1,16 +1,18 @@
 import { readFile } from 'node:fs/promises';
 
 export interface MsaslSourceRecord {
-  id: number;
+  id?: number;
   label: number;
-  label_text: string;
-  signer_id: string;
-  urls: string[];
+  text: string;
+  signer_id: number;
+  url: string;
   start_time?: number;
   end_time?: number;
-  bbox?: [number, number, number, number];
+  box?: [number, number, number, number];
   subset?: string;
   split?: 'train' | 'val' | 'test';
+  file?: string;
+  clean_text?: string;
 }
 
 export interface UnifiedLabel {
@@ -58,16 +60,27 @@ export function toUnifiedLabel(params: {
   const { record, subsetName, split, mediaPath } = params;
 
   return {
-    id: `msasl_${split}_${record.id.toString().padStart(6, '0')}`,
+    id: `msasl_${split}_${(record.id || 0).toString().padStart(6, '0')}`,
     dataset: 'msasl',
     subset: subsetName,
     split,
     path: mediaPath,
     label: record.label,
-    class_name: record.label_text,
-    signer_id: record.signer_id,
+    class_name: record.text || record.clean_text || '',
+    signer_id: record.signer_id.toString(),
     start: record.start_time ?? 0,
     end: record.end_time ?? record.start_time ?? 0,
-    box: record.bbox,
+    box: record.box,
   };
+}
+
+export function isValidMsaslRecord(value: unknown): value is MsaslSourceRecord {
+  if (typeof value !== 'object' || value === null) return false;
+  const v = value as any;
+  return (
+    typeof v.label === 'number' &&
+    typeof v.text === 'string' &&
+    typeof v.signer_id === 'number' &&
+    typeof v.url === 'string'
+  );
 }

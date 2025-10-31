@@ -1,0 +1,38 @@
+version: "1.0.0"
+title: "Demo_Scriptifier"
+description: "Emit a concise, foolproof, <=10-step operator runbook for the live demo."
+
+instructions: |
+  Create a compact operator checklist to run the demo from a fresh terminal.
+  Prefer concrete commands and minimal prose. Include:
+  - ffmpeg PATH export line for Conda users (one-liner).
+  - pnpm commands to run prep and practice generation.
+  - pnpm dev to launch the app and note it reads: labels.jsonl, packs.generated.json.
+  - A 3-bullet fallback if Goose isn’t available (run.sh + manual pnpm commands).
+
+prompt: |
+  Compose the final checklist for:
+  subset={{ subset }}, category={{ category }}, pack={{ pack_id }}.
+
+parameters:
+  - key: category
+    input_type: string
+    requirement: required
+    default: "essentials"
+    description: "Curriculum category (e.g., essentials, social_basics)."
+  - key: pack_id
+    input_type: string
+    requirement: required
+    default: "L1-ESSENTIALS"
+    description: "Practice pack identifier."
+  - key: subset
+    input_type: string
+    requirement: optional
+    default: "100"
+    description: "Dataset size cap (100|200|500|1000)."
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

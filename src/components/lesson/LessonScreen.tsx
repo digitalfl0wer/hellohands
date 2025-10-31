@@ -188,12 +188,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           variant={feedback}
         />
 
-        <AttributionChip
-          licenseText="C-UDA License — MS-ASL dataset"
-          link="https://ms-asl.cs.rochester.edu/"
-          signer="MS-ASL Contributor"
-          source="msasl_train.json"
-        />
+        <AttributionChip attribution={currentClip.attribution} />
       </section>
     );
   },

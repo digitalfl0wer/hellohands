@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { pathToFileURL } from "node:url";
+
 
 async function main(): Promise<void> {
   const labelsPath = resolve('data', 'processed', 'msasl', 'labels.jsonl');
@@ -30,8 +32,8 @@ async function main(): Promise<void> {
   }
 }
 
-if (require.main === module) {
-  main().catch((error) => {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main().catch((error) => {
     console.error('[practice_coverage] fatal', error);
     process.exit(1);
   });

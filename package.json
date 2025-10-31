@@ -16,6 +16,7 @@
     "msasl:download": "tsx scripts/msasl_download.ts",
     "msasl:trim": "tsx scripts/msasl_trim.ts",
     "msasl:labels": "tsx scripts/msasl_emit_labels.ts",
+    "msasl:stats": "tsx scripts/msasl_stats.ts",
     "msasl:prep100": "pnpm msasl:filter && pnpm msasl:download && pnpm msasl:trim && pnpm msasl:labels",
     "practice:validate": "tsx scripts/practice_validate_whitelist.ts",
     "practice:generate": "tsx scripts/practice_generate_packs.ts",
