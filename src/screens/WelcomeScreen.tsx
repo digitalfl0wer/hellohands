@@ -26,11 +26,12 @@ export function WelcomeScreen({
       <header className="space-y-sm">
         <p className="text-sm text-text-muted">Level 1: Everyday signs</p>
         <p className="max-w-xl text-base text-text-secondary">
-          Earn five stars to unlock the next pack. Manual controls always work, with gestures
-          and voice as optional power-ups.
+          Earn five stars to unlock the next pack. Manual controls always work, with
+          gestures and voice as optional power-ups.
         </p>
         <p className="text-xs text-text-muted">
-          Kid Mode is {kidMode ? 'on' : 'off'} — toggle anytime from the top-right control.
+          Kid Mode is {kidMode ? 'on' : 'off'} — toggle anytime from the top-right
+          control.
         </p>
       </header>
       <div className="grid gap-md md:grid-cols-3">
