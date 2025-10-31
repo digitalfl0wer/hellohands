@@ -21,16 +21,16 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] App shell (`src/components/AppShell.tsx`) provides safe-area padding, gradient surfaces, and landmark semantics; `src/App.tsx` consumes it while demonstrating token usage.
 - [x] Accessibility baseline: focus outlines, contrast-friendly palette, responsive layout baked into tokens and shell.
 
-## 3. Core Components
+## 3. Core Components ✅
 
 - [x] Level Card (locked/unlocked states with helper copy) - `src/components/LevelCard.tsx`.
 - [x] Settings pill + mini cheat-sheets for voice/gestures, connected to store - `src/components/SettingsPill.tsx`.
 - [x] Button set (Adult/Kid variants) with focus-visible styles - `src/components/Button.tsx`.
 - [x] Toast scaffold (auto-hide + SR live region) wired for future events - `src/components/Toast.tsx`.
-- [ ] Directions sheet (3 bullets, delayed "Begin", 3-2-1 overlay).
-- [ ] Help sheet (looping clip placeholder, "Replay in slow-mo", "Resume").
-- [ ] Feedback banner (Pass/Almost/Miss with Kid copy variants).
-- [ ] Attribution chip + modal using placeholder metadata.
+- [x] Directions sheet + countdown overlay (delayed begin, 3-2-1) - `src/components/sheets/DirectionsSheet.tsx`, `src/components/sheets/CountdownOverlay.tsx`.
+- [x] Help sheet (looping clip placeholder, "Replay in slow-mo", "Resume") - `src/components/sheets/HelpSheet.tsx`.
+- [x] Feedback banner (Pass/Almost/Miss with Kid copy variants) - `src/components/feedback/FeedbackBanner.tsx`.
+- [x] Attribution chip + modal using placeholder metadata - `src/components/attribution/`.
 
 ## 4. Welcome & Gate
 
