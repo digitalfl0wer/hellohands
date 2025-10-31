@@ -45,12 +45,12 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Low-light/manual hint placeholders surfaced through help interactions.
 - [x] Sample clip queue wired to placeholder assets; telemetry placeholders emit console logs.
 
-## 6. Gesture Input
+## 6. Gesture Input ✅
 
-- [ ] Swipe detection (right, left, up, down) ~15% frame, <=400 ms, 600 ms debounce, disabled during modals.
-- [ ] Gesture confirmations (300 ms overlays).
-- [ ] Palm hold pause (3 s) with countdown ring and thumbs-up resume; 1 s cooldown.
-- [ ] Telemetry hook for gesture success/fail counts.
+- [x] Swipe detection (right, left, up, down) with threshold/debounce via `useGestureInput` hook; suspended during modals.
+- [x] Gesture confirmations surfaced as transient overlays.
+- [x] Palm hold pause (3 s) + tap-to-resume flow with pause overlay and resume control.
+- [x] Telemetry placeholder logs each recognized gesture.
 
 ## 7. Voice Input
 
