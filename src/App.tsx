@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 
 import { AppShell } from './components/AppShell';
+import { LevelCard } from './components/LevelCard';
+import { SettingsPill } from './components/SettingsPill';
+import { AppButton } from './components/Button';
+import { Toast } from './components/Toast';
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
 
-function App(): JSX.Element {
+function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
   const voiceOn = useLessonStore((state) => state.voiceOn);
@@ -28,56 +33,59 @@ function App(): JSX.Element {
     <AppShell
       header={
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-accent-lime">Hello Hands</h1>
-          <span className="text-sm text-text-muted">Prototype shell wired to Zustand</span>
+          <h1 className="text-3xl font-bold tracking-tight text-accent-lime">
+            Hello Hands
+          </h1>
+          <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
+            Kid Mode: {kidMode ? 'On' : 'Off'}
+          </AppButton>
         </div>
       }
+      footer={<SettingsPill />}
     >
-      <section className="rounded-[var(--radius-lg)] border border-white/10 bg-surface-800/70 p-lg shadow-brand ring-1 ring-white/5">
-        <p className="text-base text-text-secondary">
-          Kid Mode and input toggles update the shared store, paving the way for the welcome
-          screen. Tokens flow through Tailwind classes and CSS variables.
-        </p>
-        <dl className="mt-lg grid grid-cols-2 gap-md text-sm text-text-secondary">
-          <div className="rounded-[var(--radius-md)] border border-white/10 bg-surface-700/40 p-md">
-            <dt className="text-xs uppercase tracking-widest text-text-muted">Level</dt>
-            <dd className="mt-2 text-2xl font-semibold text-accent-lime">{level}</dd>
-          </div>
-          <div className="rounded-[var(--radius-md)] border border-white/10 bg-surface-700/40 p-md">
-            <dt className="text-xs uppercase tracking-widest text-text-muted">Stars</dt>
-            <dd className="mt-2 text-2xl font-semibold text-accent-orange">
-              {stars} / {maxStars}
-            </dd>
-          </div>
-        </dl>
-        <div className="mt-lg flex flex-wrap gap-sm">
-          <button
-            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
-            onClick={() => setKidMode(!kidMode)}
-            type="button"
-          >
-            Kid Mode: {kidMode ? 'On' : 'Off'}
-          </button>
-          <button
-            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
-            onClick={toggleVoice}
-            type="button"
-          >
+      <section className="grid gap-lg md:grid-cols-2">
+        <LevelCard
+          title={`Level ${level}`}
+          description="Earn five stars to unlock the next pack."
+          starsEarned={stars}
+          totalStars={maxStars}
+          locked={false}
+          action={
+            <AppButton onClick={() => setShowToast(true)} type="button" variant="adult">
+              Start lesson
+            </AppButton>
+          }
+        />
+        <LevelCard
+          title="Level 2"
+          description="Keep practicing to unlock more signs."
+          starsEarned={0}
+          totalStars={5}
+          locked
+        />
+      </section>
+      <section className="rounded-lg border border-white/10 bg-surface-800/70 p-lg shadow-brand ring-1 ring-white/5">
+        <h2 className="text-xl font-semibold text-text-primary">Input toggles</h2>
+        <div className="mt-md flex flex-wrap gap-sm">
+          <AppButton onClick={toggleVoice} type="button" variant="adult">
             Voice: {voiceOn ? 'On' : 'Off'}
-          </button>
-          <button
-            className="rounded-full border border-white/20 px-md py-2 text-sm font-semibold transition hover:border-white hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-sky"
-            onClick={toggleGestures}
-            type="button"
-          >
+          </AppButton>
+          <AppButton onClick={toggleGestures} type="button" variant="adult">
             Gestures: {gesturesOn ? 'On' : 'Off'}
-          </button>
+          </AppButton>
         </div>
         <p className="mt-md text-sm text-text-muted">
-          Manual mode is {manualMode ? 'enabled' : 'disabled'} (toggled via store for the
-          upcoming welcome screen).
+          Manual mode is {manualMode ? 'enabled' : 'disabled'} (toggled via these
+          controls).
         </p>
       </section>
+      {showToast && (
+        <Toast
+          message="Starter toast! We'll hook this into lesson events later."
+          variant="info"
+          duration={2500}
+        />
+      )}
     </AppShell>
   );
 }
