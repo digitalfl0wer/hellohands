@@ -1,125 +1,120 @@
-TASK LIST (Cursor / GitHub Issues)
+# MVP Task Tracker
 
-Labels: feat, ui, mcp, infra, docs, test, polish • Est.: S ≤1h, M 1–3h, L 3–6h
+Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S` <=1h, `M` 1-3h, `L` 3-6h
 
-A) Environment & Storage
+## 0. Foundation & Tooling ✅
 
-chore(env) [S]: Validate .env (DATA_ROOT, VIDEO_FPS, VIDEO_SIZE, SUBSET); doc ffmpeg + disk needs.
+- [x] **infra:** Confirmed Node 20 + pnpm (doc in `CONTRIBUTING.md`), added `.editorconfig`, `.prettierrc.json`, and `simple-git-hooks` pre-commit formatter (`package.json` scripts).
+- [x] **ui:** Scaffolded Vite + React + Tailwind app (`src/main.tsx`, `tailwind.config.ts`, `postcss.config.cjs`) with placeholder welcome screen to prove styles render.
+- [x] **assets:** Seeded `/public/signs/level1` with placeholder poster/video/meta files and added sample `data/processed/msasl/labels.jsonl`.
+- [x] **git hygiene:** Updated `.gitignore` to allow lightweight metadata while excluding media; added `.env.example`.
+- [x] **vercel readiness:** Added `vercel.json` plus `pnpm build` script for deploy; ensured `pnpm dev/build/preview` exist and output to `dist`.
 
-chore(git) [S]: Ignore raw/processed media; allow labels.jsonl + logs.
+## 1. State & Persistence (next)
 
-feat(data) [S]: Scaffold data/processed/msasl/{clips,labels.jsonl} + data/README.md (layout + symlink).
+- [x] **plan:** Use Zustand with slices for `kidMode`, `voiceOn`, `gesturesOn`, `level`, `stars`, `index`, `clips`, and `feedback`. Persist `level`, `stars`, and toggles to `localStorage` (via `zustand/middleware`). Provide selectors/hooks for progression and manual mode (true when voice & gestures disabled). Add Vitest unit tests for reducers (increment stars, reset, unlock).
+- [ ] **feat:** Implement store in `src/state/useLessonStore.ts`, wire provider, and expose hooks.
+- [ ] **feat:** Hook persistence + hydration guard to avoid mismatch during SSR/Vercel preview.
+- [ ] **test:** Add Vitest suite covering pass/ almost/ miss transitions and unlock reset.
 
-B) Core Prep Scripts (MS-ASL)
+## 2. UI Foundations
 
-feat(adapter) [M]: adapters/msasl.ts → normalize MS-ASL JSON rows to unified schema.
+- [ ] Tailwind design tokens (colors, radii, spacing, typography scale) with documented usage.
+- [ ] App shell with safe-area padding, centered content frame, background surfaces.
+- [ ] Accessibility baseline: contrast >=4.5:1, focus-visible treatments, captions default on.
 
-feat(filter) [S]: scripts/msasl_filter.ts → --subset 100|200|500|1000 (label < N), deterministic output.
+## 3. Core Components
 
-feat(download) [M]: scripts/msasl_download.ts → retries=${DOWNLOAD_RETRIES}, failed.csv, resume.
+- [ ] Level Card (locked/unlocked states with helper copy).
+- [ ] Settings pill + mini cheat-sheets for voice/gestures, connected to store.
+- [ ] Button set (Adult/Kid variants) with focus-visible styles.
+- [ ] Toast component (success/info/warn, auto-hide, SR live region).
+- [ ] Directions sheet (3 bullets, delayed "Begin", 3-2-1 overlay).
+- [ ] Help sheet (looping clip placeholder, "Replay in slow-mo", "Resume").
+- [ ] Feedback banner (Pass/Almost/Miss with Kid copy variants).
+- [ ] Attribution chip + modal using placeholder metadata.
 
-feat(trim) [M]: scripts/msasl_trim.ts → ffmpeg trim, fps=${VIDEO_FPS}, size=${VIDEO_SIZE}, skip completed.
+## 4. Welcome & Gate
 
-feat(labels) [S]: scripts/msasl_emit_labels.ts → write processed/msasl/labels.jsonl with relative paths & stable IDs.
+- [ ] Assemble Welcome view with Level cards, Kid Mode toggle, Settings pill.
+- [ ] Locked toast copy: "Keep practicing to unlock Level 2 (earn 5 stars)."
+- [ ] Directions gate sequencing with countdown and manual fallback.
 
-feat(stats) [S]: dataset stats (per-class counts, signer counts, duration hist).
+## 5. Lesson Loop
 
-C) Validation & Observability
+- [ ] Poster-to-MP4 playback pipeline with replay, slow-mo, next controls (Kid labels when enabled).
+- [ ] Integrate feedback banner with lesson progression logic.
+- [ ] Low-light hint: "I can't see clearly - try brighter light."
+- [ ] Connect to stubbed `labels.jsonl` or MCP mock data; add analytics hooks placeholder.
 
-test(adapter) [S]: fixtures + unit tests to lock schema.
+## 6. Gesture Input
 
-feat(logs) [S]: structured logging (progress %, ETA, retries) + summary.json.
+- [ ] Swipe detection (right, left, up, down) ~15% frame, <=400 ms, 600 ms debounce, disabled during modals.
+- [ ] Gesture confirmations (300 ms overlays).
+- [ ] Palm hold pause (3 s) with countdown ring and thumbs-up resume; 1 s cooldown.
+- [ ] Telemetry hook for gesture success/fail counts.
 
-feat(qc) [S]: integrity checks + spot-audit script to play random trimmed clips.
+## 7. Voice Input
 
-D) Practice (Fixed + One-Handed)
+- [ ] Voice toggle behavior with onboarding toast.
+- [ ] Command set: Next, Replay, Slow-mo, Pause, Resume, Help, Continue, Back, Level navigation, Kid Mode toggle, uncertain-intent hint.
+- [ ] Mock recognizer adapter for dev; logging for recognized intents.
 
-feat(practice-loader) [M]: Enforce categories (essentials,social_basics); enforce one-handed (vocab.map.json).
+## 8. Progression & Rewards
 
-feat(packs) [S]: Respect whitelist.json / packs.manual.json; write practice/missing_items.log.
+- [ ] Increment stars on pass, reset on level advance; persist.
+- [ ] Unlock Level 2 at five stars with confetti/sticker once per session; update Welcome.
+- [ ] Respect reduced-motion (subtle confetti alternative); unlock toast accessible.
 
-ui(receptive) [M]: Video player + 4-option MCQ + keyboard 1-4; session queue & scoring.
+## 9. Content & Attribution
 
-ui(productive) [M]: Gloss prompt + optional reference clip; webcam record; self-mark pass/fail.
+- [ ] Review Level 1 copy vs dataset metadata; sync with MS-ASL outputs.
+- [ ] Wire attribution chip/modal to real metadata.
+- [ ] Keyboard + screen reader access to attribution surfaces.
 
-feat(progress) [S]: Progress store (unlock at 80% Receptive).
+## 10. Observability & QA
 
-docs(practice) [S]: Usage + how to swap glosses safely.
+- [ ] Centralised logger for gestures, voice, unlock events; console + optional file export.
+- [ ] Vitest component tests for store logic, gesture utility, voice adapter stubs.
+- [ ] Manual QA checklist (mobile browsers, Kid Mode, reduced motion) and bug triage template.
 
-E) Frontend Foundations
+## 11. MCP & External Tools
 
-infra(ui) [S]: Vite + Tailwind; tokens (colors, radii, spacing, type).
+- [ ] MCP server (packs.list/get, practice.next, license.info) with CORS and deploy plan.
+- [ ] Service layer toggle between local fixtures and MCP responses.
+- [ ] README quickstart + endpoint shapes.
 
-ui(shell) [S]: App shell, Settings pill, Level cards (locked/unlocked).
+## 12. Goose Orchestration
 
-a11y [S]: Contrast ≥4.5:1, focus-visible, captions on by default.
+- [ ] Configure Goose provider; validate with `goose run --recipe "Say: hi"`.
+- [ ] Recipes for conductor, voice_listener, gesture_interpreter, intent_router, lesson_planner, attribution_guardian, prefetcher, coach_adult, coach_kid, progress_tracker, permission_steward, safety_monitor.
+- [ ] Demo script showing parallel listeners/fan-out; capture logs/screenshots.
 
-F) MCP & Service Layer
+## 13. Data Pipeline (MS-ASL)
 
-mcp(server) [M]: Minimal MCP server endpoints: packs.list, packs.get, practice.next, license.info.
+- [ ] adapters/msasl.ts full normalization + schema validation.
+- [ ] `scripts/msasl_filter.ts` subset filtering (label < N) with deterministic output.
+- [ ] `scripts/msasl_download.ts` with retries, `failed.csv`, resume.
+- [ ] `scripts/msasl_trim.ts` ffmpeg trim + standardise, skip completed.
+- [ ] `scripts/msasl_emit_labels.ts` emit unified labels.
+- [ ] Dataset stats script (per-class, per-signer, duration histogram).
+- [ ] Unit tests, structured logging, integrity checks, spot-audit player.
 
-infra(app) [S]: Service layer to switch between local fixtures and MCP.
+## 14. Practice Pipeline
 
-docs(mcp) [S]: README quickstart + endpoint shapes.
+- [ ] Practice loader enforcing whitelist + one-handed rule.
+- [ ] Generate packs + missing_items log.
+- [ ] Docs for adjusting glosses safely.
 
-G) Agent Orchestration (Goose)
+## 15. Baseline Model & Eval (Optional)
 
-chore(goose) [S]: Add goose/recipes/ and configure provider.
+- [ ] Video data module reading labels.jsonl.
+- [ ] Baseline model (I3D/TimeSformer) + train loop.
+- [ ] Metrics export (top-1/top-5, confusion matrix).
+- [ ] Pipeline docs (prep steps, env vars, troubleshooting).
 
-feat(goose-orchestrator) [S]: asl_mvp.yaml with vars subset|fps|size|phases.
+## 16. Demo Readiness
 
-feat(goose-prep) [S]: asl_prep.sub.yaml (filter → download → trim → labels).
-
-feat(goose-practice) [S]: asl_practice.sub.yaml (validate → packs → coverage).
-
-feat(goose-train/eval) [S]: asl_train.sub.yaml, asl_eval.sub.yaml.
-
-docs(goose) [S]: Run commands for Cursor terminal + screenshots/logs for judges.
-
-H) Baseline Model & Eval (optional but nice)
-
-feat(dl) [M]: VideoDataModule (reads labels.jsonl).
-
-feat(model) [M]: I3D/TimeSformer baseline config + train loop.
-
-feat(eval) [S]: Top-1/Top-5 + confusion matrix export.
-
-docs(pipeline) [S]: Prep steps, env vars, troubleshooting.
-
-I) Demo Readiness
-
-polish(perf) [S]: Lazy load media; small clip durations.
-
-polish(record) [S]: Record 90-sec demo run (Lv1 → ★5 unlock).
-
-docs(readme) [S]: Final Quickstart (prep → packs → run), dataset attribution, Goose overview.
-
-Quickstart (README block to paste)
-# 0) Env & tooling
-nvm use || (nvm install --lts && nvm use)
-corepack enable
-pnpm install
-cp .env.example .env  # set DATA_ROOT, FPS, SIZE, SUBSET
-
-# 1) Prep MS-ASL subset (filter → download → trim → labels)
-pnpm msasl:prep100
-
-# 2) Practice files (fixed, one-handed)
-# edit practice/*.json as needed, then generate coverage
-pnpm practice:coverage
-
-# 3) Run orchestrator (Goose)
-goose run --recipe goose/recipes/asl_mvp.yaml --vars subset=100 phases=prep,practice
-
-# 4) Start app
-pnpm dev
-
-.gitignore (snippet)
-node_modules/
-.env
-data/**/videos/**
-data/**/clips/**
-*.mp4
-*.webm
-*.m4v
-*.avi
+- [ ] Performance sweep (lazy loading, clip duration).
+- [ ] Record 90-second demo run (Level 1 -> five stars -> unlock).
+- [ ] Final README Quickstart, dataset attribution, Goose overview.

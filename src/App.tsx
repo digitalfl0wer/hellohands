@@ -2,9 +2,7 @@ function App(): JSX.Element {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
       <div className="rounded-3xl bg-slate-900 px-10 py-12 shadow-xl ring-1 ring-white/10">
-        <h1 className="text-3xl font-bold tracking-tight text-lime-300">
-          Hello Hands
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight text-lime-300">Hello Hands</h1>
         <p className="mt-4 max-w-sm text-base text-slate-300">
           Tailwind is wired up. Swap in the real Level 1 welcome screen here.
         </p>

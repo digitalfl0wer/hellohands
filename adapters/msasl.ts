@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile } from 'node:fs/promises';
 
 export interface MsaslSourceRecord {
   id: number;
@@ -10,14 +10,14 @@ export interface MsaslSourceRecord {
   end_time?: number;
   bbox?: [number, number, number, number];
   subset?: string;
-  split?: "train" | "val" | "test";
+  split?: 'train' | 'val' | 'test';
 }
 
 export interface UnifiedLabel {
   id: string;
-  dataset: "msasl";
+  dataset: 'msasl';
   subset: string;
-  split: "train" | "val" | "test";
+  split: 'train' | 'val' | 'test';
   path: string;
   label: number;
   class_name: string;
@@ -29,7 +29,7 @@ export interface UnifiedLabel {
 
 export interface LoadOptions {
   subsetName: string;
-  split: "train" | "val" | "test";
+  split: 'train' | 'val' | 'test';
   jsonPath: string;
 }
 
@@ -38,10 +38,8 @@ export interface LoadOptions {
  * The result is intentionally unfiltered; downstream scripts can
  * supply their own predicates and transformations.
  */
-export async function loadMsaslSplit(
-  options: LoadOptions,
-): Promise<MsaslSourceRecord[]> {
-  const contents = await readFile(options.jsonPath, "utf8");
+export async function loadMsaslSplit(options: LoadOptions): Promise<MsaslSourceRecord[]> {
+  const contents = await readFile(options.jsonPath, 'utf8');
   const parsed = JSON.parse(contents) as MsaslSourceRecord[];
 
   return parsed;
@@ -54,14 +52,14 @@ export async function loadMsaslSplit(
 export function toUnifiedLabel(params: {
   record: MsaslSourceRecord;
   subsetName: string;
-  split: "train" | "val" | "test";
+  split: 'train' | 'val' | 'test';
   mediaPath: string;
 }): UnifiedLabel {
   const { record, subsetName, split, mediaPath } = params;
 
   return {
-    id: `msasl_${split}_${record.id.toString().padStart(6, "0")}`,
-    dataset: "msasl",
+    id: `msasl_${split}_${record.id.toString().padStart(6, '0')}`,
+    dataset: 'msasl',
     subset: subsetName,
     split,
     path: mediaPath,
