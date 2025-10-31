@@ -1,0 +1,5 @@
+title: "Train Baseline"
+vars: { subset: { type: string, default: "100" } }
+activities:
+  - name: Train
+    run: { mcp: shell, with: { command: "pnpm run train:msasl{{ vars.subset }}" } }

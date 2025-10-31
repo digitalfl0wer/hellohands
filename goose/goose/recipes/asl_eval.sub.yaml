@@ -1,0 +1,5 @@
+title: "Eval"
+vars: { subset: { type: string, default: "100" } }
+activities:
+  - name: Evaluate
+    run: { mcp: shell, with: { command: "pnpm run eval:msasl{{ vars.subset }}" } }

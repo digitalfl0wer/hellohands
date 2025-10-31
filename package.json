@@ -1,0 +1,27 @@
+{
+  "name": "hellohands",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "msasl:prep100": "echo \"(1) filter to MS-ASL100 -> (2) download -> (3) trim -> (4) write labels.jsonl\" && echo \"Run your scripts here (we'll add next)\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalfl0wer/hellohands.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/digitalfl0wer/hellohands/issues"
+  },
+  "homepage": "https://github.com/digitalfl0wer/hellohands#readme",
+  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd",
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
