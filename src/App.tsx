@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
 
 function App(): JSX.Element {
+  const [hydrated, setHydrated] = useState(false);
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
   const voiceOn = useLessonStore((state) => state.voiceOn);
@@ -11,6 +14,14 @@ function App(): JSX.Element {
   const stars = useLessonStore((state) => state.stars);
   const maxStars = useLessonStore((state) => state.maxStars);
   const manualMode = useLessonStore(selectManualMode);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
