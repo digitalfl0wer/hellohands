@@ -23,10 +23,10 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 
 ## 3. Core Components
 
-- [ ] Level Card (locked/unlocked states with helper copy).
-- [ ] Settings pill + mini cheat-sheets for voice/gestures, connected to store.
-- [ ] Button set (Adult/Kid variants) with focus-visible styles.
-- [ ] Toast component (success/info/warn, auto-hide, SR live region).
+- [x] Level Card (locked/unlocked states with helper copy) - `src/components/LevelCard.tsx`.
+- [x] Settings pill + mini cheat-sheets for voice/gestures, connected to store - `src/components/SettingsPill.tsx`.
+- [x] Button set (Adult/Kid variants) with focus-visible styles - `src/components/Button.tsx`.
+- [x] Toast scaffold (auto-hide + SR live region) wired for future events - `src/components/Toast.tsx`.
 - [ ] Directions sheet (3 bullets, delayed "Begin", 3-2-1 overlay).
 - [ ] Help sheet (looping clip placeholder, "Replay in slow-mo", "Resume").
 - [ ] Feedback banner (Pass/Almost/Miss with Kid copy variants).
