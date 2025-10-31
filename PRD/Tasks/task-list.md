@@ -116,3 +116,13 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [ ] Performance sweep (lazy loading, clip duration).
 - [ ] Record 90-second demo run (Level 1 -> five stars -> unlock).
 - [ ] Final README Quickstart, dataset attribution, Goose overview.
+
+## 17. Realtime Multimodal Platform
+
+- [ ] Scaffold new agents/gestures/components/pages/server folders (gesture worker, bus, evaluator, planner, attribution, prefetcher, voice, camera feed, subagents panel, practice page, goose proxy).
+- [ ] Implement BroadcastChannel `hh_bus` event types plus helper to post intents across voice, gesture, planner, attribution, and prefetch flows.
+- [ ] Stand up MediaPipe hand landmarker worker with heuristics for `thumbs_up`, `open_palm`, `point`, `pinch`; ensure `/public/hand_landmarker.task` packaged or CDN path configured.
+- [ ] Build mirrored CameraFeed component that obtains permissions, streams frames to worker, and surfaces permission errors gracefully.
+- [ ] Add voice agent behind `VITE_USE_VOICE=1`, gesture evaluator, planner attribution tagging, and practice expected gesture wiring.
+- [ ] Create SubagentsPanel right rail with collapsible controls, progress bars, live event console, and hook in Goose SSE stream.
+- [ ] Add practice page wiring expected gestures + camera, bootstrap planner/voice at app entry, and register new pnpm scripts (`dev`, `goose:proxy`, `dev:all`) with express-based SSE proxy plus dependencies.

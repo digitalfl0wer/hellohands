@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
-import { pathToFileURL } from "node:url";
+import { pathToFileURL } from 'node:url';
 import { loadPipelineEnv } from './_env';
 
 type Split = 'train' | 'val' | 'test';
@@ -21,7 +21,11 @@ async function filterSplit(
   const raw = await readFile(metaPath, 'utf8').catch(() => '');
   if (!raw.trim()) {
     console.warn(`[msasl_filter] missing or empty: ${metaPath}`);
-    return { inCount: 0, outCount: 0, outPath: join(filteredDir, `MSASL_${split}_${subset ?? 'all'}.json`) };
+    return {
+      inCount: 0,
+      outCount: 0,
+      outPath: join(filteredDir, `MSASL_${split}_${subset ?? 'all'}.json`),
+    };
   }
 
   const records = JSON.parse(raw) as Array<{ label: number }>;

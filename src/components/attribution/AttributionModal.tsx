@@ -17,16 +17,17 @@ export function AttributionModal({
   const dialogRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const dialogNode = dialogRef.current;
-    if (!dialogNode) {
+    const node = dialogRef.current;
+    if (!node) {
       return;
     }
+    const dialogElement: HTMLDivElement = node;
 
     const focusableSelector =
       'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
     const getFocusable = () =>
-      Array.from(dialogNode.querySelectorAll<HTMLElement>(focusableSelector)).filter(
+      Array.from(dialogElement.querySelectorAll<HTMLElement>(focusableSelector)).filter(
         (element) => !element.hasAttribute('disabled') && element.tabIndex !== -1,
       );
 
@@ -54,7 +55,7 @@ export function AttributionModal({
         const activeElement = document.activeElement;
 
         if (event.shiftKey) {
-          if (activeElement === first || !dialogNode.contains(activeElement)) {
+          if (activeElement === first || !dialogElement.contains(activeElement)) {
             event.preventDefault();
             last.focus();
           }
@@ -65,9 +66,9 @@ export function AttributionModal({
       }
     }
 
-    dialogNode.addEventListener('keydown', handleKey);
+    dialogElement.addEventListener('keydown', handleKey);
     return () => {
-      dialogNode.removeEventListener('keydown', handleKey);
+      dialogElement.removeEventListener('keydown', handleKey);
     };
   }, [onClose]);
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { logger } from '../utils/logger';
 
 type GestureType = 'next' | 'replay' | 'slow' | 'help' | 'pause' | 'resume';
 
@@ -55,7 +56,7 @@ export function useGestureInput({
         return;
       }
       lastGestureTime.current = now;
-      console.info(`[gesture] ${gesture}`);
+      logger.info('gesture', 'recognized', { gesture });
       onGesture(gesture);
     };
 

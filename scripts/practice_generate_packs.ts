@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { pathToFileURL } from "node:url";
+import { pathToFileURL } from 'node:url';
 
 const PRACTICE_DIR = 'practice';
 const OUTPUT_PATH = resolve('practice', 'packs.generated.json');
@@ -31,7 +31,7 @@ async function main(): Promise<void> {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await  main().catch((error) => {
+  await main().catch((error) => {
     console.error('[practice_generate_packs] fatal', error);
     process.exit(1);
   });

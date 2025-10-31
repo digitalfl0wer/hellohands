@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { AppShell } from './components/AppShell';
 import { SettingsPill } from './components/SettingsPill';
@@ -13,10 +13,15 @@ import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
 import { ConfettiOverlay } from './components/ConfettiOverlay';
+import PracticePage from './pages/PracticePage';
+import SubagentsPanel from './components/SubagentsPanel';
+import { bus, post, type HHEvent } from './gestures/gestureBus';
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
-  const [view, setView] = useState<'welcome' | 'directions' | 'lesson'>('welcome');
+  const [view, setView] = useState<'welcome' | 'directions' | 'lesson' | 'practice'>(
+    'welcome',
+  );
   const [toast, setToast] = useState<{
     message: string;
     variant?: 'info' | 'success' | 'warn';
@@ -53,13 +58,16 @@ function App(): JSX.Element | null {
 
   // hydration guard moved below custom hooks to keep hook order stable across renders
 
-  const triggerToast = (
-    message: string,
-    variant: 'info' | 'success' | 'warn' = 'info',
-    duration?: number,
-  ) => {
-    setToast({ message, variant, duration });
-  };
+  const triggerToast = useCallback(
+    (
+      message: string,
+      variant: 'info' | 'success' | 'warn' = 'info',
+      duration?: number,
+    ) => {
+      setToast({ message, variant, duration });
+    },
+    [],
+  );
 
   const handleLockedLevel = (lockedLevel: number) => {
     triggerToast(
@@ -164,10 +172,10 @@ function App(): JSX.Element | null {
   const celebratedLevelsRef = useRef<Set<number>>(new Set());
   const prevLevelRef = useRef<number>(level);
   useEffect(() => {
-    if (level > prevLevelRef.current && !celebratedLevelsRef.current.has(level)) {
-      celebratedLevelsRef.current.add(level);
-      triggerToast(`Level ${level} unlocked!`, 'success', 2800);
-      setShowCelebration(true);
+      if (level > prevLevelRef.current && !celebratedLevelsRef.current.has(level)) {
+        celebratedLevelsRef.current.add(level);
+        triggerToast(`Level ${level} unlocked!`, 'success', 2800);
+        setShowCelebration(true);
       // auto-hide handled inside ConfettiOverlay
     }
     prevLevelRef.current = level;
@@ -229,6 +237,68 @@ function App(): JSX.Element | null {
     },
   });
 
+  useEffect(() => {
+    const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
+      if (!data || data.intent !== 'planner') {
+        return;
+      }
+
+      if (data.action === 'NAVIGATE_PRACTICE') {
+        setView('practice');
+        triggerToast('Practice mode ready.', 'info');
+      }
+
+      if (data.action === 'PRACTICE_CORRECT') {
+        triggerToast('Great match!', 'success');
+      }
+    };
+
+    bus.addEventListener('message', handlePlanner);
+    return () => {
+      bus.removeEventListener('message', handlePlanner);
+    };
+  }, [triggerToast]);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+    if (typeof window === 'undefined' || typeof EventSource === 'undefined') {
+      return;
+    }
+
+    const streamUrl =
+      import.meta.env.VITE_GOOSE_STREAM_URL ??
+      'http://localhost:5174/api/goose/stream';
+
+    let source: EventSource | null = null;
+
+    try {
+      source = new EventSource(streamUrl);
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to connect to goose stream:', error);
+      }
+    }
+
+    if (!source) {
+      return;
+    }
+
+    source.onmessage = (event) => {
+      if (!event.data) return;
+      post({ intent: 'planner', action: 'GOOSE_LOG', meta: { line: event.data } });
+    };
+    source.onerror = () => {
+      source?.close();
+    };
+
+    return () => {
+      source?.close();
+    };
+  }, []);
+
   if (!hydrated) {
     return null;
   }
@@ -283,13 +353,21 @@ function App(): JSX.Element | null {
   );
 
   return (
-    <AppShell
+    <>
+      <AppShell
       header={
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-accent-lime">
             Hello Hands
           </h1>
           <div className="flex items-center gap-sm">
+            <AppButton
+              onClick={() => setView('practice')}
+              type="button"
+              variant="adult"
+            >
+              Practice
+            </AppButton>
             <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
               Kid Mode: {kidMode ? 'On' : 'Off'}
             </AppButton>
@@ -306,6 +384,7 @@ function App(): JSX.Element | null {
       {view === 'welcome' && welcomeView}
       {view === 'directions' && directionsView}
       {view === 'lesson' && lessonView}
+      {view === 'practice' && <PracticePage />}
 
       {showCelebration && (
         <ConfettiOverlay
@@ -327,7 +406,9 @@ function App(): JSX.Element | null {
           variant={toast.variant ?? 'info'}
         />
       )}
-    </AppShell>
+      </AppShell>
+      <SubagentsPanel />
+    </>
   );
 }
 

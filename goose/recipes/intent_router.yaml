@@ -1,0 +1,26 @@
+version: "1.0.0"
+title: "IntentRouter_Planner"
+description: "Route intents from listeners to downstream planners and guards."
+
+instructions: |
+  Emit a short routing policy (6–8 bullets):
+  - Accept intents from VOICE and GESTURE with timestamps.
+  - Coalesce duplicates within 300ms.
+  - Forward control intents to LESSON_PLANNER.
+  - Forward metadata requests to ATTRIBUTION_GUARDIAN.
+  - Trigger PREFETCHER on next/replay.
+  - Enforce SAFETY_MONITOR rules before dispatch.
+  - Log decisions (tag=ROUTER) with reason.
+
+prompt: |
+  Provide the routing policy now.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

@@ -69,8 +69,19 @@ async function ffmpegTrim(input: string, output: string, fps: number, size: numb
   });
 }
 
-async function processSplit(envRoot: string, subset: number | undefined, split: Split, fps: number, size: number) {
-  const filteredPath = resolve(envRoot, 'msasl', 'filtered', `MSASL_${split}_${subset ?? 'all'}.json`);
+async function processSplit(
+  envRoot: string,
+  subset: number | undefined,
+  split: Split,
+  fps: number,
+  size: number,
+) {
+  const filteredPath = resolve(
+    envRoot,
+    'msasl',
+    'filtered',
+    `MSASL_${split}_${subset ?? 'all'}.json`,
+  );
   const raw = await readFile(filteredPath, 'utf8').catch(() => '');
   if (!raw.trim()) {
     console.warn(`[msasl_trim] missing filtered: ${filteredPath}`);
@@ -87,7 +98,14 @@ async function processSplit(envRoot: string, subset: number | undefined, split: 
       console.warn(`[msasl_trim] raw not found for ${idPadded}`);
       continue;
     }
-    const outputPath = resolve('data', 'processed', 'msasl', 'clips', shard, `${idPadded}.mp4`);
+    const outputPath = resolve(
+      'data',
+      'processed',
+      'msasl',
+      'clips',
+      shard,
+      `${idPadded}.mp4`,
+    );
     if (await fileExistsNonZero(outputPath)) {
       // skip completed
       continue;
@@ -105,11 +123,21 @@ async function processSplit(envRoot: string, subset: number | undefined, split: 
 
 async function main(): Promise<void> {
   const env = loadPipelineEnv();
-  console.log('[msasl_trim] start', { fps: env.VIDEO_FPS, size: env.VIDEO_SIZE, subset: env.SUBSET ?? 'all' });
+  console.log('[msasl_trim] start', {
+    fps: env.VIDEO_FPS,
+    size: env.VIDEO_SIZE,
+    subset: env.SUBSET ?? 'all',
+  });
   await ensureDir(resolve('data', 'processed', 'msasl', 'clips'));
   const splits: Split[] = ['train', 'val', 'test'];
   for (const split of splits) {
-    const r = await processSplit(env.DATA_ROOT, env.SUBSET, split, env.VIDEO_FPS, env.VIDEO_SIZE);
+    const r = await processSplit(
+      env.DATA_ROOT,
+      env.SUBSET,
+      split,
+      env.VIDEO_FPS,
+      env.VIDEO_SIZE,
+    );
     console.log(`[msasl_trim] ${split}: trimmed ${r.trimmed}/${r.count}`);
   }
   console.log('[msasl_trim] done');

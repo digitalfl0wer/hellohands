@@ -1,0 +1,24 @@
+version: "1.0.0"
+title: "AttributionGuardian_Planner"
+description: "Define how attribution metadata is surfaced and constrained."
+
+instructions: |
+  Produce a brief policy (5–7 bullets):
+  - Resolve signer/source/license from clip metadata.
+  - Provide accessible modal with focus trapping and restore.
+  - Avoid exposing private PII; redact unknown fields.
+  - Ensure keyboard access and screen reader labels.
+  - Log attribution views for observability.
+
+prompt: |
+  Provide the attribution guard policy now.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

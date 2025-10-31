@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { parseVoiceCommand, VoiceParseResult } from './voiceCommandParser';
+import { logger } from '../utils/logger';
 
 interface VoiceInputOptions {
   enabled: boolean;
@@ -65,13 +66,16 @@ export function useVoiceInput({
       const transcript = last[0]?.transcript ?? '';
       const parsed = parseVoiceCommand(transcript);
       if (parsed === 'uncertain') {
+        logger.info('voice', 'uncertain', { transcript });
         onUnrecognized();
       } else {
+        logger.info('voice', 'recognized', parsed);
         onCommand(parsed);
       }
     };
 
     recognition.onerror = (event) => {
+      logger.warn('voice', 'error', { error: event.error ?? event.message });
       onError(event.error ?? event.message);
     };
 
@@ -80,6 +84,7 @@ export function useVoiceInput({
         try {
           recognitionRef.current.start();
         } catch (error) {
+          logger.warn('voice', 'restart_failed', { reason: (error as Error).message });
           onError((error as Error).message);
         }
       }
@@ -91,6 +96,7 @@ export function useVoiceInput({
       try {
         recognition.start();
       } catch (error) {
+        logger.warn('voice', 'start_failed', { reason: (error as Error).message });
         onError((error as Error).message);
       }
     }

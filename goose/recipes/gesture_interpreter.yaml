@@ -1,0 +1,24 @@
+version: "1.0.0"
+title: "GestureInterpreter_Planner"
+description: "Outline how the gesture interpreter detects swipes/holds and emits intents."
+
+instructions: |
+  Produce a minimal, operator-readable plan (5–7 steps) for a GESTURE interpreter:
+  - Pointer listeners + thresholds (swipe, long palm-hold).
+  - Debounce and pause/resume handling.
+  - Map gestures to intents (next, replay, slow, help, pause, resume).
+  - Emit normalized intents to the router.
+  - Structured logging with timestamps.
+
+prompt: |
+  Plan the gesture interpreter runbook now. Keep it concise.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

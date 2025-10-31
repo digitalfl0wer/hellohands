@@ -1,0 +1,23 @@
+version: "1.0.0"
+title: "PermissionSteward_Planner"
+description: "Outline permission prompts and fallbacks for mic/camera."
+
+instructions: |
+  Emit a 5–6 bullet plan:
+  - Check mic permission; fall back gracefully on denial.
+  - Surface clear rationale and retry path.
+  - Respect reduced-motion and accessibility settings.
+  - Log permission outcomes.
+
+prompt: |
+  Provide the permission steward plan.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

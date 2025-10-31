@@ -91,5 +91,3 @@ export function ConfettiOverlay({
 }
 
 export default ConfettiOverlay;
-
-

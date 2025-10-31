@@ -20,6 +20,7 @@ Deliver a playful, mobile-first ASL micro-lesson experience that can be demoed e
 - Manual controls always work; gestures and voice remain opt-in layers.
 - Each clip surfaces signer, source, and license attribution.
 - Goose agents visibly coordinate prep, practice, and status messaging.
+- Demo-ready multimodal sandbox featuring live camera capture, MediaPipe hand tracking, BroadcastChannel event bus, and a right-rail Goose subagents panel with live telemetry.
 
 ## Non-Goals (Version 1)
 
@@ -33,12 +34,15 @@ Deliver a playful, mobile-first ASL micro-lesson experience that can be demoed e
 - **Lesson Loop:** Poster preview then video playback with Replay, Slow-mo, and Next controls; feedback banner shows Pass, Almost, or Miss.
 - **Help Surfaces:** Compact help sheet with looping clip, one actionable tip, and a "Replay in slow-mo" shortcut.
 - **Progress and Toasts:** Locked level messaging, unlock celebration, mic/gesture onboarding nudges, low-light hints.
+- **Practice Workspace:** Dedicated practice page with mirrored camera feed, worker-powered gesture intents, and inline evaluator feedback.
+- **Agent Console:** Docked, collapsible Goose subagents panel with Agents / Console / Network tabs, progress bars, streamed Goose logs, and live BroadcastChannel event feed.
 
 ## Input Modes
 
 - **Manual Baseline:** Touch controls and swipes function even when other modes are disabled.
-- **Air Gestures:** Optional detection for right-swipe Next, left-swipe Replay, up Slow-mo, down Help. A three-second palm hold pauses; thumbs-up resumes. Provide confirmation overlays, debounce, and cooldown.
+- **Air Gestures:** Optional detection for right-swipe Next, left-swipe Replay, up Slow-mo, down Help. A three-second palm hold pauses; thumbs-up resumes. Provide confirmation overlays, debounce, and cooldown. Practice mode extends this with MediaPipe Tasks running in a Worker, emitting `thumbs_up`, `open_palm`, `point`, and `pinch` intents via BroadcastChannel.
 - **Voice:** Optional commands for navigation (Next, Replay, Slow-mo, Pause, Resume, Help), level selection, and Kid Mode toggles. Offer polite hints on uncertain recognition.
+- **Parallel Event Bus:** BroadcastChannel `hh_bus` fans out voice, gesture, planner, attribution, and prefetch intents so UI, workers, and Goose subagents stay in sync.
 
 ## Accessibility Requirements
 
@@ -64,10 +68,13 @@ Deliver a playful, mobile-first ASL micro-lesson experience that can be demoed e
 ## Technology and Architecture
 
 - **Frontend:** React with Vite and Tailwind. Zustand powers state with localStorage persistence.
+- **Realtime Multimodal Layer:** `navigator.mediaDevices.getUserMedia` camera feed mirrors video and pumps frames into a MediaPipe Tasks `HandLandmarker` running inside a dedicated Worker. Gesture classifications feed a practice evaluator that compares expected vs. observed gestures and posts annotated planner actions back onto `hh_bus`.
+- **Voice Flag:** Web Speech API remains optional behind `VITE_USE_VOICE=1`, ensuring Safari and desktop fallbacks degrade gracefully.
 - **State Model:** Track Kid Mode, voiceOn, gesturesOn, level, stars, lesson index, clip queue, and feedback states. Derived `manualMode` flips on when both gesture and voice toggles are off.
 - **Data Stubs:** Provide local JSON files (`labels.jsonl`, MCP mocks) so the UI works before the full pipeline lands.
 - **MCP Tools:** `packs.list`, `packs.get`, `practice.next`, and `license.info` return static JSON/URIs and are deployable on serverless/edge targets such as Vercel.
 - **Agent Plan:** Goose recipes keep voice and gesture listeners running in parallel while lesson planning, prefetching, and attribution checks fan out. Unlock flows remain sequential (unlock, toast, navigation).
+- **Goose Proxy:** Node-based dev proxy spawns Goose locally and streams stdout to the UI via Server-Sent Events (`/api/goose/stream`) so the subagents panel visualizes orchestration in real time.
 
 ## Success Metrics
 

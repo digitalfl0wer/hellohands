@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { pathToFileURL } from "node:url";
-
+import { pathToFileURL } from 'node:url';
 
 async function main(): Promise<void> {
   const labelsPath = resolve('data', 'processed', 'msasl', 'labels.jsonl');

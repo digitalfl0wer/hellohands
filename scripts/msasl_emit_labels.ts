@@ -1,6 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { pathToFileURL } from "node:url";
+import { pathToFileURL } from 'node:url';
 
 import { loadMsaslSplit, toUnifiedLabel } from '../adapters/msasl';
 import { loadPipelineEnv } from './_env';
@@ -38,9 +38,11 @@ async function main(): Promise<void> {
     for (let i = 0; i < records.length; i++) {
       const rec = records[i] as any;
       // Add an ID field based on the index and split
-      const recordId = parseInt(`${split === 'train' ? 1 : split === 'val' ? 2 : 3}${String(i).padStart(5, '0')}`);
+      const recordId = parseInt(
+        `${split === 'train' ? 1 : split === 'val' ? 2 : 3}${String(i).padStart(5, '0')}`,
+      );
       rec.id = recordId;
-      
+
       // Media path convention (clip files are grouped by zero-padded id blocks)
       const idPadded = String(recordId).padStart(6, '0');
       const shard = idPadded.slice(0, 3);
@@ -60,7 +62,7 @@ async function main(): Promise<void> {
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
- await main().catch((error) => {
+  await main().catch((error) => {
     console.error('[msasl_emit_labels] fatal', error);
     process.exit(1);
   });
