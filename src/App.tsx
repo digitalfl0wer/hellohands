@@ -80,7 +80,6 @@ function App(): JSX.Element | null {
     }, duration);
   };
 
-
   useEffect(() => {
     return () => {
       if (gestureCueTimer.current) {

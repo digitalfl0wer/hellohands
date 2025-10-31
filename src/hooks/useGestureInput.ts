@@ -1,12 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-type GestureType =
-  | 'next'
-  | 'replay'
-  | 'slow'
-  | 'help'
-  | 'pause'
-  | 'resume';
+type GestureType = 'next' | 'replay' | 'slow' | 'help' | 'pause' | 'resume';
 
 interface GestureOptions {
   enabled: boolean;
@@ -45,7 +39,8 @@ export function useGestureInput({
       return undefined;
     }
 
-    const thresholdPx = Math.max(window.innerWidth, window.innerHeight) * swipeThresholdRatio;
+    const thresholdPx =
+      Math.max(window.innerWidth, window.innerHeight) * swipeThresholdRatio;
 
     const clearLongPress = () => {
       if (longPressTimer.current !== null) {

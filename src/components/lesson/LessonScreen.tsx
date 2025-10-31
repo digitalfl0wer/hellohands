@@ -37,18 +37,21 @@ interface LessonScreenProps {
 }
 
 export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
-  ({
-    kidMode,
-    paused,
-    voiceOn,
-    gesturesOn,
-    manualMode,
-    onPauseChange,
-    onNextClip,
-    onHint,
-    onToggleVoice,
-    onToggleGestures,
-  }, ref) => {
+  (
+    {
+      kidMode,
+      paused,
+      voiceOn,
+      gesturesOn,
+      manualMode,
+      onPauseChange,
+      onNextClip,
+      onHint,
+      onToggleVoice,
+      onToggleGestures,
+    },
+    ref,
+  ) => {
     const clips = useMemo<LessonClip[]>(() => SAMPLE_CLIPS, []);
     const [index, setIndex] = useState(0);
     const [feedback, setFeedback] = useState<'pass' | 'almost' | 'miss'>('pass');
@@ -118,7 +121,8 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
             </AppButton>
           </div>
           <p className="mt-md text-sm text-text-muted">
-            Manual mode is {manualMode ? 'enabled' : 'disabled'} (toggled via these controls).
+            Manual mode is {manualMode ? 'enabled' : 'disabled'} (toggled via these
+            controls).
           </p>
           <p className="text-xs text-text-muted">
             Low-light hint: Swipe down to reopen help if the camera struggles.
@@ -141,7 +145,8 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           <div className="rounded-lg border border-white/10 bg-surface-800/80 p-lg shadow-brand ring-1 ring-white/5">
             <h3 className="text-lg font-semibold text-text-primary">Paused</h3>
             <p className="mt-sm text-sm text-text-secondary">
-              Hold a thumbs-up (or tap resume) to continue. Manual controls remain available.
+              Hold a thumbs-up (or tap resume) to continue. Manual controls remain
+              available.
             </p>
             <AppButton
               onClick={() => {

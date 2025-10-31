@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 
 interface LessonPlayerProps {
   poster: string;
@@ -24,16 +19,19 @@ export interface LessonPlayerHandle {
 }
 
 export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
-  ({
-    poster,
-    videoSrc,
-    title,
-    kidMode = false,
-    paused = false,
-    onReplay,
-    onSlowMo,
-    onNext,
-  }, ref) => {
+  (
+    {
+      poster,
+      videoSrc,
+      title,
+      kidMode = false,
+      paused = false,
+      onReplay,
+      onSlowMo,
+      onNext,
+    },
+    ref,
+  ) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
     const handleReplay = () => {
