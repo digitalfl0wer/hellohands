@@ -1,11 +1,24 @@
 {
   "name": "hellohands",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "msasl:prep100": "echo \"(1) filter to MS-ASL100 -> (2) download -> (3) trim -> (4) write labels.jsonl\" && echo \"Run your scripts here (we'll add next)\""
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"{src,scripts,adapters,practice,PRD}/**/*.{ts,tsx,js,jsx,json,jsonl,md}\"",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks",
+    "msasl:filter": "tsx scripts/msasl_filter.ts",
+    "msasl:download": "tsx scripts/msasl_download.ts",
+    "msasl:trim": "tsx scripts/msasl_trim.ts",
+    "msasl:labels": "tsx scripts/msasl_emit_labels.ts",
+    "msasl:prep100": "pnpm msasl:filter && pnpm msasl:download && pnpm msasl:trim && pnpm msasl:labels",
+    "practice:validate": "tsx scripts/practice_validate_whitelist.ts",
+    "practice:generate": "tsx scripts/practice_generate_packs.ts",
+    "practice:coverage": "tsx scripts/practice_coverage.ts",
+    "practice:all": "pnpm practice:validate && pnpm practice:generate && pnpm practice:coverage"
   },
   "repository": {
     "type": "git",
@@ -18,10 +31,28 @@
     "url": "https://github.com/digitalfl0wer/hellohands/issues"
   },
   "homepage": "https://github.com/digitalfl0wer/hellohands#readme",
-  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd",
+  "packageManager": "pnpm@10.20.0",
+  "simple-git-hooks": {
+    "pre-commit": "pnpm format"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "devDependencies": {
-    "@types/node": "^24.9.2",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.7",
+    "@types/react-dom": "^18.3.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "prettier": "^3.3.3",
+    "simple-git-hooks": "^2.9.0",
+    "tailwindcss": "^3.4.14",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "tsx": "^4.15.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.10"
   }
 }

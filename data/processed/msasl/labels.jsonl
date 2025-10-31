@@ -1,0 +1,2 @@
+{"id":"msasl_train_000001","dataset":"msasl","subset":"MS-ASL100","split":"train","path":"data/processed/msasl/clips/000/000001.mp4","label":0,"class_name":"HELLO","signer_id":"S001","start":0,"end":2.5,"box":[0.1,0.2,0.7,0.9]}
+{"id":"msasl_val_000001","dataset":"msasl","subset":"MS-ASL100","split":"val","path":"data/processed/msasl/clips/000/000002.mp4","label":1,"class_name":"THANK YOU","signer_id":"S014","start":1,"end":3.2}

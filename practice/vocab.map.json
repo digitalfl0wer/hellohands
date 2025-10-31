@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "rule": "only include entries with one_handed true"
+  },
+  "WATER": { "aliases": ["WATER"], "one_handed": true },
+  "EAT": { "aliases": ["EAT", "FOOD"], "one_handed": true },
+  "DRINK": { "aliases": ["DRINK"], "one_handed": true },
+  "BATHROOM": {
+    "aliases": ["BATHROOM", "TOILET", "RESTROOM"],
+    "one_handed": true
+  },
+  "LIKE": { "aliases": ["LIKE"], "one_handed": true },
+  "DON'T LIKE": {
+    "aliases": ["DON'T LIKE", "DONT LIKE", "NOT LIKE"],
+    "one_handed": true
+  },
+  "HOME": { "aliases": ["HOME", "HOUSE"], "one_handed": true },
+  "SLEEP": { "aliases": ["SLEEP"], "one_handed": true },
+  "HUNGRY": { "aliases": ["HUNGRY"], "one_handed": true },
+  "WHERE": { "aliases": ["WHERE"], "one_handed": true },
+  "WHO": { "aliases": ["WHO"], "one_handed": true },
+  "WHY": { "aliases": ["WHY"], "one_handed": true },
+  "YES": { "aliases": ["YES"], "one_handed": true },
+  "NO": { "aliases": ["NO"], "one_handed": true },
+  "HOT": { "aliases": ["HOT"], "one_handed": true },
+  "CLEAN": { "aliases": ["CLEAN"], "one_handed": true },
+  "DIRTY": { "aliases": ["DIRTY"], "one_handed": true },
+  "PAY": { "aliases": ["PAY"], "one_handed": true },
+  "PHONE": { "aliases": ["PHONE", "CALL"], "one_handed": true },
+  "WAIT": { "aliases": ["WAIT", "HOLD-ON"], "one_handed": true },
+  "HELLO": { "aliases": ["HELLO", "HI"], "one_handed": true },
+  "GOODBYE": { "aliases": ["GOODBYE", "BYE"], "one_handed": true },
+  "PLEASE": { "aliases": ["PLEASE"], "one_handed": true },
+  "THANK YOU": {
+    "aliases": ["THANK YOU", "THANKS"],
+    "one_handed": true
+  },
+  "SORRY": { "aliases": ["SORRY"], "one_handed": true },
+  "NICE": { "aliases": ["NICE"], "one_handed": true },
+  "LATER": { "aliases": ["LATER", "SEE-YOU-LATER"], "one_handed": true },
+  "NOW": { "aliases": ["NOW"], "one_handed": true },
+  "AGAIN": { "aliases": ["AGAIN"], "one_handed": true },
+  "EXCUSE-ME": {
+    "aliases": ["EXCUSE-ME", "EXCUSE ME", "PARDON"],
+    "one_handed": true
+  },
+  "SEE-YOU": {
+    "aliases": ["SEE-YOU", "SEE YOU", "SEE-YA"],
+    "one_handed": true
+  },
+  "OK": { "aliases": ["OK", "OKAY"], "one_handed": true },
+  "COOL": { "aliases": ["COOL", "ALRIGHT"], "one_handed": true },
+  "BUSY": { "aliases": ["BUSY"], "one_handed": true },
+  "READY": { "aliases": ["READY"], "one_handed": true }
+}
