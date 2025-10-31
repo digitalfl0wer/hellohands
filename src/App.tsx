@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { AppShell } from './components/AppShell';
 import { SettingsPill } from './components/SettingsPill';
 import { AppButton } from './components/Button';
 import { Toast } from './components/Toast';
-import { LessonScreen } from './components/lesson/LessonScreen';
+import { LessonScreen, LessonScreenHandle } from './components/lesson/LessonScreen';
 import { DirectionsSheet } from './components/sheets/DirectionsSheet';
 import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
+import { useGestureInput } from './hooks/useGestureInput';
 import { selectManualMode, useLessonStore } from './state/useLessonStore';
 
 function App(): JSX.Element | null {
@@ -19,10 +20,10 @@ function App(): JSX.Element | null {
     duration?: number;
   } | null>(null);
   const [showCountdown, setShowCountdown] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
-  const [feedbackVariant, setFeedbackVariant] = useState<'pass' | 'almost' | 'miss'>(
-    'pass',
-  );
+  const [lessonPaused, setLessonPaused] = useState(false);
+  const gestureCueTimer = useRef<number | null>(null);
+  const [gestureCue, setGestureCue] = useState<string | null>(null);
+  const lessonRef = useRef<LessonScreenHandle | null>(null);
 
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
@@ -69,6 +70,66 @@ function App(): JSX.Element | null {
     triggerToast('Lesson starting — good luck!', 'success');
   };
 
+  const flashGestureCue = (message: string, duration = 300) => {
+    if (gestureCueTimer.current) {
+      window.clearTimeout(gestureCueTimer.current);
+    }
+    setGestureCue(message);
+    gestureCueTimer.current = window.setTimeout(() => {
+      setGestureCue(null);
+    }, duration);
+  };
+
+
+  useEffect(() => {
+    return () => {
+      if (gestureCueTimer.current) {
+        window.clearTimeout(gestureCueTimer.current);
+      }
+    };
+  }, []);
+  useGestureInput({
+    enabled: view === 'lesson',
+    paused: lessonPaused,
+    suspended: showCountdown,
+    onGesture: (gesture) => {
+      switch (gesture) {
+        case 'next':
+          lessonRef.current?.nextClip();
+          flashGestureCue('Next');
+          break;
+        case 'replay':
+          lessonRef.current?.replayClip();
+          flashGestureCue('Replay');
+          break;
+        case 'slow':
+          lessonRef.current?.playSlow();
+          flashGestureCue('Slow-mo');
+          break;
+        case 'help':
+          lessonRef.current?.toggleHelp(true);
+          flashGestureCue('Help');
+          break;
+        case 'pause':
+          if (!lessonPaused) {
+            setLessonPaused(true);
+            lessonRef.current?.pause();
+            flashGestureCue('Paused', 600);
+          }
+          break;
+        case 'resume':
+          if (lessonPaused) {
+            setLessonPaused(false);
+            lessonRef.current?.resume();
+            flashGestureCue('Resume', 600);
+          }
+          break;
+        default:
+          break;
+      }
+    },
+  });
+
   const welcomeView = (
     <WelcomeScreen
       kidMode={kidMode}
@@ -98,9 +159,17 @@ function App(): JSX.Element | null {
 
   const lessonView = (
     <LessonScreen
+      gesturesOn={gesturesOn}
       kidMode={kidMode}
+      manualMode={manualMode}
       onHint={() => triggerToast('Slow-mo replay coming soon.', 'info')}
       onNextClip={() => triggerToast('Next sign queued.', 'success')}
+      onPauseChange={setLessonPaused}
+      onToggleGestures={toggleGestures}
+      onToggleVoice={toggleVoice}
+      paused={lessonPaused}
+      ref={lessonRef}
+      voiceOn={voiceOn}
     />
   );
 
@@ -123,6 +192,11 @@ function App(): JSX.Element | null {
       {view === 'lesson' && lessonView}
 
       {showCountdown && <CountdownOverlay onComplete={handleCountdownComplete} />}
+      {gestureCue && (
+        <div className="pointer-events-none fixed bottom-6 right-6 rounded-full bg-surface-800/80 px-md py-2 text-sm font-semibold text-text-primary shadow-lg ring-1 ring-white/10">
+          {gestureCue}
+        </div>
+      )}
       {toast && (
         <Toast
           duration={toast.duration ?? 2500}

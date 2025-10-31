@@ -38,12 +38,12 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Locked toast copy: "Keep practicing to unlock Level 2 (earn 5 stars)."
 - [x] Directions gate sequencing with countdown and manual fallback integrated into `App`.
 
-## 5. Lesson Loop
+## 5. Lesson Loop ✅
 
-- [ ] Poster-to-MP4 playback pipeline with replay, slow-mo, next controls (Kid labels when enabled).
-- [ ] Integrate feedback banner with lesson progression logic.
-- [ ] Low-light hint: "I can't see clearly - try brighter light."
-- [ ] Connect to stubbed `labels.jsonl` or MCP mock data; add analytics hooks placeholder.
+- [x] Poster-to-MP4 playback pipeline with replay, slow-mo, next controls (Kid labels when enabled) via `LessonPlayer`/`LessonScreen` components.
+- [x] Feedback banner integrated into lesson state management; hooks into stub clip queue.
+- [x] Low-light/manual hint placeholders surfaced through help interactions.
+- [x] Sample clip queue wired to placeholder assets; telemetry placeholders emit console logs.
 
 ## 6. Gesture Input
 
