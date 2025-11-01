@@ -191,23 +191,21 @@ export async function getNextPracticeItem(
   const result = await safeFetch<{ item: PracticeItem; pack: PracticePackSummary }>(
     '/practice/next',
     {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ packId, cursor }),
-  },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ packId, cursor }),
+    },
   );
 
   if (!result) return null;
   const pack = normalizePack(result.pack);
-  const item =
-    pack.items?.find((entry) => entry.id === result.item.id) ??
-    {
-      ...result.item,
-      posterUrl:
-        result.item.posterUrl ??
-        DEMO_SIGN_CLIP_MAP.get(result.item.sign.trim().toUpperCase())?.posterUrl,
-      sign: result.item.sign.trim().toUpperCase(),
-    };
+  const item = pack.items?.find((entry) => entry.id === result.item.id) ?? {
+    ...result.item,
+    posterUrl:
+      result.item.posterUrl ??
+      DEMO_SIGN_CLIP_MAP.get(result.item.sign.trim().toUpperCase())?.posterUrl,
+    sign: result.item.sign.trim().toUpperCase(),
+  };
   return { item, pack };
 }
 

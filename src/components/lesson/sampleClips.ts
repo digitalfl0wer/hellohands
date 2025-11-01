@@ -43,7 +43,10 @@ const FALLBACK_ATTRIBUTION = (sign: string, src: string): LessonClipAttribution 
   link: '#',
 });
 
-const buildLessonClip = (clip: DemoSignClip, overrides: LessonClipOverrides = {}): LessonClip => {
+const buildLessonClip = (
+  clip: DemoSignClip,
+  overrides: LessonClipOverrides = {},
+): LessonClip => {
   const overrideClipUrl = overrides.clipUrl ?? overrides.video ?? clip.clipUrl;
   const overridePosterUrl = overrides.posterUrl ?? overrides.poster ?? clip.posterUrl;
   return {

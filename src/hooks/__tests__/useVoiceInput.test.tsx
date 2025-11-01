@@ -54,19 +54,18 @@ describe('useVoiceInput', () => {
     startSpy.mockReset();
     stopSpy.mockReset();
 
-    const FakeSpeechRecognition = vi
-      .fn(function (this: SpeechRecognitionMock) {
-        this.lang = '';
-        this.interimResults = false;
-        this.continuous = false;
-        this.maxAlternatives = 0;
-        this.onresult = null;
-        this.onerror = null;
-        this.onend = null;
-        this.start = startSpy;
-        this.stop = stopSpy;
-        instances.push(this);
-      }) as unknown as SpeechRecognitionConstructor;
+    const FakeSpeechRecognition = vi.fn(function (this: SpeechRecognitionMock) {
+      this.lang = '';
+      this.interimResults = false;
+      this.continuous = false;
+      this.maxAlternatives = 0;
+      this.onresult = null;
+      this.onerror = null;
+      this.onend = null;
+      this.start = startSpy;
+      this.stop = stopSpy;
+      instances.push(this);
+    }) as unknown as SpeechRecognitionConstructor;
 
     Object.defineProperty(window as any, 'webkitSpeechRecognition', {
       configurable: true,

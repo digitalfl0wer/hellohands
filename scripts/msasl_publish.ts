@@ -39,7 +39,12 @@ async function main(): Promise<void> {
     if (s) want.add(s);
   }
 
-  const items: Array<{ id: string; sign: string; expectedGesture: any; clipUrl: string }> = [];
+  const items: Array<{
+    id: string;
+    sign: string;
+    expectedGesture: any;
+    clipUrl: string;
+  }> = [];
   const counts = new Map<string, number>();
 
   await mkdir(outDir, { recursive: true });
@@ -69,8 +74,8 @@ async function main(): Promise<void> {
         const fname = row.youtube_id
           ? `${row.youtube_id}.mp4`
           : row.url
-          ? basename(row.url.split('?')[0])
-          : null;
+            ? basename(row.url.split('?')[0])
+            : null;
         if (!fname) continue;
         const trySrc = [resolve(rawDirA, fname), resolve(rawDirB, fname)];
         const dst = resolve(outDir, sign, fname);
@@ -101,7 +106,10 @@ async function main(): Promise<void> {
   if (items.length === 0) {
     try {
       const urlsTxt = await readFile(resolve('data', 'tmp', 'pick_urls.txt'), 'utf8');
-      const urlLines = urlsTxt.split('\n').map((s) => s.trim()).filter(Boolean);
+      const urlLines = urlsTxt
+        .split('\n')
+        .map((s) => s.trim())
+        .filter(Boolean);
       // Index-pair fallback: align urls with rows order
       const limit = Math.min(rows.length, urlLines.length);
       for (let i = 0; i < limit; i++) {
@@ -117,7 +125,8 @@ async function main(): Promise<void> {
           const host = url.hostname.toLowerCase();
           if (host.includes('youtube.com') || host.includes('youtu.be')) {
             // Prefer v param; fallback to pathname last segment
-            const vid = url.searchParams.get('v') || url.pathname.split('/').filter(Boolean).pop();
+            const vid =
+              url.searchParams.get('v') || url.pathname.split('/').filter(Boolean).pop();
             if (vid) fname = `${vid}.mp4`;
           } else {
             fname = basename(u.split('?')[0]);
@@ -172,8 +181,8 @@ async function main(): Promise<void> {
         const fname: string | null = obj.youtube_id
           ? `${obj.youtube_id}.mp4`
           : obj.url
-          ? basename(String(obj.url).split('?')[0])
-          : null;
+            ? basename(String(obj.url).split('?')[0])
+            : null;
         if (!fname) continue;
         const id = `${sign}-${fname}`;
         if (seenIds.has(id)) continue;
@@ -211,15 +220,21 @@ async function main(): Promise<void> {
   };
 
   await mkdir(resolve('data', 'tmp'), { recursive: true });
-  await writeFile(resolve('data', 'tmp', 'local_pack.json'), JSON.stringify(pack, null, 2));
-  await writeFile(resolve('public', 'local', 'local_pack.json'), JSON.stringify(pack, null, 2));
+  await writeFile(
+    resolve('data', 'tmp', 'local_pack.json'),
+    JSON.stringify(pack, null, 2),
+  );
+  await writeFile(
+    resolve('public', 'local', 'local_pack.json'),
+    JSON.stringify(pack, null, 2),
+  );
   // eslint-disable-next-line no-console
-  console.log(`[publish] wrote ${items.length} items to public/local and data/tmp/local_pack.json`);
+  console.log(
+    `[publish] wrote ${items.length} items to public/local and data/tmp/local_pack.json`,
+  );
 }
 
 main().catch((e) => {
   console.error('[publish] fatal', e);
   process.exit(1);
 });
-
-

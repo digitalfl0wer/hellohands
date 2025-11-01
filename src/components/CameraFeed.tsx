@@ -25,9 +25,9 @@ export function CameraFeed({
     Number((import.meta as any)?.env?.VITE_GESTURE_HOLD_MS ?? 1200),
   );
 
-  const matchCallbackRef = useRef<((payload: { gesture: ExpectedGesture; score: number }) => void) | null>(
-    onMatch ?? null,
-  );
+  const matchCallbackRef = useRef<
+    ((payload: { gesture: ExpectedGesture; score: number }) => void) | null
+  >(onMatch ?? null);
   const expectedGestureRef = useRef<ExpectedGesture | null>(expectedGesture);
 
   useEffect(() => {
