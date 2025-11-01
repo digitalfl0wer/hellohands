@@ -188,6 +188,7 @@ function App(): JSX.Element | null {
   }, [level]);
 
   const [showCelebration, setShowCelebration] = useState(false);
+  const [goosePanelEnabled, setGoosePanelEnabled] = useState(false);
   useVoiceInput({
     enabled: view === 'lesson' && voiceOn && !showCountdown,
     paused: lessonPaused,
@@ -281,9 +282,11 @@ function App(): JSX.Element | null {
       enableStreamEnv === '1' || (enableStreamEnv === undefined && Boolean(streamUrl));
 
     if (!shouldConnect || !streamUrl) {
+      setGoosePanelEnabled(false);
       return;
     }
 
+    setGoosePanelEnabled(true);
     let source: EventSource | null = null;
 
     try {
@@ -426,7 +429,7 @@ function App(): JSX.Element | null {
           />
         </div>
       </AppShell>
-      <SubagentsPanel />
+      {goosePanelEnabled && <SubagentsPanel />}
     </>
   );
 }
