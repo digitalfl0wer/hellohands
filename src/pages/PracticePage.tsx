@@ -140,6 +140,8 @@ export function PracticePage() {
             <SignMedia
               sign={currentItem.sign}
               expectedGesture={currentItem.expectedGesture}
+              clipUrl={currentItem.clipUrl}
+              posterUrl={currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')}
             />
           ) : null}
         </div>
