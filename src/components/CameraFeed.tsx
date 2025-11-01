@@ -82,6 +82,11 @@ export function CameraFeed({
       }
 
       try {
+        const handsBase =
+          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_BASE ??
+          'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/';
+        const handsIntegrity = (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_INTEGRITY;
+
         const loadHands = async () =>
           await new Promise<void>((resolve, reject) => {
             const existing = document.querySelector(
@@ -89,9 +94,13 @@ export function CameraFeed({
             ) as HTMLScriptElement | null;
             if (existing) return resolve();
             const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js';
+            script.src = `${handsBase}hands.js`;
             script.async = true;
             script.defer = true;
+            if (handsIntegrity) {
+              (script as any).integrity = handsIntegrity;
+              (script as any).crossOrigin = 'anonymous';
+            }
             (script as any).dataset.hhHands = '1';
             script.onload = () => resolve();
             script.onerror = () => reject(new Error('Failed to load hands.js'));
@@ -105,8 +114,7 @@ export function CameraFeed({
         if (!HandsCtor) throw new Error('Hands constructor not found on window');
 
         detector = new HandsCtor({
-          locateFile: (file: string) =>
-            `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`,
+          locateFile: (file: string) => `${handsBase}${file}`,
         });
         detector.setOptions({
           selfieMode: true,
@@ -117,30 +125,26 @@ export function CameraFeed({
         });
         // Try to load drawing utils (non-fatal)
         try {
+          const drawBase =
+            (import.meta as any)?.env?.VITE_MEDIAPIPE_DRAW_BASE ??
+            'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/';
+          const drawIntegrity = (import.meta as any)?.VITE_MEDIAPIPE_DRAW_INTEGRITY;
           await new Promise<void>((resolve, reject) => {
             const existing = document.querySelector(
               'script[data-hh-draw="1"]',
             ) as HTMLScriptElement | null;
             if (existing) return resolve();
             const script = document.createElement('script');
-            script.src =
-              'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/drawing_utils.js';
+            script.src = `${drawBase}drawing_utils.js`;
             script.async = true;
             script.defer = true;
+            if (drawIntegrity) {
+              (script as any).integrity = drawIntegrity;
+              (script as any).crossOrigin = 'anonymous';
+            }
             (script as any).dataset.hhDraw = '1';
             script.onload = () => resolve();
-            script.onerror = () => {
-              // fallback to unpkg
-              const fallback = document.createElement('script');
-              fallback.src =
-                'https://unpkg.com/@mediapipe/drawing_utils@0.4/drawing_utils.js';
-              fallback.async = true;
-              fallback.defer = true;
-              (fallback as any).dataset.hhDraw = '1';
-              fallback.onload = () => resolve();
-              fallback.onerror = () => resolve(); // proceed without overlay
-              document.head.appendChild(fallback);
-            };
+            script.onerror = () => resolve(); // proceed without overlay
             document.head.appendChild(script);
           });
         } catch {}
@@ -167,8 +171,13 @@ export function CameraFeed({
         for (const pts of landmarks) {
           if (!pts) continue;
           // Heuristics (lenient): tune distances a bit broader
+          // Pinch: index-to-thumb OR middle-to-thumb close
           if (dist(pts[4], pts[8]) < 0.08) {
             const cand = { type: 'pinch' as const, score: 0.9 };
+            best = !best || cand.score > best.score ? cand : best;
+          }
+          if (dist(pts[4], pts[12]) < 0.09) {
+            const cand = { type: 'pinch' as const, score: 0.88 };
             best = !best || cand.score > best.score ? cand : best;
           }
           if (dist(pts[5], pts[17]) > 0.17) {

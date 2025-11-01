@@ -130,7 +130,7 @@ export const DEMO_SIGN_CLIPS: DemoSignClip[] = [
     title: 'NO',
     clipUrl: '/local/NO/2TQMVwOkHWw.mp4',
     posterUrl: '/signs/level1/no/poster.jpg',
-    expectedGesture: 'point',
+    expectedGesture: 'pinch',
     attribution: {
       clipId: 'demo_no_2tqmvwo',
       className: 'NO',

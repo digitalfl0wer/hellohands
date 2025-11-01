@@ -112,7 +112,7 @@ export function PracticePage() {
     HELLO: 'Open palm near temple; small outward wave.',
     'THANK YOU': 'Open palm from chin outward.',
     YES: 'Thumbs-up; hold steady.',
-    NO: 'Open palm (or index + middle close to thumb) to signal no.',
+    NO: 'Pinch index + middle to thumb; small bite-like motion.',
     WHERE: 'Point with index finger; keep other fingers curled.',
     EAT: 'Pinch fingertips together near mouth.',
     DRINK: 'Pinch like holding a cup; small tilt toward mouth.',

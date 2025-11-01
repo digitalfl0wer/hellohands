@@ -253,7 +253,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
                   HELLO: 'Open palm near temple; small outward wave.',
                   'THANK YOU': 'Open palm from chin outward.',
                   YES: 'Thumbs-up; hold steady.',
-                  NO: 'Open palm (or index + middle close to thumb).',
+                  NO: 'Pinch index + middle to thumb; hold briefly.',
                   WHERE: 'Point with index; keep other fingers curled.',
                   EAT: 'Pinch fingertips together near mouth.',
                   DRINK: 'Pinch like holding a cup; slight tilt.',
