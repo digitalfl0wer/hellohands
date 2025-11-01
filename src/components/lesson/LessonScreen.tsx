@@ -13,6 +13,7 @@ import { LessonPlayer, LessonPlayerHandle } from './LessonPlayer';
 import { HelpSheet } from '../sheets/HelpSheet';
 import { SAMPLE_CLIPS, LessonClip } from './sampleClips';
 import { setExpectedGesture } from '../../agents/planner';
+import { useLessonStore } from '../../state/useLessonStore';
 import { AttributionChip } from '../attribution/AttributionChip';
 import { CameraFeed } from '../CameraFeed';
 import { VoiceGuide } from '../VoiceGuide';
@@ -44,6 +45,8 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
     const [feedback, setFeedback] = useState<'pass' | 'almost' | 'miss'>('pass');
     const [showHelp, setShowHelp] = useState(false);
     const playerRef = useRef<LessonPlayerHandle | null>(null);
+    const registerResult = useLessonStore((s) => s.registerResult);
+    const approveGuardRef = useRef<number>(0);
 
     const currentClip = clips[index];
 
@@ -53,6 +56,23 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       return () => setExpectedGesture(null);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [index, clips]);
+
+    // Listen for PRACTICE_CORRECT to auto-approve and advance
+    useEffect(() => {
+      const onMessage = ({ data }: MessageEvent<HHEvent>) => {
+        if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT')
+          return;
+        const now = Date.now();
+        if (now - approveGuardRef.current < 1200) return;
+        approveGuardRef.current = now;
+        registerResult('pass');
+        setFeedback('pass');
+        goToNextClip();
+      };
+      bus.addEventListener('message', onMessage);
+      return () => bus.removeEventListener('message', onMessage);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index]);
 
     const goToNextClip = () => {
       setIndex((prev) => (prev + 1) % clips.length);

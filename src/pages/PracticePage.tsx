@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
 import SignMedia from '../components/SignMedia';
+import { Toast } from '../components/Toast';
+import { ConfettiOverlay } from '../components/ConfettiOverlay';
 import { setExpectedGesture } from '../agents/planner';
 import { bus, type HHEvent } from '../gestures/gestureBus';
 import {
@@ -23,6 +25,10 @@ export function PracticePage() {
     url: string;
   } | null>(null);
   const SHOW_CAMERA = import.meta.env.VITE_SHOW_CAMERA === '1';
+  const [toast, setToast] = useState<{ message: string; duration?: number } | null>(
+    null,
+  );
+  const [confetti, setConfetti] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -61,6 +67,9 @@ export function PracticePage() {
       if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT') {
         return;
       }
+      setToast({ message: 'Great match!', duration: 1400 });
+      setConfetti(true);
+      window.setTimeout(() => setConfetti(false), 1400);
       // Advance to the next suggested sign
       void handleSuggestNext();
     };
@@ -137,12 +146,7 @@ export function PracticePage() {
         </p>
         <div className="mt-4">
           {currentItem ? (
-            <SignMedia
-              sign={currentItem.sign}
-              expectedGesture={currentItem.expectedGesture}
-              clipUrl={currentItem.clipUrl}
-              posterUrl={currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')}
-            />
+            <SignMedia sign={currentItem.sign} expectedGesture={currentItem.expectedGesture} />
           ) : null}
         </div>
         {SHOW_CAMERA ? (
@@ -234,6 +238,12 @@ export function PracticePage() {
           </p>
         ) : null}
       </section>
+      {confetti ? (
+        <ConfettiOverlay message="Great match!" onEnd={() => setConfetti(false)} />
+      ) : null}
+      {toast ? (
+        <Toast duration={toast.duration ?? 1400} message={toast.message} variant="success" />
+      ) : null}
     </div>
   );
 }
