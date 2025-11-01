@@ -281,30 +281,50 @@ function App(): JSX.Element | null {
 
     setGoosePanelEnabled(true);
     let source: EventSource | null = null;
+    let retryTimer: number | null = null;
+    let attempts = 0;
 
-    try {
-      source = new EventSource(streamUrl);
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to connect to goose stream:', error);
+    const connect = () => {
+      try {
+        source = new EventSource(streamUrl);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.warn('Failed to connect to goose stream:', error);
+        }
+        scheduleRetry();
+        return;
       }
-    }
 
-    if (!source) {
-      return;
-    }
+      source.onopen = () => {
+        attempts = 0;
+      };
+      source.onmessage = (event) => {
+        if (!event.data) return;
+        post({ intent: 'planner', action: 'GOOSE_LOG', meta: { line: event.data } });
+        logger.info('goose', 'stream_line', { line: event.data });
+      };
+      source.onerror = () => {
+        source?.close();
+        scheduleRetry();
+      };
+    };
 
-    source.onmessage = (event) => {
-      if (!event.data) return;
-      post({ intent: 'planner', action: 'GOOSE_LOG', meta: { line: event.data } });
-      logger.info('goose', 'stream_line', { line: event.data });
+    const scheduleRetry = () => {
+      if (retryTimer) return;
+      attempts += 1;
+      const delay = Math.min(30000, 1000 * Math.pow(2, Math.min(attempts, 5)));
+      retryTimer = window.setTimeout(() => {
+        retryTimer = null;
+        connect();
+      }, delay);
     };
-    source.onerror = () => {
-      source?.close();
-    };
+
+    connect();
 
     return () => {
+      if (retryTimer) window.clearTimeout(retryTimer);
+      retryTimer = null;
       source?.close();
     };
   }, []);

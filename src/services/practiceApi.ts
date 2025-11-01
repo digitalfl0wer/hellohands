@@ -170,7 +170,14 @@ export async function getPracticePack(id: string): Promise<PracticePackSummary |
   }
 
   const result = await safeFetch<{ pack: PracticePackSummary }>(`/packs/${id}`);
-  return result?.pack ? normalizePack(result.pack) : null;
+  if (result?.pack) {
+    const normalized = normalizePack(result.pack);
+    if ((normalized.items?.length ?? 0) > 0) return normalized;
+  }
+  // Graceful fallback if empty/unavailable
+  return (
+    FALLBACK_SANITISED.find((pack) => pack.id === id) ?? FALLBACK_SANITISED[0] ?? null
+  );
 }
 
 export async function getNextPracticeItem(
@@ -196,17 +203,24 @@ export async function getNextPracticeItem(
       body: JSON.stringify({ packId, cursor }),
     },
   );
-
-  if (!result) return null;
-  const pack = normalizePack(result.pack);
-  const item = pack.items?.find((entry) => entry.id === result.item.id) ?? {
-    ...result.item,
-    posterUrl:
-      result.item.posterUrl ??
-      DEMO_SIGN_CLIP_MAP.get(result.item.sign.trim().toUpperCase())?.posterUrl,
-    sign: result.item.sign.trim().toUpperCase(),
-  };
-  return { item, pack };
+  if (result?.item && result.pack) {
+    const pack = normalizePack(result.pack);
+    const item = pack.items?.find((entry) => entry.id === result.item.id) ?? {
+      ...result.item,
+      posterUrl:
+        result.item.posterUrl ??
+        DEMO_SIGN_CLIP_MAP.get(result.item.sign.trim().toUpperCase())?.posterUrl,
+      sign: result.item.sign.trim().toUpperCase(),
+    };
+    return { item, pack };
+  }
+  // Fallback to local rotation logic
+  const pack =
+    FALLBACK_SANITISED.find((entry) => entry.id === packId) ?? FALLBACK_SANITISED[0];
+  if (!pack?.items?.length) return null;
+  const index = pack.items.findIndex((item) => item.id === cursor);
+  const nextItem = pack.items[(index + 1) % pack.items.length];
+  return { item: nextItem, pack };
 }
 
 export interface LicenseInfo {
