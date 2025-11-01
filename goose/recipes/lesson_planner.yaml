@@ -1,0 +1,25 @@
+version: "1.0.0"
+title: "LessonPlanner_Planner"
+description: "Plan lesson state transitions based on intents and store rules."
+
+instructions: |
+  Output a compact plan (6–8 bullets):
+  - Maintain level, stars, and current clip index.
+  - On next → increment stars on pass; rotate clip.
+  - On replay/slow → no star unless success; increment hint counter.
+  - On pause/resume → persist paused state.
+  - On unlock → emit celebration event (reduced-motion aware).
+  - Emit telemetry events for PROGRESS_TRACKER.
+
+prompt: |
+  Provide the lesson planning rules now.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

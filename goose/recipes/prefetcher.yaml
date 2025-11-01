@@ -1,0 +1,23 @@
+version: "1.0.0"
+title: "Prefetcher_Planner"
+description: "Plan prefetch of next poster/video assets to reduce latency."
+
+instructions: |
+  Emit a 5–6 bullet plan:
+  - On NEXT intent → prefetch next poster and video.
+  - Limit concurrency and cache size (LRU 2–3 items).
+  - Respect network saver / reduced data settings.
+  - Log prefetch hits/misses.
+
+prompt: |
+  Provide the prefetch plan.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

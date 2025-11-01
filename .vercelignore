@@ -1,0 +1,12 @@
+# Exclude large/dev-only directories from Vercel build upload context
+data/
+goose/
+scripts/
+server/
+docs/
+PRD/
+**/__tests__/
+node_modules/
+pnpm-lock.yaml
+
+

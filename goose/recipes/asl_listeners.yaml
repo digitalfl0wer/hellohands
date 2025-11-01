@@ -1,0 +1,24 @@
+version: "1.0.0"
+title: "ParallelListenersPlanner"
+description: "Plan a short demo where voice and gesture listeners run 'in parallel' conceptually."
+
+instructions: |
+  Produce a timestamped mock log (10–12 lines total) showing two concurrent listeners
+  (VOICE, GESTURE) receiving intents, then a fan-out to PLANNER → PREFETCHER → ATTRIBUTION_GUARDIAN.
+  Requirements:
+  - Exactly 10–12 lines.
+  - Timestamps in ISO-like HH:MM:SS.mmm (e.g., 14:03:21.127).
+  - Left-justified tags in a 18-char field (pad with spaces).
+  - Use the tags: VOICE, GESTURE, PLANNER, PREFETCHER, ATTRIBUTION_GUARDIAN.
+  - End with a single-line SUMMARY including counts per tag.
+
+prompt: |
+  Create the parallel listeners mock log now.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120

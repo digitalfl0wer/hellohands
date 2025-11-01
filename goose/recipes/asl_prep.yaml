@@ -1,0 +1,45 @@
+version: "1.0.0"
+title: "Prep_Planner"
+description: "Verify data roots, prepare MS-ASL subset, and write manifests."
+
+instructions: |
+  Validate repo paths, then emit the exact shell commands to:
+  1) verify labels/clips roots exist for the chosen subset,
+  2) run preprocessing at the requested fps/size,
+  3) write/update manifests (labels.jsonl, packs.generated.json as applicable).
+  Keep it concise and operator-ready.
+
+prompt: |
+  Prepare MS-ASL for demo:
+  - subset={{ subset }}
+  - fps={{ fps }}
+  - size={{ size }}
+
+  Output:
+  - Path checks (present/missing) for required roots.
+  - Exact commands to run preprocessing and write manifests.
+  - Brief note on expected artifact counts.
+
+parameters:
+  - key: subset
+    input_type: string
+    requirement: required
+    default: "100"
+    description: "Dataset size cap for quick demo runs (100|200|500|1000)."
+  - key: fps
+    input_type: string
+    requirement: optional
+    default: "30"
+    description: "Target FPS for extracted clips."
+  - key: size
+    input_type: string
+    requirement: optional
+    default: "256"
+    description: "Output video width in pixels (height auto)."
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300
+

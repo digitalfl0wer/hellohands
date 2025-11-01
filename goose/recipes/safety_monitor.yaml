@@ -1,0 +1,23 @@
+version: "1.0.0"
+title: "SafetyMonitor_Planner"
+description: "Define guardrails for unsafe states and escalation."
+
+instructions: |
+  Emit a brief policy (5–7 bullets):
+  - Rate-limit repeats to avoid overload.
+  - Disable voice on persistent errors; surface fallback.
+  - Suppress conflicting commands (pause vs resume) within 500ms.
+  - Provide a single recovery command to reset state.
+
+prompt: |
+  Provide the safety monitor policy now.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

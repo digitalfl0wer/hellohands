@@ -1,0 +1,19 @@
+version: "1.0.0"
+title: "CoachAdult_Planner"
+description: "Adult-targeted coaching copy and escalation rules."
+
+instructions: |
+  Emit 5 bullets with coaching tone, escalation, and retry guidance for adults.
+
+prompt: |
+  Provide adult coaching copy guidelines.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

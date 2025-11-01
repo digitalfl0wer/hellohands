@@ -1,0 +1,23 @@
+version: "1.0.0"
+title: "ProgressTracker_Planner"
+description: "Define telemetry events and storage for stars, levels, and hints."
+
+instructions: |
+  Emit a short event schema and storage strategy (5–7 bullets):
+  - Events: gesture, voice, pass, almost, miss, unlock.
+  - Fields: ts, view, intent, level, stars, clip_id.
+  - Console sink default; optional JSONL export.
+  - Privacy note and retention window.
+
+prompt: |
+  Provide the progress tracking plan.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

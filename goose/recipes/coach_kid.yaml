@@ -1,0 +1,19 @@
+version: "1.0.0"
+title: "CoachKid_Planner"
+description: "Kid-friendly coaching prompts and safety language."
+
+instructions: |
+  Emit 5 bullets with kid-friendly copy, positive reinforcement, and gentle retries.
+
+prompt: |
+  Provide kid coaching copy guidelines.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+

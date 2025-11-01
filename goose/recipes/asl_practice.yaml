@@ -1,0 +1,35 @@
+version: "1.0.0"
+title: "Practice_Verifier"
+description: "Validate category/pack IDs and enumerate expected vs found items."
+
+instructions: |
+  Check that the requested category and pack exist in the repo's practice config, then
+  report what items are expected and how many are present vs missing. Keep it concise.
+
+prompt: |
+  Verify practice pack:
+  - category={{ category }}
+  - pack_id={{ pack_id }}
+
+  Output:
+  - Valid/invalid status and nearest-match suggestion if invalid.
+  - Expected count vs found count (brief table OK).
+  - Notes on any missing items (first 5 only).
+
+parameters:
+  - key: category
+    input_type: string
+    requirement: required
+    default: "essentials"
+    description: "Curriculum category (essentials | social_basics)."
+  - key: pack_id
+    input_type: string
+    requirement: required
+    default: "L1-ESSENTIALS"
+    description: "Practice pack identifier (e.g., L1-ESSENTIALS)."
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

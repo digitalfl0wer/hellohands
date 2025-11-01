@@ -1,0 +1,12 @@
+{
+  "clipId": "msasl_val_000001",
+  "className": "THANK YOU",
+  "dataset": "MS-ASL",
+  "subset": "MS-ASL100",
+  "split": "val",
+  "signerId": "S014",
+  "signerLabel": "MS-ASL contributor S014",
+  "source": "data/processed/msasl/clips/000/000002.mp4",
+  "licenseText": "MS-ASL dataset — academic research license",
+  "link": "https://ms-asl.cs.rochester.edu/dataset"
+}

@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.vite/
+.DS_Store
+
+# Dataset assets
+data/**
+!data/.gitkeep
+!data/processed/
+data/processed/**
+!data/processed/msasl/
+data/processed/msasl/**
+!data/processed/msasl/labels.jsonl
+data/processed/msasl/clips/**
+
+# Media artifacts
+*.mp4
+*.webm
+*.m4v
+*.avi
+
+# Generated practice artifacts
+practice/packs.generated.json

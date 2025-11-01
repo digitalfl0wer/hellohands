@@ -1,0 +1,24 @@
+version: "1.0.0"
+title: "VoiceListener_Planner"
+description: "Outline how the voice listener should initialize, listen, and emit intents."
+
+instructions: |
+  Produce a minimal, operator-readable plan (5–7 steps) for a VOICE listener:
+  - Initialize Web Speech or fallback.
+  - Noise hinting / auto-retry onend.
+  - Parse commands (next, replay, slow, help, pause, resume, kid mode, level).
+  - Emit normalized intents to the router.
+  - Structured logging with timestamps.
+
+prompt: |
+  Plan the voice listener runbook now. Keep it concise.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 120
+
+
