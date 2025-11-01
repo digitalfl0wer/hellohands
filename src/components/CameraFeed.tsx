@@ -83,7 +83,8 @@ export function CameraFeed({
 
       try {
         const handsPrimaryBase =
-          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_BASE ?? '/vendor/mediapipe/hands/';
+          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_BASE ??
+          '/vendor/mediapipe/hands/';
         const handsFallbackBase =
           (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_CDN ??
           'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/';
