@@ -16,6 +16,7 @@ import { setExpectedGesture } from '../../agents/planner';
 import { AttributionChip } from '../attribution/AttributionChip';
 import { CameraFeed } from '../CameraFeed';
 import { VoiceGuide } from '../VoiceGuide';
+import { bus, type HHEvent } from '../../gestures/gestureBus';
 
 export interface LessonScreenHandle {
   nextClip(): void;
@@ -100,6 +101,20 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         playerRef.current?.resume();
       },
     }));
+
+    // Auto-advance when planner marks a correct gesture
+    useEffect(() => {
+      const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
+        if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT') {
+          return;
+        }
+        goToNextClip();
+      };
+      bus.addEventListener('message', handlePlanner);
+      return () => {
+        bus.removeEventListener('message', handlePlanner);
+      };
+    }, [clips]);
 
     return (
       <section className="space-y-lg">

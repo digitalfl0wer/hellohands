@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
 import SignMedia from '../components/SignMedia';
 import { setExpectedGesture } from '../agents/planner';
+import { bus, type HHEvent } from '../gestures/gestureBus';
 import {
   PracticeItem,
   PracticePackSummary,
@@ -53,6 +54,21 @@ export function PracticePage() {
       setExpectedGesture(null);
     };
   }, []);
+
+  // Auto-advance when planner marks a correct gesture
+  useEffect(() => {
+    const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
+      if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT') {
+        return;
+      }
+      // Advance to the next suggested sign
+      void handleSuggestNext();
+    };
+    bus.addEventListener('message', handlePlanner);
+    return () => {
+      bus.removeEventListener('message', handlePlanner);
+    };
+  }, [selectedPackId, selectedItemId, items]);
 
   useEffect(() => {
     if (!selectedPackId) return;

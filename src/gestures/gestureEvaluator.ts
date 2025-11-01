@@ -6,5 +6,8 @@ export const isCorrectGesture = (
   score = 0,
 ): boolean => {
   if (!expected) return false;
-  return expected === actual && score >= 0.6;
+  const raw = (import.meta as any)?.env?.VITE_GESTURE_THRESHOLD;
+  const parsed = Number(raw);
+  const threshold = Number.isFinite(parsed) ? Math.min(Math.max(parsed, 0), 1) : 0.6;
+  return expected === actual && score >= threshold;
 };
