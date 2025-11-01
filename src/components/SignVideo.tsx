@@ -32,39 +32,37 @@ export function SignVideo({ src, poster, autoPlay = true }: SignVideoProps) {
     };
   }, [src, autoPlay]);
 
-  return (
-    failed ? (
-      poster ? (
-        <img
-          src={poster}
-          alt="Sign demonstration"
-          className="w-full rounded-xl border border-zinc-800 bg-zinc-900 object-cover"
-        />
-      ) : (
-        <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-300">
-          Video unavailable
-        </div>
-      )
+  return failed ? (
+    poster ? (
+      <img
+        src={poster}
+        alt="Sign demonstration"
+        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 object-cover"
+      />
     ) : (
-      <video
-        ref={videoRef}
-        playsInline
-        muted
-        preload="auto"
-        autoPlay={autoPlay}
-        controls
-        onError={(e) => {
-          console.warn('video error:', (e.target as HTMLVideoElement)?.currentSrc);
-          setFailed(true);
-        }}
-        onStalled={() => setFailed(true)}
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-900"
-        poster={poster}
-        src={src}
-      >
-        Your browser can’t play this video.
-      </video>
+      <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-300">
+        Video unavailable
+      </div>
     )
+  ) : (
+    <video
+      ref={videoRef}
+      playsInline
+      muted
+      preload="auto"
+      autoPlay={autoPlay}
+      controls
+      onError={(e) => {
+        console.warn('video error:', (e.target as HTMLVideoElement)?.currentSrc);
+        setFailed(true);
+      }}
+      onStalled={() => setFailed(true)}
+      className="w-full rounded-xl border border-zinc-800 bg-zinc-900"
+      poster={poster}
+      src={src}
+    >
+      Your browser can’t play this video.
+    </video>
   );
 }
 
