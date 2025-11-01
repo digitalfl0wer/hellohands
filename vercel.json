@@ -5,7 +5,7 @@
   "devCommand": "pnpm dev",
   "rewrites": [
     {
-      "source": "/((?!api|assets|signs).*)",
+      "source": "/((?!api|assets|signs|local).*)",
       "destination": "/index.html"
     }
   ]
