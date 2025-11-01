@@ -89,7 +89,12 @@ export function SubagentsPanel() {
         const last = activity[agent.key];
         const delta = last ? heartbeat - last : Number.POSITIVE_INFINITY;
         const active = delta < ACTIVE_WINDOW_MS;
-        const pct = active ? Math.max(12, Math.round(((ACTIVE_WINDOW_MS - delta) / ACTIVE_WINDOW_MS) * 100)) : 6;
+        const pct = active
+          ? Math.max(
+              12,
+              Math.round(((ACTIVE_WINDOW_MS - delta) / ACTIVE_WINDOW_MS) * 100),
+            )
+          : 6;
         return {
           ...agent,
           last,
@@ -110,10 +115,10 @@ export function SubagentsPanel() {
 
       setRows((current) => [{ ts, tag, text }, ...current].slice(0, 200));
 
-       const agentKey = classifyEvent(data);
-       if (agentKey) {
-         markActivity(agentKey);
-       }
+      const agentKey = classifyEvent(data);
+      if (agentKey) {
+        markActivity(agentKey);
+      }
     };
 
     bus.addEventListener('message', handleMessage);

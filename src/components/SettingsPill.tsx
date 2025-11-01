@@ -13,7 +13,10 @@ export function SettingsPill() {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const closeIfOutside = (event: FocusEvent<HTMLDivElement>) => {
-    if (containerRef.current && !containerRef.current.contains(event.relatedTarget as Node)) {
+    if (
+      containerRef.current &&
+      !containerRef.current.contains(event.relatedTarget as Node)
+    ) {
       setExpanded(false);
     }
   };
@@ -43,7 +46,9 @@ export function SettingsPill() {
 
       <div
         className={`${
-          expanded ? 'pointer-events-auto opacity-100 translate-y-0' : 'pointer-events-none opacity-0 translate-y-1'
+          expanded
+            ? 'pointer-events-auto opacity-100 translate-y-0'
+            : 'pointer-events-none opacity-0 translate-y-1'
         } absolute right-0 top-full z-50 mt-2 w-64 rounded-lg border border-accent-teal/60 bg-surface-900/98 p-4 text-sm text-text-primary shadow-2xl backdrop-blur transition-all`}
         role="menu"
       >

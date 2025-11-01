@@ -65,7 +65,8 @@ export function toUnifiedLabel(params: {
   const startTime = toNumber(record.start_time) ?? 0;
   const endTimeRaw = toNumber(record.end_time);
   const endTime = endTimeRaw !== undefined ? Math.max(endTimeRaw, startTime) : startTime;
-  const signer = typeof record.signer_id === 'number' ? record.signer_id : Number(record.signer_id);
+  const signer =
+    typeof record.signer_id === 'number' ? record.signer_id : Number(record.signer_id);
 
   return {
     id: `msasl_${split}_${(record.id || 0).toString().padStart(6, '0')}`,
@@ -87,7 +88,9 @@ export function isValidMsaslRecord(value: unknown): value is MsaslSourceRecord {
   const v = value as any;
   return (
     typeof v.label === 'number' &&
-    (typeof v.text === 'string' || typeof v.clean_text === 'string' || typeof v.label_text === 'string') &&
+    (typeof v.text === 'string' ||
+      typeof v.clean_text === 'string' ||
+      typeof v.label_text === 'string') &&
     (typeof v.signer_id === 'number' || typeof v.signer_id === 'string') &&
     typeof v.url === 'string'
   );
@@ -110,11 +113,7 @@ function normalizeMsaslRecord(record: MsaslSourceRecord): MsaslSourceRecord {
 
 function deriveClassName(record: MsaslSourceRecord): string {
   const raw =
-    record.text ??
-    record.clean_text ??
-    record.label_text ??
-    record.class_name ??
-    '';
+    record.text ?? record.clean_text ?? record.label_text ?? record.class_name ?? '';
   return raw.trim().toUpperCase();
 }
 

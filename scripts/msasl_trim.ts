@@ -92,7 +92,12 @@ async function processSplit(
   fps: number,
   size: number,
 ) {
-  const filteredPath = resolve(envRoot, 'msasl', 'filtered', `MSASL_${split}_${subset ?? 'all'}.json`);
+  const filteredPath = resolve(
+    envRoot,
+    'msasl',
+    'filtered',
+    `MSASL_${split}_${subset ?? 'all'}.json`,
+  );
   const raw = await readFile(filteredPath, 'utf8').catch(() => '');
   if (!raw.trim()) {
     console.warn(`[msasl_trim] missing filtered: ${filteredPath}`);
@@ -102,9 +107,10 @@ async function processSplit(
   let trimmed = 0;
   for (let i = 0; i < records.length; i++) {
     const baseId = records[i]?.id;
-    const recordId = typeof baseId === 'number' && Number.isFinite(baseId)
-      ? baseId
-      : computeRecordId(split, i);
+    const recordId =
+      typeof baseId === 'number' && Number.isFinite(baseId)
+        ? baseId
+        : computeRecordId(split, i);
     const idPadded = String(recordId).padStart(6, '0');
     const shard = idPadded.slice(0, 3);
     const inputPath = await resolveRawPath(envRoot, idPadded);

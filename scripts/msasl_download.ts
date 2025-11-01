@@ -72,7 +72,6 @@ function getClassName(rec: any): string | undefined {
   return raw ? raw.toUpperCase() : undefined;
 }
 
-
 async function ensureDir(path: string): Promise<void> {
   await mkdir(path, { recursive: true });
 }
@@ -151,8 +150,10 @@ async function downloadYouTube(url: string, destPath: string, retries: number) {
       [
         '--no-playlist',
         '--no-cache-dir',
-        '--retries', String(Math.max(1, retries)),
-        '--fragment-retries', String(Math.max(1, retries)),
+        '--retries',
+        String(Math.max(1, retries)),
+        '--fragment-retries',
+        String(Math.max(1, retries)),
 
         // Progressive MP4 only (includes audio); avoids ffmpeg merge entirely
         '-f',
@@ -215,9 +216,10 @@ async function processSplit(
     if (current >= maxPerClass) {
       continue; // cap reached for this class
     }
-    const recordId = typeof rec.id === 'number' && Number.isFinite(rec.id)
-      ? rec.id
-      : computeRecordId(split, i);
+    const recordId =
+      typeof rec.id === 'number' && Number.isFinite(rec.id)
+        ? rec.id
+        : computeRecordId(split, i);
     const idPadded = String(recordId).padStart(6, '0');
     const outPath = resolve(rawDir, `${idPadded}.mp4`);
 

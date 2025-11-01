@@ -110,18 +110,18 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
               src={poster}
             />
           ) : (
-          <video
-            aria-label={`Tutorial clip for ${title}`}
-            className="block h-full w-full"
-            controls
-            playsInline
-            muted
-            poster={poster}
-            ref={videoRef}
-          >
-            <source src={videoSrc} type="video/mp4" />
-            Your browser does not support video playback.
-          </video>
+            <video
+              aria-label={`Tutorial clip for ${title}`}
+              className="block h-full w-full"
+              controls
+              playsInline
+              muted
+              poster={poster}
+              ref={videoRef}
+            >
+              <source src={videoSrc} type="video/mp4" />
+              Your browser does not support video playback.
+            </video>
           )}
         </div>
         <div className="flex flex-wrap gap-sm">

@@ -60,7 +60,8 @@ const FALLBACK_PACKS: PracticePackSummary[] = [
 
 const USE_MCP = import.meta.env.VITE_USE_MCP === '1';
 const MCP_BASE =
-  import.meta.env.VITE_MCP_URL ?? (import.meta.env.DEV ? 'http://localhost:5175/api/mcp' : '/api/mcp');
+  import.meta.env.VITE_MCP_URL ??
+  (import.meta.env.DEV ? 'http://localhost:5175/api/mcp' : '/api/mcp');
 
 type WhitelistConfig = { allow: string[] };
 type VocabEntry = { aliases?: string[]; one_handed?: boolean };
@@ -109,9 +110,7 @@ const sanitizeFallbackPacks = (): PracticePackSummary[] => {
 };
 
 const BYPASS_WHITELIST = import.meta.env.VITE_PRACTICE_BYPASS_WHITELIST === '1';
-const FALLBACK_SANITISED = BYPASS_WHITELIST
-  ? FALLBACK_PACKS
-  : sanitizeFallbackPacks();
+const FALLBACK_SANITISED = BYPASS_WHITELIST ? FALLBACK_PACKS : sanitizeFallbackPacks();
 
 async function safeFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   try {

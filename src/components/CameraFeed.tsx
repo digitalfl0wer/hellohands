@@ -55,8 +55,7 @@ export function CameraFeed() {
             ) as HTMLScriptElement | null;
             if (existing) return resolve();
             const script = document.createElement('script');
-            script.src =
-              'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js';
+            script.src = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js';
             script.async = true;
             script.defer = true;
             (script as any).dataset.hhHands = '1';
@@ -103,7 +102,7 @@ export function CameraFeed() {
                 'https://unpkg.com/@mediapipe/drawing_utils@0.4/drawing_utils.js';
               fallback.async = true;
               fallback.defer = true;
-              ;(fallback as any).dataset.hhDraw = '1';
+              (fallback as any).dataset.hhDraw = '1';
               fallback.onload = () => resolve();
               fallback.onerror = () => resolve(); // proceed without overlay
               document.head.appendChild(fallback);
@@ -120,11 +119,17 @@ export function CameraFeed() {
         return;
       }
 
-      const classifyLandmarks = (landmarks: any[]):
-        | { type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch'; score: number }
-        | null => {
+      const classifyLandmarks = (
+        landmarks: any[],
+      ): {
+        type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
+        score: number;
+      } | null => {
         const dist = (a: any, b: any) => Math.hypot(a.x - b.x, a.y - b.y);
-        let best: { type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch'; score: number } | null = null;
+        let best: {
+          type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
+          score: number;
+        } | null = null;
         for (const pts of landmarks) {
           if (!pts) continue;
           // Heuristics (lenient): tune distances a bit broader
@@ -162,8 +167,10 @@ export function CameraFeed() {
           const ctx = canvas?.getContext('2d');
           if (canvas && video && ctx) {
             const container = overlayRef.current?.parentElement as HTMLElement | null;
-            const cssW = (container?.clientWidth ?? video.clientWidth) || video.videoWidth;
-            const cssH = (container?.clientHeight ?? video.clientHeight) || video.videoHeight;
+            const cssW =
+              (container?.clientWidth ?? video.clientWidth) || video.videoWidth;
+            const cssH =
+              (container?.clientHeight ?? video.clientHeight) || video.videoHeight;
             const dpr = Math.max(1, window.devicePixelRatio || 1);
             const targetW = Math.floor(cssW * dpr);
             const targetH = Math.floor(cssH * dpr);
@@ -177,7 +184,10 @@ export function CameraFeed() {
             const drawConnectors = (window as any).drawConnectors;
             const drawLandmarks = (window as any).drawLandmarks;
             const HAND_CONNECTIONS = (window as any).HAND_CONNECTIONS;
-            if (typeof drawConnectors === 'function' && typeof drawLandmarks === 'function') {
+            if (
+              typeof drawConnectors === 'function' &&
+              typeof drawLandmarks === 'function'
+            ) {
               for (const pts of lm) {
                 try {
                   drawConnectors(ctx, pts, HAND_CONNECTIONS, {
@@ -195,7 +205,13 @@ export function CameraFeed() {
                     const p = pts[idx];
                     if (!p) continue;
                     ctx.beginPath();
-                    ctx.arc(p.x * canvas.width, p.y * canvas.height, idx === 8 ? 6 : 4, 0, Math.PI * 2);
+                    ctx.arc(
+                      p.x * canvas.width,
+                      p.y * canvas.height,
+                      idx === 8 ? 6 : 4,
+                      0,
+                      Math.PI * 2,
+                    );
                     ctx.fill();
                   }
                 } catch {}
@@ -268,9 +284,13 @@ export function CameraFeed() {
               `${classification.type} (${Math.round(
                 (classification.score || 0) * 100,
               )}%) · hold ${Math.ceil(
-                Math.max(0, HOLD_MS - (lastStableStartMsRef.current
-                  ? now - lastStableStartMsRef.current
-                  : 0)) / 1000,
+                Math.max(
+                  0,
+                  HOLD_MS -
+                    (lastStableStartMsRef.current
+                      ? now - lastStableStartMsRef.current
+                      : 0),
+                ) / 1000,
               )}s`,
             );
           } else {
@@ -316,10 +336,10 @@ export function CameraFeed() {
     <div className="relative">
       <div className="relative inline-block w-full max-w-md transform -scale-x-100">
         <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
           className="w-full rounded-xl shadow-lg"
         />
         <canvas

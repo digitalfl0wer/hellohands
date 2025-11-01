@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
+import SignMedia from '../components/SignMedia';
 import { setExpectedGesture } from '../agents/planner';
 import {
   PracticeItem,
@@ -15,9 +16,12 @@ export function PracticePage() {
   const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
   const [items, setItems] = useState<PracticeItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [license, setLicense] = useState<{ dataset: string; license: string; url: string } | null>(
-    null,
-  );
+  const [license, setLicense] = useState<{
+    dataset: string;
+    license: string;
+    url: string;
+  } | null>(null);
+  const SHOW_CAMERA = import.meta.env.VITE_SHOW_CAMERA === '1';
 
   useEffect(() => {
     let mounted = true;
@@ -76,6 +80,11 @@ export function PracticePage() {
     return packs.find((entry) => entry.id === selectedPackId) ?? packs[0];
   }, [packs, selectedPackId]);
 
+  const currentItem = useMemo(() => {
+    if (!items.length) return null;
+    return items.find((entry) => entry.id === selectedItemId) ?? items[0];
+  }, [items, selectedItemId]);
+
   const handleSignSelect = (itemId: string) => {
     setSelectedItemId(itemId);
     const item = items.find((entry) => entry.id === itemId);
@@ -97,8 +106,9 @@ export function PracticePage() {
     setExpectedGesture(result.item.expectedGesture);
   };
 
-  const expectedGestureLabel = items.find((item) => item.id === selectedItemId)?.expectedGesture
-    ?.replace('_', ' ')
+  const expectedGestureLabel = items
+    .find((item) => item.id === selectedItemId)
+    ?.expectedGesture?.replace('_', ' ')
     .toUpperCase();
 
   return (
@@ -110,12 +120,22 @@ export function PracticePage() {
           recognise it.
         </p>
         <div className="mt-4">
-          <CameraFeed />
+          {currentItem ? (
+            <SignMedia sign={currentItem.sign} expectedGesture={currentItem.expectedGesture} />
+          ) : null}
         </div>
+        {SHOW_CAMERA ? (
+          <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
+            <CameraFeed />
+          </div>
+        ) : null}
       </section>
       <section className="flex flex-col gap-4">
         <div>
-          <label className="text-xs uppercase tracking-wide text-text-secondary" htmlFor="pack-select">
+          <label
+            className="text-xs uppercase tracking-wide text-text-secondary"
+            htmlFor="pack-select"
+          >
             Practice pack
           </label>
           <select
@@ -181,7 +201,12 @@ export function PracticePage() {
         {license ? (
           <p className="text-xs text-text-muted">
             Data source:{' '}
-            <a className="text-accent-teal underline" href={license.url} target="_blank" rel="noreferrer">
+            <a
+              className="text-accent-teal underline"
+              href={license.url}
+              target="_blank"
+              rel="noreferrer"
+            >
               {license.dataset}
             </a>{' '}
             ({license.license})

@@ -37,18 +37,7 @@ interface LessonScreenProps {
 }
 
 export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
-  (
-    {
-      kidMode,
-      paused,
-      voiceOn,
-      gesturesOn,
-      onPauseChange,
-      onNextClip,
-      onHint,
-    },
-    ref,
-  ) => {
+  ({ kidMode, paused, voiceOn, gesturesOn, onPauseChange, onNextClip, onHint }, ref) => {
     const clips = useMemo<LessonClip[]>(() => SAMPLE_CLIPS, []);
     const [index, setIndex] = useState(0);
     const [feedback, setFeedback] = useState<'pass' | 'almost' | 'miss'>('pass');
@@ -132,7 +121,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
               <aside className="rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
                 <header className="mb-sm flex items-center justify-between">
                   <h3 className="text-base font-semibold">Gesture camera</h3>
-                  <span className="text-xs uppercase tracking-wide text-accent-teal">On</span>
+                  <span className="text-xs uppercase tracking-wide text-accent-teal">
+                    On
+                  </span>
                 </header>
                 <p className="text-xs text-text-secondary">
                   Keep within the frame and hold each gesture briefly for the best match.

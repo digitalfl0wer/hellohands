@@ -278,8 +278,7 @@ function App(): JSX.Element | null {
 
     const enableStreamEnv = import.meta.env.VITE_ENABLE_GOOSE_STREAM;
     const shouldConnect =
-      enableStreamEnv === '1' ||
-      (enableStreamEnv === undefined && Boolean(streamUrl));
+      enableStreamEnv === '1' || (enableStreamEnv === undefined && Boolean(streamUrl));
 
     if (!shouldConnect || !streamUrl) {
       return;
@@ -382,11 +381,7 @@ function App(): JSX.Element | null {
               >
                 Practice
               </AppButton>
-              <AppButton
-                onClick={() => setKidMode(!kidMode)}
-                type="button"
-                variant="kid"
-              >
+              <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
                 Kid Mode: {kidMode ? 'On' : 'Off'}
               </AppButton>
               {voiceOn && (
@@ -398,39 +393,39 @@ function App(): JSX.Element | null {
           </div>
         }
       >
-      {view === 'welcome' && welcomeView}
-      {view === 'directions' && directionsView}
-      {view === 'lesson' && lessonView}
-      {view === 'practice' && <PracticePage />}
+        {view === 'welcome' && welcomeView}
+        {view === 'directions' && directionsView}
+        {view === 'lesson' && lessonView}
+        {view === 'practice' && <PracticePage />}
 
-      {showCelebration && (
-        <ConfettiOverlay
-          message={`Level ${level} unlocked!`}
-          onEnd={() => setShowCelebration(false)}
-        />
-      )}
+        {showCelebration && (
+          <ConfettiOverlay
+            message={`Level ${level} unlocked!`}
+            onEnd={() => setShowCelebration(false)}
+          />
+        )}
 
-      {showCountdown && <CountdownOverlay onComplete={handleCountdownComplete} />}
-      {gestureCue && (
-        <div className="pointer-events-none fixed bottom-6 right-6 rounded-full bg-surface-800/80 px-md py-2 text-sm font-semibold text-text-primary shadow-lg ring-1 ring-white/10">
-          {gestureCue}
+        {showCountdown && <CountdownOverlay onComplete={handleCountdownComplete} />}
+        {gestureCue && (
+          <div className="pointer-events-none fixed bottom-6 right-6 rounded-full bg-surface-800/80 px-md py-2 text-sm font-semibold text-text-primary shadow-lg ring-1 ring-white/10">
+            {gestureCue}
+          </div>
+        )}
+        {toast && (
+          <Toast
+            duration={toast.duration ?? 2500}
+            message={toast.message}
+            variant={toast.variant ?? 'info'}
+          />
+        )}
+        <div className="pointer-events-none fixed top-6 left-1/2 z-[65] -translate-x-1/2">
+          <UnlockSticker
+            level={unlockStickerLevel ?? 0}
+            visible={unlockStickerLevel !== null}
+            onHide={() => setUnlockStickerLevel(null)}
+          />
         </div>
-      )}
-      {toast && (
-        <Toast
-          duration={toast.duration ?? 2500}
-          message={toast.message}
-          variant={toast.variant ?? 'info'}
-        />
-      )}
-      <div className="pointer-events-none fixed top-6 left-1/2 z-[65] -translate-x-1/2">
-        <UnlockSticker
-          level={unlockStickerLevel ?? 0}
-          visible={unlockStickerLevel !== null}
-          onHide={() => setUnlockStickerLevel(null)}
-        />
-      </div>
-    </AppShell>
+      </AppShell>
       <SubagentsPanel />
     </>
   );

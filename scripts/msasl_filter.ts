@@ -33,9 +33,10 @@ async function filterSplit(
     return { inCount: 0, outCount: 0, outPath };
   }
 
-  const filtered = (!subset
-    ? records
-    : records.filter((r) => typeof r.label === 'number' && r.label < subset)
+  const filtered = (
+    !subset
+      ? records
+      : records.filter((r) => typeof r.label === 'number' && r.label < subset)
   ).map((record) => ({
     id: record.id ?? null,
     label: record.label,

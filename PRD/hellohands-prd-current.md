@@ -55,15 +55,15 @@ Hello Hands offers a guided, multimodal ASL micro-lesson focused on a five-star 
 
 ## Outstanding Work (Task Tracker Sections 14–16)
 
-| Task | Status | Notes |
-| --- | --- | --- |
-| Practice loader enforcing whitelist & one-handed rule | ✅ | `practiceApi` sanitises fallback packs against `whitelist.json` + `vocab.map.json`; non-compliant items are dropped with dev warnings. |
-| Generate packs + missing_items log | ✅ | `pnpm practice:generate` now writes whitelist-filtered packs and `practice/packs.missing.json` with removal reasons. |
-| Docs for adjusting glosses safely | ✅ | Runbook added at `docs/practice-pipeline.md` covering whitelist edits, regeneration, and troubleshooting. |
-| Baseline model + train loop (optional) | ⏳ | Goose recipe stub exists; no executable training pipeline or metrics export yet. |
-| Metrics export, confusion matrix | ⏳ | Pending once baseline loop lands. |
-| Demo readiness sweep | ✅ | Checklist captured in `docs/demo-readiness.md` with performance guidance and capture script. |
-| Final README quickstart refresh | ✅ | README now documents dev servers, environment flags, and practice scripts. |
+| Task                                                  | Status | Notes                                                                                                                                  |
+| ----------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Practice loader enforcing whitelist & one-handed rule | ✅     | `practiceApi` sanitises fallback packs against `whitelist.json` + `vocab.map.json`; non-compliant items are dropped with dev warnings. |
+| Generate packs + missing_items log                    | ✅     | `pnpm practice:generate` now writes whitelist-filtered packs and `practice/packs.missing.json` with removal reasons.                   |
+| Docs for adjusting glosses safely                     | ✅     | Runbook added at `docs/practice-pipeline.md` covering whitelist edits, regeneration, and troubleshooting.                              |
+| Baseline model + train loop (optional)                | ⏳     | Goose recipe stub exists; no executable training pipeline or metrics export yet.                                                       |
+| Metrics export, confusion matrix                      | ⏳     | Pending once baseline loop lands.                                                                                                      |
+| Demo readiness sweep                                  | ✅     | Checklist captured in `docs/demo-readiness.md` with performance guidance and capture script.                                           |
+| Final README quickstart refresh                       | ✅     | README now documents dev servers, environment flags, and practice scripts.                                                             |
 
 ## Launch Checklist
 

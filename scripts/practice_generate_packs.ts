@@ -83,7 +83,9 @@ async function main(): Promise<void> {
       )} items; see ${MISSING_LOG_PATH}`,
     );
   } else {
-    console.log('[practice_generate_packs] all manual items satisfied whitelist + one-handed rule.');
+    console.log(
+      '[practice_generate_packs] all manual items satisfied whitelist + one-handed rule.',
+    );
   }
 }
 
