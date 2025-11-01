@@ -32,6 +32,7 @@ export default function SignMedia({ sign, expectedGesture, clipUrl, posterUrl }:
           controls
           playsInline
           muted
+          autoPlay
           preload="metadata"
           poster={posterUrl}
         >
