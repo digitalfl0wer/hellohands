@@ -25,9 +25,7 @@ export function PracticePage() {
     url: string;
   } | null>(null);
   const SHOW_CAMERA = import.meta.env.VITE_SHOW_CAMERA === '1';
-  const [toast, setToast] = useState<{ message: string; duration?: number } | null>(
-    null,
-  );
+  const [toast, setToast] = useState<{ message: string; duration?: number } | null>(null);
   const [confetti, setConfetti] = useState(false);
 
   useEffect(() => {
@@ -110,6 +108,20 @@ export function PracticePage() {
     return items.find((entry) => entry.id === selectedItemId) ?? items[0];
   }, [items, selectedItemId]);
 
+  const SIGN_TIPS: Record<string, string> = {
+    HELLO: 'Open palm near temple; small outward wave.',
+    'THANK YOU': 'Open palm from chin outward.',
+    YES: 'Thumbs-up; hold steady.',
+    NO: 'Open palm (or index + middle close to thumb) to signal no.',
+    WHERE: 'Point with index finger; keep other fingers curled.',
+    EAT: 'Pinch fingertips together near mouth.',
+    DRINK: 'Pinch like holding a cup; small tilt toward mouth.',
+    MORE: 'Pinch both hands; bring fingertips together.',
+    STOP: 'Open palm facing forward; hold steady.',
+    HELP: 'Open palm; slight lift to signal help.',
+    PLEASE: 'Open palm on chest; small circle.',
+  };
+
   const handleSignSelect = (itemId: string) => {
     setSelectedItemId(itemId);
     const item = items.find((entry) => entry.id === itemId);
@@ -146,7 +158,18 @@ export function PracticePage() {
         </p>
         <div className="mt-4">
           {currentItem ? (
-            <SignMedia sign={currentItem.sign} expectedGesture={currentItem.expectedGesture} />
+            <SignMedia
+              sign={currentItem.sign}
+              expectedGesture={currentItem.expectedGesture}
+              clipUrl={currentItem.clipUrl}
+              posterUrl={currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')}
+            />
+          ) : null}
+          {currentItem ? (
+            <p className="mt-2 text-sm text-text-secondary">
+              {SIGN_TIPS[currentItem.sign.toUpperCase()] ??
+                'Mirror the poster and hold your gesture steady for a moment.'}
+            </p>
           ) : null}
         </div>
         {SHOW_CAMERA ? (
@@ -242,7 +265,11 @@ export function PracticePage() {
         <ConfettiOverlay message="Great match!" onEnd={() => setConfetti(false)} />
       ) : null}
       {toast ? (
-        <Toast duration={toast.duration ?? 1400} message={toast.message} variant="success" />
+        <Toast
+          duration={toast.duration ?? 1400}
+          message={toast.message}
+          variant="success"
+        />
       ) : null}
     </div>
   );
