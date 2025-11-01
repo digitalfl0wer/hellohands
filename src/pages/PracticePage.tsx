@@ -194,7 +194,10 @@ export function PracticePage() {
               sign={currentItem.sign}
               expectedGesture={currentItem.expectedGesture}
               clipUrl={currentItem.clipUrl}
-              posterUrl={currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')}
+              posterUrl={
+                currentItem.posterUrl ??
+                currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')
+              }
             />
           ) : null}
           {currentItem ? (
