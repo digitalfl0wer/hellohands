@@ -11,14 +11,19 @@ app.get('/api/goose/stream', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.flushHeaders?.();
 
+  const provider = process.env.GOOSE_PROVIDER ?? 'mock';
+  const model =
+    process.env.GOOSE_MODEL ??
+    (provider === 'mock' ? 'mock-lite' : 'claude-3-5-sonnet-latest');
+
   const args = [
     'run',
     '--recipe',
     './goose/recipes/asl_listeners.yaml',
     '--provider',
-    process.env.GOOSE_PROVIDER ?? 'anthropic',
+    provider,
     '--model',
-    process.env.GOOSE_MODEL ?? 'claude-3-5-sonnet-latest',
+    model,
     '--params',
     'subset=100',
   ];

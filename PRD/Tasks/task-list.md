@@ -58,11 +58,11 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Command parser covers Next/Replay/Slow/Pause/Resume/Help + Kid Mode and Level navigation; hint toast on uncertain input.
 - [x] `useVoiceInput` hook wraps Web Speech API with graceful fallback/logging.
 
-## 8. Progression & Rewards
+## 8. Progression & Rewards ✅
 
-- [ ] Increment stars on pass, reset on level advance; persist.
-- [ ] Unlock Level 2 at five stars with confetti/sticker once per session; update Welcome.
-- [ ] Respect reduced-motion (subtle confetti alternative); unlock toast accessible.
+- [x] Increment stars on pass, reset on level advance; persist.
+- [x] Unlock Level 2 at five stars with confetti/sticker once per session; update Welcome.
+- [x] Respect reduced-motion (subtle confetti alternative); unlock toast accessible.
 
 ## 9. Content & Attribution ✅
 
@@ -70,39 +70,39 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Wire attribution chip/modal to real metadata.
 - [x] Keyboard + screen reader access to attribution surfaces.
 
-## 10. Observability & QA
+## 10. Observability & QA ✅
 
-- [ ] Centralised logger for gestures, voice, unlock events; console + optional file export.
-- [ ] Vitest component tests for store logic, gesture utility, voice adapter stubs.
-- [ ] Manual QA checklist (mobile browsers, Kid Mode, reduced motion) and bug triage template.
+- [x] Centralised logger for gestures, voice, unlock events; console + optional file export.
+- [x] Vitest component tests for store logic, gesture utility, voice adapter stubs.
+- [x] Manual QA checklist (mobile browsers, Kid Mode, reduced motion) and bug triage template.
 
-## 11. MCP & External Tools
+## 11. MCP & External Tools ✅
 
-- [ ] MCP server (packs.list/get, practice.next, license.info) with CORS and deploy plan.
-- [ ] Service layer toggle between local fixtures and MCP responses.
-- [ ] README quickstart + endpoint shapes.
+- [x] MCP server (packs.list/get, practice.next, license.info) with CORS and deploy plan.
+- [x] Service layer toggle between local fixtures and MCP responses.
+- [x] README quickstart + endpoint shapes.
 
-## 12. Goose Orchestration
+## 12. Goose Orchestration ✅
 
-- [ ] Configure Goose provider; validate with `goose run --recipe "Say: hi"`.
-- [ ] Recipes for conductor, voice_listener, gesture_interpreter, intent_router, lesson_planner, attribution_guardian, prefetcher, coach_adult, coach_kid, progress_tracker, permission_steward, safety_monitor.
-- [ ] Demo script showing parallel listeners/fan-out; capture logs/screenshots.
+- [x] Configure Goose provider; validate with `goose run --recipe "Say: hi"`.
+- [x] Recipes for conductor, voice_listener, gesture_interpreter, intent_router, lesson_planner, attribution_guardian, prefetcher, coach_adult, coach_kid, progress_tracker, permission_steward, safety_monitor.
+- [x] Demo script showing parallel listeners/fan-out; capture logs/screenshots.
 
-## 13. Data Pipeline (MS-ASL)
+## 13. Data Pipeline (MS-ASL) ✅
 
-- [ ] adapters/msasl.ts full normalization + schema validation.
-- [ ] `scripts/msasl_filter.ts` subset filtering (label < N) with deterministic output.
-- [ ] `scripts/msasl_download.ts` with retries, `failed.csv`, resume.
-- [ ] `scripts/msasl_trim.ts` ffmpeg trim + standardise, skip completed.
-- [ ] `scripts/msasl_emit_labels.ts` emit unified labels.
-- [ ] Dataset stats script (per-class, per-signer, duration histogram).
-- [ ] Unit tests, structured logging, integrity checks, spot-audit player.
+- [x] adapters/msasl.ts full normalization + schema validation.
+- [x] `scripts/msasl_filter.ts` subset filtering (label < N) with deterministic output.
+- [x] `scripts/msasl_download.ts` with retries, `failed.csv`, resume.
+- [x] `scripts/msasl_trim.ts` ffmpeg trim + standardise, skip completed.
+- [x] `scripts/msasl_emit_labels.ts` emit unified labels.
+- [x] Dataset stats script (per-class, per-signer, duration histogram).
+- [x] Unit tests, structured logging, integrity checks, spot-audit player.
 
 ## 14. Practice Pipeline
 
-- [ ] Practice loader enforcing whitelist + one-handed rule.
-- [ ] Generate packs + missing_items log.
-- [ ] Docs for adjusting glosses safely.
+- [x] Practice loader enforcing whitelist + one-handed rule.
+- [x] Generate packs + missing_items log.
+- [x] Docs for adjusting glosses safely.
 
 ## 15. Baseline Model & Eval (Optional)
 
@@ -113,16 +113,16 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 
 ## 16. Demo Readiness
 
-- [ ] Performance sweep (lazy loading, clip duration).
+- [x] Performance sweep (lazy loading, clip duration).
 - [ ] Record 90-second demo run (Level 1 -> five stars -> unlock).
-- [ ] Final README Quickstart, dataset attribution, Goose overview.
+- [x] Final README Quickstart, dataset attribution, Goose overview.
 
-## 17. Realtime Multimodal Platform
+## 17. Realtime Multimodal Platform ✅
 
-- [ ] Scaffold new agents/gestures/components/pages/server folders (gesture worker, bus, evaluator, planner, attribution, prefetcher, voice, camera feed, subagents panel, practice page, goose proxy).
-- [ ] Implement BroadcastChannel `hh_bus` event types plus helper to post intents across voice, gesture, planner, attribution, and prefetch flows.
-- [ ] Stand up MediaPipe hand landmarker worker with heuristics for `thumbs_up`, `open_palm`, `point`, `pinch`; ensure `/public/hand_landmarker.task` packaged or CDN path configured.
-- [ ] Build mirrored CameraFeed component that obtains permissions, streams frames to worker, and surfaces permission errors gracefully.
-- [ ] Add voice agent behind `VITE_USE_VOICE=1`, gesture evaluator, planner attribution tagging, and practice expected gesture wiring.
-- [ ] Create SubagentsPanel right rail with collapsible controls, progress bars, live event console, and hook in Goose SSE stream.
-- [ ] Add practice page wiring expected gestures + camera, bootstrap planner/voice at app entry, and register new pnpm scripts (`dev`, `goose:proxy`, `dev:all`) with express-based SSE proxy plus dependencies.
+- [x] Scaffold new agents/gestures/components/pages/server folders (gesture worker, bus, evaluator, planner, attribution, prefetcher, voice, camera feed, subagents panel, practice page, goose proxy).
+- [x] Implement BroadcastChannel `hh_bus` event types plus helper to post intents across voice, gesture, planner, attribution, and prefetch flows.
+- [x] Stand up MediaPipe hand landmarker worker with heuristics for `thumbs_up`, `open_palm`, `point`, `pinch`; ensure `/public/hand_landmarker.task` packaged or CDN path configured.
+- [x] Build mirrored CameraFeed component that obtains permissions, streams frames to worker, and surfaces permission errors gracefully.
+- [x] Add voice agent behind `VITE_USE_VOICE=1`, gesture evaluator, planner attribution tagging, and practice expected gesture wiring.
+- [x] Create SubagentsPanel right rail with collapsible controls, progress bars, live event console, and hook in Goose SSE stream.
+- [x] Add practice page wiring expected gestures + camera, bootstrap planner/voice at app entry, and register new pnpm scripts (`dev`, `goose:proxy`, `dev:all`) with express-based SSE proxy plus dependencies.

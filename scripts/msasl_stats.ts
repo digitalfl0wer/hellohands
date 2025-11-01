@@ -29,11 +29,13 @@ async function main(): Promise<void> {
   const perSigner: Record<string, number> = {};
   const durations: number[] = [];
   const bySplit: Record<'train' | 'val' | 'test', number> = { train: 0, val: 0, test: 0 };
+  const subsets = new Set<string>();
 
   for (const line of raw.trim().split('\n')) {
     if (!line) continue;
     const row = JSON.parse(line) as LabelRow;
     total += 1;
+    subsets.add(row.subset);
     perClass[row.class_name] = (perClass[row.class_name] ?? 0) + 1;
     perSigner[row.signer_id] = (perSigner[row.signer_id] ?? 0) + 1;
     durations.push(Math.max(0, (row.end ?? 0) - (row.start ?? 0)));
@@ -51,6 +53,8 @@ async function main(): Promise<void> {
   const summary = {
     total,
     bySplit,
+    dataset: 'msasl',
+    subsets: Array.from(subsets).sort(),
     perClass,
     perSignerTop10: Object.entries(perSigner)
       .sort((a, b) => b[1] - a[1])

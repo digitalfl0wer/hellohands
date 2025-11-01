@@ -11,11 +11,14 @@ import type { VoiceParseResult } from './hooks/voiceCommandParser';
 import { DirectionsSheet } from './components/sheets/DirectionsSheet';
 import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
-import { selectManualMode, useLessonStore } from './state/useLessonStore';
+import { useLessonStore } from './state/useLessonStore';
 import { ConfettiOverlay } from './components/ConfettiOverlay';
 import PracticePage from './pages/PracticePage';
 import SubagentsPanel from './components/SubagentsPanel';
+import ProgressBadge from './components/ProgressBadge';
+import UnlockSticker from './components/UnlockSticker';
 import { bus, post, type HHEvent } from './gestures/gestureBus';
+import { logger } from './utils/logger';
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
@@ -33,6 +36,7 @@ function App(): JSX.Element | null {
   const [gestureCue, setGestureCue] = useState<string | null>(null);
   const lessonRef = useRef<LessonScreenHandle | null>(null);
   const voiceHintShown = useRef(false);
+  const [unlockStickerLevel, setUnlockStickerLevel] = useState<number | null>(null);
 
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
@@ -43,7 +47,6 @@ function App(): JSX.Element | null {
   const level = useLessonStore((state) => state.level);
   const stars = useLessonStore((state) => state.stars);
   const maxStars = useLessonStore((state) => state.maxStars);
-  const manualMode = useLessonStore(selectManualMode);
   const registerResult = useLessonStore((state) => state.registerResult);
 
   useEffect(() => {
@@ -165,6 +168,7 @@ function App(): JSX.Element | null {
     if (voiceOn && !voiceHintShown.current) {
       voiceHintShown.current = true;
       triggerToast('Tip: quiet background gives the best results.', 'info');
+      logger.info('voice', 'hint_shown');
     }
   }, [voiceOn]);
 
@@ -172,10 +176,12 @@ function App(): JSX.Element | null {
   const celebratedLevelsRef = useRef<Set<number>>(new Set());
   const prevLevelRef = useRef<number>(level);
   useEffect(() => {
-      if (level > prevLevelRef.current && !celebratedLevelsRef.current.has(level)) {
-        celebratedLevelsRef.current.add(level);
-        triggerToast(`Level ${level} unlocked!`, 'success', 2800);
-        setShowCelebration(true);
+    if (level > prevLevelRef.current && !celebratedLevelsRef.current.has(level)) {
+      celebratedLevelsRef.current.add(level);
+      triggerToast(`Level ${level} unlocked!`, 'success', 2800);
+      setShowCelebration(true);
+      logger.info('progress', 'level_unlocked', { level });
+      setUnlockStickerLevel(level);
       // auto-hide handled inside ConfettiOverlay
     }
     prevLevelRef.current = level;
@@ -246,10 +252,12 @@ function App(): JSX.Element | null {
       if (data.action === 'NAVIGATE_PRACTICE') {
         setView('practice');
         triggerToast('Practice mode ready.', 'info');
+        logger.info('planner', 'navigate_practice');
       }
 
       if (data.action === 'PRACTICE_CORRECT') {
         triggerToast('Great match!', 'success');
+        logger.info('practice', 'correct_gesture', data.meta);
       }
     };
 
@@ -260,16 +268,22 @@ function App(): JSX.Element | null {
   }, [triggerToast]);
 
   useEffect(() => {
-    if (!import.meta.env.DEV) {
-      return;
-    }
     if (typeof window === 'undefined' || typeof EventSource === 'undefined') {
       return;
     }
 
     const streamUrl =
       import.meta.env.VITE_GOOSE_STREAM_URL ??
-      'http://localhost:5174/api/goose/stream';
+      (import.meta.env.DEV ? 'http://localhost:5174/api/goose/stream' : undefined);
+
+    const enableStreamEnv = import.meta.env.VITE_ENABLE_GOOSE_STREAM;
+    const shouldConnect =
+      enableStreamEnv === '1' ||
+      (enableStreamEnv === undefined && Boolean(streamUrl));
+
+    if (!shouldConnect || !streamUrl) {
+      return;
+    }
 
     let source: EventSource | null = null;
 
@@ -289,6 +303,7 @@ function App(): JSX.Element | null {
     source.onmessage = (event) => {
       if (!event.data) return;
       post({ intent: 'planner', action: 'GOOSE_LOG', meta: { line: event.data } });
+      logger.info('goose', 'stream_line', { line: event.data });
     };
     source.onerror = () => {
       source?.close();
@@ -334,7 +349,6 @@ function App(): JSX.Element | null {
     <LessonScreen
       gesturesOn={gesturesOn}
       kidMode={kidMode}
-      manualMode={manualMode}
       onHint={() => {
         registerResult('almost');
         triggerToast('Slow-mo replay coming soon.', 'info');
@@ -344,8 +358,6 @@ function App(): JSX.Element | null {
         triggerToast('Next sign queued.', 'success');
       }}
       onPauseChange={setLessonPaused}
-      onToggleGestures={toggleGestures}
-      onToggleVoice={toggleVoice}
       paused={lessonPaused}
       ref={lessonRef}
       voiceOn={voiceOn}
@@ -355,32 +367,37 @@ function App(): JSX.Element | null {
   return (
     <>
       <AppShell
-      header={
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-accent-lime">
-            Hello Hands
-          </h1>
-          <div className="flex items-center gap-sm">
-            <AppButton
-              onClick={() => setView('practice')}
-              type="button"
-              variant="adult"
-            >
-              Practice
-            </AppButton>
-            <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
-              Kid Mode: {kidMode ? 'On' : 'Off'}
-            </AppButton>
-            {voiceOn && (
-              <span className="inline-flex items-center gap-1 rounded-full border border-accent-teal/60 bg-accent-teal/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-teal">
-                Listening
-              </span>
-            )}
+        header={
+          <div className="flex flex-wrap items-center justify-between gap-sm">
+            <h1 className="text-3xl font-bold tracking-tight text-accent-lime">
+              Hello Hands
+            </h1>
+            <div className="flex flex-wrap items-center justify-end gap-sm">
+              <SettingsPill />
+              <ProgressBadge level={level} stars={stars} total={maxStars} />
+              <AppButton
+                onClick={() => setView('practice')}
+                type="button"
+                variant="adult"
+              >
+                Practice
+              </AppButton>
+              <AppButton
+                onClick={() => setKidMode(!kidMode)}
+                type="button"
+                variant="kid"
+              >
+                Kid Mode: {kidMode ? 'On' : 'Off'}
+              </AppButton>
+              {voiceOn && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-accent-teal/60 bg-accent-teal/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-teal">
+                  Listening
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      }
-      footer={<SettingsPill />}
-    >
+        }
+      >
       {view === 'welcome' && welcomeView}
       {view === 'directions' && directionsView}
       {view === 'lesson' && lessonView}
@@ -406,7 +423,14 @@ function App(): JSX.Element | null {
           variant={toast.variant ?? 'info'}
         />
       )}
-      </AppShell>
+      <div className="pointer-events-none fixed top-6 left-1/2 z-[65] -translate-x-1/2">
+        <UnlockSticker
+          level={unlockStickerLevel ?? 0}
+          visible={unlockStickerLevel !== null}
+          onHide={() => setUnlockStickerLevel(null)}
+        />
+      </div>
+    </AppShell>
       <SubagentsPanel />
     </>
   );

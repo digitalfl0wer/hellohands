@@ -1,68 +1,192 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
 import { setExpectedGesture } from '../agents/planner';
-
-const SIGN_TO_GESTURE: Record<string, 'thumbs_up' | 'open_palm' | 'point' | 'pinch'> = {
-  YES: 'thumbs_up',
-  NO: 'open_palm',
-  WHERE: 'point',
-  EAT: 'pinch',
-};
-
-const SIGNS = Object.keys(SIGN_TO_GESTURE);
+import {
+  PracticeItem,
+  PracticePackSummary,
+  fetchLicenseInfo,
+  getNextPracticeItem,
+  getPracticePack,
+  listPracticePacks,
+} from '../services/practiceApi';
 
 export function PracticePage() {
-  const [selectedSign, setSelectedSign] = useState(SIGNS[0]);
+  const [packs, setPacks] = useState<PracticePackSummary[]>([]);
+  const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
+  const [items, setItems] = useState<PracticeItem[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [license, setLicense] = useState<{ dataset: string; license: string; url: string } | null>(
+    null,
+  );
 
   useEffect(() => {
-    setExpectedGesture(SIGN_TO_GESTURE[selectedSign] ?? null);
+    let mounted = true;
+
+    listPracticePacks().then((available) => {
+      if (!mounted || !available.length) return;
+      setPacks(available);
+      const firstPack = available[0];
+      setSelectedPackId(firstPack.id);
+      if (firstPack.items?.length) {
+        setItems(firstPack.items);
+      } else {
+        void getPracticePack(firstPack.id).then((full) => {
+          if (mounted && full?.items) {
+            setItems(full.items);
+          }
+        });
+      }
+    });
+
+    fetchLicenseInfo().then((info) => {
+      if (info && mounted) {
+        setLicense({ dataset: info.dataset, license: info.license, url: info.url });
+      }
+    });
+
     return () => {
+      mounted = false;
       setExpectedGesture(null);
     };
-  }, [selectedSign]);
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPackId) return;
+    const pack = packs.find((entry) => entry.id === selectedPackId);
+    if (pack?.items?.length) {
+      setItems(pack.items);
+      return;
+    }
+    void getPracticePack(selectedPackId).then((full) => {
+      if (full?.items) {
+        setItems(full.items);
+      }
+    });
+  }, [selectedPackId, packs]);
+
+  useEffect(() => {
+    if (!items.length) return;
+    const item = items.find((entry) => entry.id === selectedItemId) ?? items[0];
+    setSelectedItemId(item.id);
+    setExpectedGesture(item.expectedGesture);
+  }, [items, selectedItemId]);
+
+  const currentPack = useMemo(() => {
+    if (!packs.length) return null;
+    return packs.find((entry) => entry.id === selectedPackId) ?? packs[0];
+  }, [packs, selectedPackId]);
+
+  const handleSignSelect = (itemId: string) => {
+    setSelectedItemId(itemId);
+    const item = items.find((entry) => entry.id === itemId);
+    if (item) {
+      setExpectedGesture(item.expectedGesture);
+    }
+  };
+
+  const handleSuggestNext = async () => {
+    if (!selectedPackId) return;
+    const result = await getNextPracticeItem(selectedPackId, selectedItemId ?? undefined);
+    if (!result?.item) return;
+
+    if (!items.find((entry) => entry.id === result.item.id)) {
+      setItems((prev) => [...prev, result.item]);
+    }
+    setSelectedPackId(result.pack.id);
+    setSelectedItemId(result.item.id);
+    setExpectedGesture(result.item.expectedGesture);
+  };
+
+  const expectedGestureLabel = items.find((item) => item.id === selectedItemId)?.expectedGesture
+    ?.replace('_', ' ')
+    .toUpperCase();
 
   return (
     <div className="grid gap-6 p-4 md:grid-cols-2">
       <section>
         <h2 className="text-xl font-semibold text-text-primary">Practice</h2>
         <p className="text-sm text-text-secondary">
-          Mirror your gesture to the example. Hold it steady for a moment so the worker
-          can recognize it.
+          Mirror your gesture to the example. Hold it steady for a moment so the model can
+          recognise it.
         </p>
         <div className="mt-4">
           <CameraFeed />
         </div>
       </section>
-      <section>
-        <h3 className="text-lg font-semibold text-text-primary">Select a sign</h3>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {SIGNS.map((sign) => (
-            <button
-              key={sign}
-              type="button"
-              onClick={() => setSelectedSign(sign)}
-              className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
-                selectedSign === sign
-                  ? 'border-accent-teal bg-accent-teal/20 text-accent-teal'
-                  : 'border-white/15 text-text-secondary hover:border-white/30 hover:text-text-primary'
-              }`}
-            >
-              {sign}
-            </button>
-          ))}
+      <section className="flex flex-col gap-4">
+        <div>
+          <label className="text-xs uppercase tracking-wide text-text-secondary" htmlFor="pack-select">
+            Practice pack
+          </label>
+          <select
+            id="pack-select"
+            value={selectedPackId ?? currentPack?.id ?? ''}
+            onChange={(event) => setSelectedPackId(event.target.value)}
+            className="mt-1 w-full rounded border border-white/15 bg-surface-800/80 px-3 py-2 text-sm text-text-primary shadow-inner"
+          >
+            {packs.map((pack) => (
+              <option key={pack.id} value={pack.id}>
+                {pack.title}
+              </option>
+            ))}
+          </select>
         </div>
-        <dl className="mt-6 space-y-2 text-sm text-text-secondary">
+
+        <div>
+          <h3 className="text-lg font-semibold text-text-primary">Select a sign</h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {items.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleSignSelect(item.id)}
+                className={`rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                  selectedItemId === item.id
+                    ? 'border-accent-teal bg-accent-teal/20 text-accent-teal'
+                    : 'border-white/15 text-text-secondary hover:border-white/30 hover:text-text-primary'
+                }`}
+              >
+                {item.sign}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleSuggestNext}
+            className="rounded-full border border-accent-lime/40 bg-accent-lime/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-lime transition hover:border-accent-lime/80"
+          >
+            Suggest next sign
+          </button>
+          {currentPack ? (
+            <span className="text-xs text-text-secondary">
+              {currentPack.title} · {items.length} signs
+            </span>
+          ) : null}
+        </div>
+
+        <dl className="space-y-2 text-sm text-text-secondary">
           <div>
             <dt className="font-semibold text-text-primary">Expected gesture</dt>
-            <dd className="uppercase tracking-wide">
-              {SIGN_TO_GESTURE[selectedSign].replace('_', ' ')}
-            </dd>
+            <dd className="uppercase tracking-wide">{expectedGestureLabel ?? '—'}</dd>
           </div>
           <div>
             <dt className="font-semibold text-text-primary">Tip</dt>
             <dd>Move slowly at first; quick movements can reduce confidence scores.</dd>
           </div>
         </dl>
+
+        {license ? (
+          <p className="text-xs text-text-muted">
+            Data source:{' '}
+            <a className="text-accent-teal underline" href={license.url} target="_blank" rel="noreferrer">
+              {license.dataset}
+            </a>{' '}
+            ({license.license})
+          </p>
+        ) : null}
       </section>
     </div>
   );

@@ -1,12 +1,21 @@
-import { access, mkdir, readFile, stat } from 'node:fs/promises';
+import { access, mkdir, readFile, stat, appendFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 import { loadPipelineEnv } from './_env';
 
 type Split = 'train' | 'val' | 'test';
+type FilteredRecord = {
+  id: number | null;
+  label: number;
+  class_name: string;
+  signer_id: number | string;
+  url: string;
+  start_time?: number | null;
+  end_time?: number | null;
+};
 
 async function ensureDir(path: string): Promise<void> {
   await mkdir(path, { recursive: true });
@@ -44,9 +53,16 @@ async function resolveRawPath(root: string, idPadded: string): Promise<string | 
   return null;
 }
 
+async function logTrimFailure(root: string, entry: string): Promise<void> {
+  const failedPath = resolve(root, 'msasl', 'trim_failed.csv');
+  await ensureDir(dirname(failedPath));
+  await appendFile(failedPath, entry + '\n');
+}
+
 async function ffmpegTrim(input: string, output: string, fps: number, size: number) {
   await ensureDir(resolve(output, '..'));
   return new Promise<void>((resolvePromise, reject) => {
+    const ffmpegBin = process.env.FFMPEG_BIN || 'ffmpeg';
     const args = [
       '-y',
       '-i',
@@ -60,7 +76,7 @@ async function ffmpegTrim(input: string, output: string, fps: number, size: numb
       'yuv420p',
       output,
     ];
-    const proc = spawn('ffmpeg', args, { stdio: 'ignore' });
+    const proc = spawn(ffmpegBin, args, { stdio: 'ignore' });
     proc.on('error', reject);
     proc.on('exit', (code) => {
       if (code === 0) resolvePromise();
@@ -76,26 +92,25 @@ async function processSplit(
   fps: number,
   size: number,
 ) {
-  const filteredPath = resolve(
-    envRoot,
-    'msasl',
-    'filtered',
-    `MSASL_${split}_${subset ?? 'all'}.json`,
-  );
+  const filteredPath = resolve(envRoot, 'msasl', 'filtered', `MSASL_${split}_${subset ?? 'all'}.json`);
   const raw = await readFile(filteredPath, 'utf8').catch(() => '');
   if (!raw.trim()) {
     console.warn(`[msasl_trim] missing filtered: ${filteredPath}`);
     return { count: 0, trimmed: 0 };
   }
-  const records = JSON.parse(raw) as any[];
+  const records = JSON.parse(raw) as FilteredRecord[];
   let trimmed = 0;
   for (let i = 0; i < records.length; i++) {
-    const recordId = computeRecordId(split, i);
+    const baseId = records[i]?.id;
+    const recordId = typeof baseId === 'number' && Number.isFinite(baseId)
+      ? baseId
+      : computeRecordId(split, i);
     const idPadded = String(recordId).padStart(6, '0');
     const shard = idPadded.slice(0, 3);
     const inputPath = await resolveRawPath(envRoot, idPadded);
     if (!inputPath) {
       console.warn(`[msasl_trim] raw not found for ${idPadded}`);
+      await logTrimFailure(envRoot, `${recordId},${split},RAW_MISSING`);
       continue;
     }
     const outputPath = resolve(
@@ -115,7 +130,9 @@ async function processSplit(
       trimmed += 1;
       console.log(`[msasl_trim] ok → ${shard}/${idPadded}.mp4`);
     } catch (err) {
-      console.error(`[msasl_trim] fail id=${idPadded} reason=${(err as Error).message}`);
+      const reason = (err as Error).message ?? String(err);
+      console.error(`[msasl_trim] fail id=${idPadded} reason=${reason}`);
+      await logTrimFailure(envRoot, `${recordId},${split},${reason}`);
     }
   }
   return { count: records.length, trimmed };

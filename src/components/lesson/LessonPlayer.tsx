@@ -33,6 +33,7 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
     ref,
   ) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
+    const POSTERS_ONLY = import.meta.env.VITE_USE_POSTERS_ONLY === '1';
 
     const handleReplay = () => {
       const video = videoRef.current;
@@ -87,8 +88,10 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
     useEffect(() => {
       const video = videoRef.current;
       if (!video) return;
+      video.muted = true; // allow autoplay without gesture
       video.pause();
       void video.load();
+      void video.play().catch(() => {});
     }, [videoSrc]);
 
     return (
@@ -100,16 +103,26 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
           </span>
         </header>
         <div className="relative overflow-hidden rounded-xl border border-white/10 bg-surface-800/60">
+          {POSTERS_ONLY ? (
+            <img
+              alt={`Poster for ${title}`}
+              className="block h-full w-full object-contain"
+              src={poster}
+            />
+          ) : (
           <video
             aria-label={`Tutorial clip for ${title}`}
             className="block h-full w-full"
             controls
+            playsInline
+            muted
             poster={poster}
             ref={videoRef}
           >
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support video playback.
           </video>
+          )}
         </div>
         <div className="flex flex-wrap gap-sm">
           <button

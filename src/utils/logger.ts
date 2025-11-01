@@ -1,3 +1,5 @@
+import { post } from '../gestures/gestureBus';
+
 export type LogLevel = 'info' | 'warn' | 'error';
 
 export interface LogEntry {
@@ -18,7 +20,12 @@ function push(entry: LogEntry): void {
   }
 }
 
-function makeEntry(level: LogLevel, tag: string, message: string, data?: unknown): LogEntry {
+function makeEntry(
+  level: LogLevel,
+  tag: string,
+  message: string,
+  data?: unknown,
+): LogEntry {
   return {
     timestampIso: new Date().toISOString(),
     tag,
@@ -32,6 +39,13 @@ export const logger = {
   info(tag: string, message: string, data?: unknown): void {
     const entry = makeEntry('info', tag, message, data);
     push(entry);
+    post({
+      intent: 'log',
+      level: 'info',
+      tag,
+      message,
+      data,
+    });
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.info(`[${entry.tag}] ${entry.message}`, entry.data ?? '');
@@ -40,6 +54,13 @@ export const logger = {
   warn(tag: string, message: string, data?: unknown): void {
     const entry = makeEntry('warn', tag, message, data);
     push(entry);
+    post({
+      intent: 'log',
+      level: 'warn',
+      tag,
+      message,
+      data,
+    });
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.warn(`[${entry.tag}] ${entry.message}`, entry.data ?? '');
@@ -48,6 +69,13 @@ export const logger = {
   error(tag: string, message: string, data?: unknown): void {
     const entry = makeEntry('error', tag, message, data);
     push(entry);
+    post({
+      intent: 'log',
+      level: 'error',
+      tag,
+      message,
+      data,
+    });
     if (import.meta.env.DEV) {
       // eslint-disable-next-line no-console
       console.error(`[${entry.tag}] ${entry.message}`, entry.data ?? '');

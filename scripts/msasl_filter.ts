@@ -1,7 +1,8 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadPipelineEnv } from './_env';
+import { loadMsaslSplit, MsaslSourceRecord } from '../adapters/msasl';
 
 type Split = 'train' | 'val' | 'test';
 
@@ -17,23 +18,47 @@ async function filterSplit(
   const metaPath = resolve(dataRoot, 'msasl', 'meta', `MSASL_${split}.json`);
   const filteredDir = resolve(dataRoot, 'msasl', 'filtered');
   await ensureDir(filteredDir);
+  const outPath = join(filteredDir, `MSASL_${split}_${subset ?? 'all'}.json`);
 
-  const raw = await readFile(metaPath, 'utf8').catch(() => '');
-  if (!raw.trim()) {
+  const records = await loadMsaslSplit({
+    jsonPath: metaPath,
+    subsetName: subset ? `MS-ASL${subset}` : 'MS-ASL',
+    split,
+  }).catch(() => [] as MsaslSourceRecord[]);
+
+  if (!records.length) {
     console.warn(`[msasl_filter] missing or empty: ${metaPath}`);
-    return {
-      inCount: 0,
-      outCount: 0,
-      outPath: join(filteredDir, `MSASL_${split}_${subset ?? 'all'}.json`),
-    };
+    await ensureDir(dirname(outPath));
+    await writeFile(outPath, '[]\n');
+    return { inCount: 0, outCount: 0, outPath };
   }
 
-  const records = JSON.parse(raw) as Array<{ label: number }>;
-  const out = !subset ? records : records.filter((r) => r.label < subset);
-  const outPath = join(filteredDir, `MSASL_${split}_${subset ?? 'all'}.json`);
+  const filtered = (!subset
+    ? records
+    : records.filter((r) => typeof r.label === 'number' && r.label < subset)
+  ).map((record) => ({
+    id: record.id ?? null,
+    label: record.label,
+    class_name: (record.text ?? record.clean_text ?? '').trim().toUpperCase(),
+    signer_id: record.signer_id,
+    url: record.url,
+    start_time: record.start_time ?? null,
+    end_time: record.end_time ?? null,
+  }));
+
+  filtered.sort((a, b) => {
+    if (a.label !== b.label) return a.label - b.label;
+    const signerA = Number(a.signer_id);
+    const signerB = Number(b.signer_id);
+    if (Number.isFinite(signerA) && Number.isFinite(signerB) && signerA !== signerB) {
+      return signerA - signerB;
+    }
+    return String(a.class_name).localeCompare(String(b.class_name));
+  });
+
   await ensureDir(dirname(outPath));
-  await writeFile(outPath, JSON.stringify(out, null, 2) + '\n');
-  return { inCount: records.length, outCount: out.length, outPath };
+  await writeFile(outPath, JSON.stringify(filtered, null, 2) + '\n');
+  return { inCount: records.length, outCount: filtered.length, outPath };
 }
 
 async function main(): Promise<void> {

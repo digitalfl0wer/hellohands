@@ -9,7 +9,19 @@ export type HHEvent =
   | { intent: 'voice'; text: string }
   | { intent: 'planner'; action: string; meta?: Record<string, unknown> }
   | { intent: 'prefetch'; resource: string }
-  | { intent: 'attribution'; from: 'voice' | 'gesture' | 'planner'; action: string; ts: number };
+  | {
+      intent: 'log';
+      level: 'info' | 'warn' | 'error';
+      tag: string;
+      message: string;
+      data?: unknown;
+    }
+  | {
+      intent: 'attribution';
+      from: 'voice' | 'gesture' | 'planner';
+      action: string;
+      ts: number;
+    };
 
 const createBus = (): BroadcastChannel => {
   if (typeof BroadcastChannel === 'undefined') {

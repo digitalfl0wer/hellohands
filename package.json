@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "goose:proxy": "tsx server/gooseProxy.ts",
     "dev:all": "run-p dev goose:proxy",
+    "mcp:server": "tsx server/mcpServer.ts",
+    "hand:model": "tsx scripts/download_hand_model.ts",
     "format": "prettier --write \"{src,scripts,adapters,practice,PRD}/**/*.{ts,tsx,js,jsx,json,jsonl,md}\"",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -37,6 +39,9 @@
   },
   "homepage": "https://github.com/digitalfl0wer/hellohands#readme",
   "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=18"
+  },
   "simple-git-hooks": {
     "pre-commit": "pnpm format"
   },
