@@ -19,7 +19,7 @@ Learn + practice ASL with bite-size sessions, clean UI, and playful AI helpers.
 Demo 
 
 🎥 Live demo: [Add your Loom or YouTube link]
-🌐 Deployed app: [Add your Vercel/Netlify link]
+🌐 Deployed app: hellohands.vercel.app
 
 Screenshots
 
