@@ -82,11 +82,14 @@ export function CameraFeed({
       }
 
       try {
-        const handsBase =
-          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_BASE ??
+        const handsPrimaryBase =
+          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_BASE ?? '/vendor/mediapipe/hands/';
+        const handsFallbackBase =
+          (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_CDN ??
           'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/';
         const handsIntegrity = (import.meta as any)?.env?.VITE_MEDIAPIPE_HANDS_INTEGRITY;
 
+        let handsBaseUsed = handsPrimaryBase;
         const loadHands = async () =>
           await new Promise<void>((resolve, reject) => {
             const existing = document.querySelector(
@@ -94,16 +97,29 @@ export function CameraFeed({
             ) as HTMLScriptElement | null;
             if (existing) return resolve();
             const script = document.createElement('script');
-            script.src = `${handsBase}hands.js`;
-            script.async = true;
-            script.defer = true;
-            if (handsIntegrity) {
-              (script as any).integrity = handsIntegrity;
-              (script as any).crossOrigin = 'anonymous';
-            }
-            (script as any).dataset.hhHands = '1';
+            const tryLoad = (base: string, isFallback = false) => {
+              script.src = `${base}hands.js`;
+              script.async = true;
+              script.defer = true;
+              if (handsIntegrity && !isFallback) {
+                (script as any).integrity = handsIntegrity;
+                (script as any).crossOrigin = 'anonymous';
+              }
+              (script as any).dataset.hhHands = '1';
+            };
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load hands.js'));
+            script.onerror = () => {
+              // retry on CDN fallback once
+              if (handsBaseUsed !== handsFallbackBase) {
+                handsBaseUsed = handsFallbackBase;
+                tryLoad(handsFallbackBase, true);
+                // Re-append to trigger reload
+                document.head.appendChild(script);
+              } else {
+                reject(new Error('Failed to load hands.js'));
+              }
+            };
+            tryLoad(handsPrimaryBase);
             document.head.appendChild(script);
           });
 
@@ -114,7 +130,7 @@ export function CameraFeed({
         if (!HandsCtor) throw new Error('Hands constructor not found on window');
 
         detector = new HandsCtor({
-          locateFile: (file: string) => `${handsBase}${file}`,
+          locateFile: (file: string) => `${handsBaseUsed}${file}`,
         });
         detector.setOptions({
           selfieMode: true,
@@ -125,26 +141,41 @@ export function CameraFeed({
         });
         // Try to load drawing utils (non-fatal)
         try {
-          const drawBase =
+          const drawPrimaryBase =
             (import.meta as any)?.env?.VITE_MEDIAPIPE_DRAW_BASE ??
+            '/vendor/mediapipe/drawing_utils/';
+          const drawFallbackBase =
+            (import.meta as any)?.env?.VITE_MEDIAPIPE_DRAW_CDN ??
             'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.4/';
-          const drawIntegrity = (import.meta as any)?.VITE_MEDIAPIPE_DRAW_INTEGRITY;
-          await new Promise<void>((resolve, reject) => {
+          const drawIntegrity = (import.meta as any)?.env?.VITE_MEDIAPIPE_DRAW_INTEGRITY;
+          let drawBaseUsed = drawPrimaryBase;
+          await new Promise<void>((resolve) => {
             const existing = document.querySelector(
               'script[data-hh-draw="1"]',
             ) as HTMLScriptElement | null;
             if (existing) return resolve();
             const script = document.createElement('script');
-            script.src = `${drawBase}drawing_utils.js`;
-            script.async = true;
-            script.defer = true;
-            if (drawIntegrity) {
-              (script as any).integrity = drawIntegrity;
-              (script as any).crossOrigin = 'anonymous';
-            }
-            (script as any).dataset.hhDraw = '1';
+            const tryLoad = (base: string, isFallback = false) => {
+              script.src = `${base}drawing_utils.js`;
+              script.async = true;
+              script.defer = true;
+              if (drawIntegrity && !isFallback) {
+                (script as any).integrity = drawIntegrity;
+                (script as any).crossOrigin = 'anonymous';
+              }
+              (script as any).dataset.hhDraw = '1';
+            };
             script.onload = () => resolve();
-            script.onerror = () => resolve(); // proceed without overlay
+            script.onerror = () => {
+              if (drawBaseUsed !== drawFallbackBase) {
+                drawBaseUsed = drawFallbackBase;
+                tryLoad(drawFallbackBase, true);
+                document.head.appendChild(script);
+              } else {
+                resolve(); // proceed without overlay
+              }
+            };
+            tryLoad(drawPrimaryBase);
             document.head.appendChild(script);
           });
         } catch {}
