@@ -121,7 +121,10 @@ export function PracticePage() {
         </p>
         <div className="mt-4">
           {currentItem ? (
-            <SignMedia sign={currentItem.sign} expectedGesture={currentItem.expectedGesture} />
+            <SignMedia
+              sign={currentItem.sign}
+              expectedGesture={currentItem.expectedGesture}
+            />
           ) : null}
         </div>
         {SHOW_CAMERA ? (
