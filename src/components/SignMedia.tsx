@@ -20,24 +20,17 @@ const mediaFor = (name: string) => ({
   png: `/signs/${name}.png`,
 });
 
+import SignVideo from './SignVideo';
+
 export default function SignMedia({ sign, expectedGesture, clipUrl, posterUrl }: Props) {
   const normalized = sign.toUpperCase();
   const m = mediaFor(normalized);
   return (
     <figure className="w-64">
       {clipUrl ? (
-        <video
-          aria-label={`${normalized} demonstration`}
-          className="h-64 w-64 rounded-xl border border-zinc-800 bg-zinc-900 object-contain"
-          controls
-          playsInline
-          muted
-          autoPlay
-          preload="metadata"
-          poster={posterUrl}
-        >
-          <source src={clipUrl} type="video/mp4" />
-        </video>
+        <div className="h-64 w-64">
+          <SignVideo src={clipUrl} poster={posterUrl} autoPlay />
+        </div>
       ) : (
         <picture>
           <source srcSet={m.webp} type="image/webp" />

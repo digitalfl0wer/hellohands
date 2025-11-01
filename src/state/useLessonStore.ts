@@ -14,6 +14,7 @@ interface LessonState {
   kidMode: boolean;
   voiceOn: boolean;
   gesturesOn: boolean;
+  introDismissed: boolean;
   level: number;
   stars: number;
   maxStars: number;
@@ -23,6 +24,7 @@ interface LessonState {
   setKidMode: (enabled: boolean) => void;
   toggleVoice: () => void;
   toggleGestures: () => void;
+  setIntroDismissed: (value: boolean) => void;
   setClips: (clips: ClipDescriptor[]) => void;
   resetSession: () => void;
   registerResult: (result: FeedbackState) => void;
@@ -47,6 +49,7 @@ export const useLessonStore = create<LessonState>()(
       kidMode: false,
       voiceOn: true,
       gesturesOn: true,
+      introDismissed: false,
       level: 1,
       stars: 0,
       maxStars: MAX_STARS_PER_LEVEL,
@@ -56,6 +59,7 @@ export const useLessonStore = create<LessonState>()(
       setKidMode: (enabled) => set(() => ({ kidMode: enabled })),
       toggleVoice: () => set((state) => ({ voiceOn: !state.voiceOn })),
       toggleGestures: () => set((state) => ({ gesturesOn: !state.gesturesOn })),
+      setIntroDismissed: (value) => set(() => ({ introDismissed: value })),
       setClips: (clips) =>
         set(() => ({
           clips,
@@ -116,6 +120,7 @@ export const useLessonStore = create<LessonState>()(
         kidMode: state.kidMode,
         voiceOn: state.voiceOn,
         gesturesOn: state.gesturesOn,
+        introDismissed: state.introDismissed,
         level: state.level,
         stars: state.stars,
       }),

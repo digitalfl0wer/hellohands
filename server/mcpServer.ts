@@ -1,4 +1,5 @@
 import express from 'express';
+import { DEMO_SIGN_CLIPS } from '../src/data/demoClips';
 
 const app = express();
 const PORT = Number(process.env.MCP_PORT ?? 5175);
@@ -21,6 +22,7 @@ type PracticeItem = {
   sign: string;
   expectedGesture: 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
   clipUrl: string;
+  posterUrl?: string;
 };
 
 type PracticePack = {
@@ -35,38 +37,13 @@ const practicePacks: PracticePack[] = [
     id: 'L1-ESSENTIALS',
     title: 'Level 1 · Essentials',
     level: 1,
-    items: [
-      {
-        id: 'hello',
-        sign: 'HELLO',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/hello/front.mp4',
-      },
-      {
-        id: 'thank-you',
-        sign: 'THANK YOU',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/thank-you/front.mp4',
-      },
-      {
-        id: 'yes',
-        sign: 'YES',
-        expectedGesture: 'thumbs_up',
-        clipUrl: '/signs/level1/yes/front.mp4',
-      },
-      {
-        id: 'no',
-        sign: 'NO',
-        expectedGesture: 'point',
-        clipUrl: '/signs/level1/no/front.mp4',
-      },
-      {
-        id: 'more',
-        sign: 'MORE',
-        expectedGesture: 'pinch',
-        clipUrl: '/signs/level1/more/front.mp4',
-      },
-    ],
+    items: DEMO_SIGN_CLIPS.map((clip) => ({
+      id: clip.sign.toLowerCase().replace(/\s+/g, '-'),
+      sign: clip.sign,
+      expectedGesture: clip.expectedGesture,
+      clipUrl: clip.clipUrl,
+      posterUrl: clip.posterUrl,
+    })),
   },
 ];
 

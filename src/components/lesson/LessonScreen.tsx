@@ -1,23 +1,32 @@
 import {
   forwardRef,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
   useEffect,
+  useCallback,
 } from 'react';
 
 import { AppButton } from '../Button';
 import { FeedbackBanner } from '../feedback/FeedbackBanner';
 import { LessonPlayer, LessonPlayerHandle } from './LessonPlayer';
 import { HelpSheet } from '../sheets/HelpSheet';
-import { SAMPLE_CLIPS, LessonClip } from './sampleClips';
+import { SAMPLE_CLIPS, LessonClip, lessonClipsFromPracticeItems } from './sampleClips';
 import { setExpectedGesture } from '../../agents/planner';
 import { useLessonStore } from '../../state/useLessonStore';
 import { AttributionChip } from '../attribution/AttributionChip';
 import { CameraFeed } from '../CameraFeed';
 import { VoiceGuide } from '../VoiceGuide';
-import { bus, type HHEvent } from '../../gestures/gestureBus';
+import { Toast } from '../Toast';
+import { ConfettiOverlay } from '../ConfettiOverlay';
+import {
+  listPracticePacks,
+  getPracticePack,
+  type PracticeItem,
+  type PracticePackSummary,
+} from '../../services/practiceApi';
+import type { ExpectedGesture } from '../../gestures/gestureEvaluator';
+import { logger } from '../../utils/logger';
 
 export interface LessonScreenHandle {
   nextClip(): void;
@@ -40,15 +49,58 @@ interface LessonScreenProps {
 
 export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
   ({ kidMode, paused, voiceOn, gesturesOn, onPauseChange, onNextClip, onHint }, ref) => {
-    const clips = useMemo<LessonClip[]>(() => SAMPLE_CLIPS, []);
+    const [clips, setClips] = useState<LessonClip[]>(() => SAMPLE_CLIPS);
     const [index, setIndex] = useState(0);
     const [feedback, setFeedback] = useState<'pass' | 'almost' | 'miss'>('pass');
     const [showHelp, setShowHelp] = useState(false);
     const playerRef = useRef<LessonPlayerHandle | null>(null);
     const registerResult = useLessonStore((s) => s.registerResult);
     const approveGuardRef = useRef<number>(0);
+    const confettiTimerRef = useRef<number | null>(null);
+    const [toast, setToast] = useState<{ message: string; duration?: number } | null>(
+      null,
+    );
+    const [confetti, setConfetti] = useState(false);
+    const advanceTimerRef = useRef<number | null>(null);
 
     const currentClip = clips[index];
+
+    useEffect(() => {
+      let mounted = true;
+
+      const resolveItems = async (
+        pack: PracticePackSummary | null | undefined,
+      ): Promise<PracticeItem[]> => {
+        if (!pack) return [];
+        if (pack.items?.length) return pack.items;
+        const full = await getPracticePack(pack.id);
+        return full?.items ?? [];
+      };
+
+      const load = async () => {
+        try {
+          const packs = await listPracticePacks();
+          if (!mounted || !packs.length) return;
+          const items = await resolveItems(packs[0]);
+          if (!mounted || !items.length) return;
+          const lessonClips = lessonClipsFromPracticeItems(items);
+          if (!lessonClips.length) return;
+          setClips(lessonClips);
+          setIndex(0);
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            // eslint-disable-next-line no-console
+            console.warn('[LessonScreen] failed to load practice pack', error);
+          }
+        }
+      };
+
+      void load();
+
+      return () => {
+        mounted = false;
+      };
+    }, []);
 
     // Update expected gesture for planner when the active clip changes
     useEffect(() => {
@@ -57,28 +109,57 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [index, clips]);
 
-    // Listen for PRACTICE_CORRECT to auto-approve and advance
-    useEffect(() => {
-      const onMessage = ({ data }: MessageEvent<HHEvent>) => {
-        if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT')
-          return;
-        const now = Date.now();
-        if (now - approveGuardRef.current < 1200) return;
-        approveGuardRef.current = now;
-        registerResult('pass');
-        setFeedback('pass');
-        goToNextClip();
-      };
-      bus.addEventListener('message', onMessage);
-      return () => bus.removeEventListener('message', onMessage);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [index]);
+    useEffect(
+      () => () => {
+        if (confettiTimerRef.current) {
+          window.clearTimeout(confettiTimerRef.current);
+        }
+        if (advanceTimerRef.current) {
+          window.clearTimeout(advanceTimerRef.current);
+        }
+      },
+      [],
+    );
 
-    const goToNextClip = () => {
+    const goToNextClip = useCallback(() => {
       setIndex((prev) => (prev + 1) % clips.length);
       setFeedback('pass');
       onNextClip();
-    };
+    }, [clips.length, onNextClip]);
+
+    const handleGestureMatch = useCallback(
+      ({ gesture, score }: { gesture: ExpectedGesture; score: number }) => {
+        if (!currentClip) return;
+        const now = Date.now();
+        if (now - approveGuardRef.current < 1200) return;
+        approveGuardRef.current = now;
+        if (paused) {
+          onPauseChange(false);
+          playerRef.current?.resume();
+        }
+        registerResult('pass');
+        setFeedback('pass');
+        setToast({ message: 'Great match!', duration: 1200 });
+        setConfetti(true);
+        if (confettiTimerRef.current) {
+          window.clearTimeout(confettiTimerRef.current);
+        }
+        confettiTimerRef.current = window.setTimeout(() => setConfetti(false), 1200);
+        logger.info('practice', 'correct_gesture', {
+          clipId: currentClip.id,
+          gesture,
+          expected: currentClip.expectedGesture,
+          score,
+        });
+        if (!advanceTimerRef.current) {
+          advanceTimerRef.current = window.setTimeout(() => {
+            advanceTimerRef.current = null;
+            goToNextClip();
+          }, 1600);
+        }
+      },
+      [currentClip, goToNextClip, onPauseChange, paused, registerResult],
+    );
 
     const handleReplay = () => {
       setFeedback('pass');
@@ -122,23 +203,11 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       },
     }));
 
-    // Auto-advance when planner marks a correct gesture
-    useEffect(() => {
-      const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
-        if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT') {
-          return;
-        }
-        goToNextClip();
-      };
-      bus.addEventListener('message', handlePlanner);
-      return () => {
-        bus.removeEventListener('message', handlePlanner);
-      };
-    }, [clips]);
+    // (removed duplicate auto-advance listener)
 
     return (
       <section className="space-y-lg">
-        <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]">
+        <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
           <LessonPlayer
             kidMode={kidMode}
             onNext={goToNextClip}
@@ -151,25 +220,49 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
             videoSrc={currentClip.video}
           />
 
-          <div className="grid gap-md">
-            {gesturesOn ? (
-              <aside className="rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
-                <header className="mb-sm flex items-center justify-between">
-                  <h3 className="text-base font-semibold">Gesture camera</h3>
-                  <span className="text-xs uppercase tracking-wide text-accent-teal">
-                    On
-                  </span>
-                </header>
-                <p className="text-xs text-text-secondary">
-                  Keep within the frame and hold each gesture briefly for the best match.
-                </p>
-                <div className="mt-md overflow-hidden rounded-xl border border-white/10">
-                  <CameraFeed />
-                </div>
-              </aside>
-            ) : null}
+          {gesturesOn ? (
+            <aside className="rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
+              <header className="mb-sm flex items-center justify-between">
+                <h3 className="text-base font-semibold">Gesture camera</h3>
+                <span className="text-xs uppercase tracking-wide text-accent-teal">On</span>
+              </header>
+              <p className="text-xs text-text-secondary">
+                Keep within the frame and hold each gesture briefly for the best match.
+              </p>
+              <div className="mt-md overflow-hidden rounded-xl border border-white/10">
+                <CameraFeed
+                  enabled={gesturesOn}
+                  expectedGesture={currentClip.expectedGesture ?? null}
+                  onMatch={handleGestureMatch}
+                />
+              </div>
+              <div className="mt-md">
+                <VoiceGuide visible={voiceOn} />
+              </div>
+            </aside>
+          ) : (
+            <div />
+          )}
 
-            <VoiceGuide visible={voiceOn} />
+          <div className="md:col-span-2">
+            <p className="text-sm text-text-secondary">
+              {(() => {
+                const TIPS: Record<string, string> = {
+                  HELLO: 'Open palm near temple; small outward wave.',
+                  'THANK YOU': 'Open palm from chin outward.',
+                  YES: 'Thumbs-up; hold steady.',
+                  NO: 'Open palm (or index + middle close to thumb).',
+                  WHERE: 'Point with index; keep other fingers curled.',
+                  EAT: 'Pinch fingertips together near mouth.',
+                  DRINK: 'Pinch like holding a cup; slight tilt.',
+                  MORE: 'Pinch both hands; bring fingertips together.',
+                };
+                return (
+                  TIPS[currentClip.title.toUpperCase()] ??
+                  'Mirror the poster and hold your gesture steady for a moment.'
+                );
+              })()}
+            </p>
           </div>
         </div>
 
@@ -221,6 +314,16 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         />
 
         <AttributionChip attribution={currentClip.attribution} />
+        {confetti ? (
+          <ConfettiOverlay message="Great match!" onEnd={() => setConfetti(false)} />
+        ) : null}
+        {toast ? (
+          <Toast
+            duration={toast.duration ?? 1200}
+            message={toast.message}
+            variant="success"
+          />
+        ) : null}
       </section>
     );
   },

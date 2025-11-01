@@ -29,9 +29,9 @@ const formatTimestamp = () => {
 };
 
 export function SubagentsPanel() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<LogRow[]>([]);
-  const [activity, setActivity] = useState<Record<AgentKey, number>>({});
+  const [activity, setActivity] = useState<Partial<Record<AgentKey, number>>>({});
   const [heartbeat, setHeartbeat] = useState(() => Date.now());
 
   useEffect(() => {

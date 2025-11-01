@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 
 interface LessonPlayerProps {
   poster: string;
@@ -33,6 +33,7 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
     ref,
   ) => {
     const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     const handleReplay = () => {
       const video = videoRef.current;
@@ -112,10 +113,17 @@ export const LessonPlayer = forwardRef<LessonPlayerHandle, LessonPlayerProps>(
             preload="metadata"
             poster={poster}
             ref={videoRef}
+            onError={() => setLoadError(`Failed to load: ${videoSrc}`)}
+            onCanPlay={() => setLoadError(null)}
           >
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support video playback.
           </video>
+          {loadError ? (
+            <div className="absolute right-2 top-2 rounded bg-rose-500/60 px-2 py-1 text-[11px] font-semibold text-white">
+              {loadError}
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-wrap gap-sm">
           <button

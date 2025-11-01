@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { post } from '../gestures/gestureBus';
+import { isCorrectGesture, type ExpectedGesture } from '../gestures/gestureEvaluator';
 
-export function CameraFeed() {
+type CameraFeedProps = {
+  enabled?: boolean;
+  expectedGesture?: ExpectedGesture | null;
+  onMatch?: (payload: { gesture: ExpectedGesture; score: number }) => void;
+};
+
+export function CameraFeed({
+  enabled = true,
+  expectedGesture = null,
+  onMatch,
+}: CameraFeedProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +25,28 @@ export function CameraFeed() {
     Number((import.meta as any)?.env?.VITE_GESTURE_HOLD_MS ?? 1200),
   );
 
+  const matchCallbackRef = useRef<((payload: { gesture: ExpectedGesture; score: number }) => void) | null>(
+    onMatch ?? null,
+  );
+  const expectedGestureRef = useRef<ExpectedGesture | null>(expectedGesture);
+
   useEffect(() => {
+    matchCallbackRef.current = onMatch ?? null;
+  }, [onMatch]);
+
+  useEffect(() => {
+    expectedGestureRef.current = expectedGesture ?? null;
+  }, [expectedGesture]);
+
+  useEffect(() => {
+    if (!enabled) {
+      setHud(null);
+      setError(null);
+      lastTypeRef.current = null;
+      lastStableStartMsRef.current = null;
+      return;
+    }
+
     let animationId: number | null = null;
     let stream: MediaStream | null = null;
     let detector: any = null;
@@ -266,6 +298,8 @@ export function CameraFeed() {
           }
 
           const classification = classifyLandmarks(lm);
+          const expected = expectedGestureRef.current;
+          const matchHandler = matchCallbackRef.current;
           if (classification) {
             const now = performance.now();
             if (lastTypeRef.current !== classification.type) {
@@ -280,20 +314,31 @@ export function CameraFeed() {
               lastPostMsRef.current = now;
               // reset to require another hold window
               lastStableStartMsRef.current = now;
+
+              if (
+                matchHandler &&
+                expected &&
+                isCorrectGesture(expected, classification.type, classification.score)
+              ) {
+                matchHandler({
+                  gesture: classification.type,
+                  score: classification.score,
+                });
+              }
             }
 
+            const remainingMs =
+              HOLD_MS -
+              (lastStableStartMsRef.current ? now - lastStableStartMsRef.current : 0);
+            const holdSeconds = Math.ceil(Math.max(0, remainingMs) / 1000);
+            const goalSuffix =
+              expected && expected !== classification.type
+                ? ` · goal: ${expected.replace('_', ' ')}`
+                : '';
             setHud(
               `${classification.type} (${Math.round(
                 (classification.score || 0) * 100,
-              )}%) · hold ${Math.ceil(
-                Math.max(
-                  0,
-                  HOLD_MS -
-                    (lastStableStartMsRef.current
-                      ? now - lastStableStartMsRef.current
-                      : 0),
-                ) / 1000,
-              )}s`,
+              )}%) · hold ${holdSeconds}s${goalSuffix}`,
             );
           } else {
             lastTypeRef.current = null;
@@ -332,7 +377,7 @@ export function CameraFeed() {
       stream?.getTracks().forEach((track) => track.stop());
       detector?.close?.();
     };
-  }, []);
+  }, [enabled]);
 
   return (
     <div className="relative">
@@ -351,7 +396,7 @@ export function CameraFeed() {
       </div>
       <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded bg-black/60 px-2 py-1 text-xs font-semibold text-white">
         <span className="inline-block h-2 w-2 rounded-full bg-green-400" />
-        <span>Camera Active</span>
+        <span>{enabled ? 'Camera Active' : 'Gestures Off'}</span>
       </div>
       {hud ? (
         <div className="absolute bottom-2 right-2 rounded bg-black/60 px-2 py-1 text-xs font-semibold text-white">

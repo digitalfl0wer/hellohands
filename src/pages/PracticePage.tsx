@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
 import SignMedia from '../components/SignMedia';
 import { Toast } from '../components/Toast';
 import { ConfettiOverlay } from '../components/ConfettiOverlay';
 import { setExpectedGesture } from '../agents/planner';
-import { bus, type HHEvent } from '../gestures/gestureBus';
 import {
+  GestureType,
   PracticeItem,
   PracticePackSummary,
   fetchLicenseInfo,
@@ -13,8 +13,11 @@ import {
   getPracticePack,
   listPracticePacks,
 } from '../services/practiceApi';
+import { useLessonStore } from '../state/useLessonStore';
+import { logger } from '../utils/logger';
 
 export function PracticePage() {
+  const gesturesOn = useLessonStore((state) => state.gesturesOn);
   const [packs, setPacks] = useState<PracticePackSummary[]>([]);
   const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
   const [items, setItems] = useState<PracticeItem[]>([]);
@@ -27,6 +30,21 @@ export function PracticePage() {
   const SHOW_CAMERA = import.meta.env.VITE_SHOW_CAMERA === '1';
   const [toast, setToast] = useState<{ message: string; duration?: number } | null>(null);
   const [confetti, setConfetti] = useState(false);
+  const matchGuardRef = useRef<number>(0);
+  const confettiTimerRef = useRef<number | null>(null);
+  const advanceTimerRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (confettiTimerRef.current) {
+        window.clearTimeout(confettiTimerRef.current);
+      }
+      if (advanceTimerRef.current) {
+        window.clearTimeout(advanceTimerRef.current);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -58,24 +76,6 @@ export function PracticePage() {
       setExpectedGesture(null);
     };
   }, []);
-
-  // Auto-advance when planner marks a correct gesture
-  useEffect(() => {
-    const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
-      if (!data || data.intent !== 'planner' || data.action !== 'PRACTICE_CORRECT') {
-        return;
-      }
-      setToast({ message: 'Great match!', duration: 1400 });
-      setConfetti(true);
-      window.setTimeout(() => setConfetti(false), 1400);
-      // Advance to the next suggested sign
-      void handleSuggestNext();
-    };
-    bus.addEventListener('message', handlePlanner);
-    return () => {
-      bus.removeEventListener('message', handlePlanner);
-    };
-  }, [selectedPackId, selectedItemId, items]);
 
   useEffect(() => {
     if (!selectedPackId) return;
@@ -130,18 +130,50 @@ export function PracticePage() {
     }
   };
 
-  const handleSuggestNext = async () => {
+  const handleSuggestNext = useCallback(async () => {
     if (!selectedPackId) return;
     const result = await getNextPracticeItem(selectedPackId, selectedItemId ?? undefined);
     if (!result?.item) return;
 
-    if (!items.find((entry) => entry.id === result.item.id)) {
-      setItems((prev) => [...prev, result.item]);
-    }
+    setItems((prev) => {
+      if (prev.find((entry) => entry.id === result.item.id)) {
+        return prev;
+      }
+      return [...prev, result.item];
+    });
     setSelectedPackId(result.pack.id);
     setSelectedItemId(result.item.id);
     setExpectedGesture(result.item.expectedGesture);
-  };
+  }, [selectedPackId, selectedItemId]);
+
+  const handleGestureMatch = useCallback(
+    ({ gesture, score }: { gesture: GestureType; score: number }) => {
+      const now = Date.now();
+      if (now - matchGuardRef.current < 1200) {
+        return;
+      }
+      matchGuardRef.current = now;
+      setToast({ message: 'Great match!', duration: 1400 });
+      setConfetti(true);
+      if (confettiTimerRef.current) {
+        window.clearTimeout(confettiTimerRef.current);
+      }
+      confettiTimerRef.current = window.setTimeout(() => setConfetti(false), 1400);
+      logger.info('practice', 'correct_gesture', {
+        packId: selectedPackId,
+        itemId: selectedItemId,
+        gesture,
+        score,
+      });
+      if (!advanceTimerRef.current) {
+        advanceTimerRef.current = window.setTimeout(() => {
+          advanceTimerRef.current = null;
+          void handleSuggestNext();
+        }, 1600);
+      }
+    },
+    [handleSuggestNext, selectedItemId, selectedPackId],
+  );
 
   const expectedGestureLabel = items
     .find((item) => item.id === selectedItemId)
@@ -174,12 +206,20 @@ export function PracticePage() {
         </div>
         {SHOW_CAMERA ? (
           <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
-            <CameraFeed />
+            <CameraFeed
+              enabled={gesturesOn}
+              expectedGesture={currentItem?.expectedGesture ?? null}
+              onMatch={handleGestureMatch}
+            />
           </div>
         ) : (
           // Run the sensor offscreen so gestures still work in practice
           <div className="absolute h-px w-px overflow-hidden opacity-0">
-            <CameraFeed />
+            <CameraFeed
+              enabled={gesturesOn}
+              expectedGesture={currentItem?.expectedGesture ?? null}
+              onMatch={handleGestureMatch}
+            />
           </div>
         )}
       </section>

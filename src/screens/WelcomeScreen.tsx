@@ -1,6 +1,6 @@
 import { AppButton } from '../components/Button';
 import { LevelCard } from '../components/LevelCard';
-import { SAMPLE_CLIPS } from '../components/lesson/sampleClips';
+import IntroMessage from '../components/IntroMessage';
 
 type WelcomeScreenProps = {
   kidMode: boolean;
@@ -21,31 +21,25 @@ export function WelcomeScreen({
 }: WelcomeScreenProps) {
   const levelTwoLocked = level < 2;
   const levelThreeLocked = level < 3;
-  const levelOneSigns = SAMPLE_CLIPS.map((clip) => clip.title).join(', ');
-  const levelOneDataset = SAMPLE_CLIPS[0]?.attribution.subset ?? 'MS-ASL';
+  // Intro message is always visible (permanent)
 
   return (
     <section className="space-y-lg">
       <header className="space-y-sm">
-        <p className="text-sm text-text-muted">
-          Level 1: {levelOneDataset} greetings — {levelOneSigns}
-        </p>
+        <IntroMessage />
         <p className="max-w-xl text-base text-text-secondary">
-          Earn five stars to unlock the next pack. Manual controls always work, with
-          gestures and voice as optional power-ups.
+          Earn five stars to unlock the next pack. Manual controls always work; gestures
+          and voice are optional power-ups.
         </p>
         <p className="text-xs text-text-muted">
           Kid Mode is {kidMode ? 'on' : 'off'} — toggle anytime from the top-right
           control.
         </p>
-        <p className="text-xs text-text-muted">
-          Clips sourced from the MS-ASL dataset for research and education use.
-        </p>
       </header>
       <div className="grid gap-md md:grid-cols-3">
         <LevelCard
           title="Level 1"
-          description={`Start with MS-ASL essentials: ${levelOneSigns}.`}
+          description="Start practicing friendly ASL signs."
           starsEarned={stars}
           totalStars={totalStars}
           locked={false}

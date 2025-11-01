@@ -11,6 +11,10 @@ describe('parseVoiceCommand', () => {
     });
     expect(parseVoiceCommand('slow motion')).toEqual({ type: 'control', action: 'slow' });
     expect(parseVoiceCommand('pause now')).toEqual({ type: 'control', action: 'pause' });
+    expect(parseVoiceCommand('continue lesson')).toEqual({
+      type: 'control',
+      action: 'resume',
+    });
   });
 
   it('parses kid mode toggles', () => {

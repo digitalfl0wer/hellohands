@@ -13,7 +13,6 @@ import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
 import { useLessonStore } from './state/useLessonStore';
 import { ConfettiOverlay } from './components/ConfettiOverlay';
-import PracticePage from './pages/PracticePage';
 import SubagentsPanel from './components/SubagentsPanel';
 import ProgressBadge from './components/ProgressBadge';
 import UnlockSticker from './components/UnlockSticker';
@@ -22,9 +21,7 @@ import { logger } from './utils/logger';
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
-  const [view, setView] = useState<'welcome' | 'directions' | 'lesson' | 'practice'>(
-    'welcome',
-  );
+  const [view, setView] = useState<'welcome' | 'directions' | 'lesson'>('welcome');
   const [toast, setToast] = useState<{
     message: string;
     variant?: 'info' | 'success' | 'warn';
@@ -203,8 +200,8 @@ function App(): JSX.Element | null {
   });
 
   useGestureInput({
-    enabled: view === 'lesson',
-    paused: lessonPaused,
+    enabled: view === 'lesson' && gesturesOn,
+    paused: lessonPaused && gesturesOn,
     suspended: showCountdown,
     onGesture: (gesture) => {
       switch (gesture) {
@@ -250,11 +247,7 @@ function App(): JSX.Element | null {
         return;
       }
 
-      if (data.action === 'NAVIGATE_PRACTICE') {
-        setView('practice');
-        triggerToast('Practice mode ready.', 'info');
-        logger.info('planner', 'navigate_practice');
-      }
+      // Ignore practice navigation while the Practice tab is disabled
 
       if (data.action === 'PRACTICE_CORRECT') {
         triggerToast('Great match!', 'success');
@@ -377,13 +370,7 @@ function App(): JSX.Element | null {
             <div className="flex flex-wrap items-center justify-end gap-sm">
               <SettingsPill />
               <ProgressBadge level={level} stars={stars} total={maxStars} />
-              <AppButton
-                onClick={() => setView('practice')}
-                type="button"
-                variant="adult"
-              >
-                Practice
-              </AppButton>
+              {/* Practice entry temporarily removed */}
               <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
                 Kid Mode: {kidMode ? 'On' : 'Off'}
               </AppButton>
@@ -399,7 +386,7 @@ function App(): JSX.Element | null {
         {view === 'welcome' && welcomeView}
         {view === 'directions' && directionsView}
         {view === 'lesson' && lessonView}
-        {view === 'practice' && <PracticePage />}
+        {/* Practice view temporarily removed */}
 
         {showCelebration && (
           <ConfettiOverlay

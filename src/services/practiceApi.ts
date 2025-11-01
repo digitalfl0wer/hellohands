@@ -1,5 +1,6 @@
 import whitelistConfig from '../../practice/whitelist.json';
 import vocabMap from '../../practice/vocab.map.json';
+import { DEMO_SIGN_CLIPS, DEMO_SIGN_CLIP_MAP } from '../data/demoClips';
 
 export type GestureType = 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
 
@@ -8,6 +9,7 @@ export interface PracticeItem {
   sign: string;
   expectedGesture: GestureType;
   clipUrl: string;
+  posterUrl?: string;
 }
 
 export interface PracticePackSummary {
@@ -23,38 +25,13 @@ const FALLBACK_PACKS: PracticePackSummary[] = [
     id: 'L1-ESSENTIALS',
     title: 'Level 1 · Essentials',
     level: 1,
-    items: [
-      {
-        id: 'hello',
-        sign: 'HELLO',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/hello/front.mp4',
-      },
-      {
-        id: 'thank-you',
-        sign: 'THANK YOU',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/thank-you/front.mp4',
-      },
-      {
-        id: 'yes',
-        sign: 'YES',
-        expectedGesture: 'thumbs_up',
-        clipUrl: '/signs/level1/yes/front.mp4',
-      },
-      {
-        id: 'no',
-        sign: 'NO',
-        expectedGesture: 'point',
-        clipUrl: '/signs/level1/no/front.mp4',
-      },
-      {
-        id: 'more',
-        sign: 'MORE',
-        expectedGesture: 'pinch',
-        clipUrl: '/signs/level1/more/front.mp4',
-      },
-    ],
+    items: DEMO_SIGN_CLIPS.map((clip) => ({
+      id: clip.sign.toLowerCase().replace(/\s+/g, '-'),
+      sign: clip.sign,
+      expectedGesture: clip.expectedGesture,
+      clipUrl: clip.clipUrl,
+      posterUrl: clip.posterUrl,
+    })),
   },
 ];
 
@@ -73,6 +50,41 @@ const ALLOW_SET = new Set(
 );
 
 const VOCAB = vocabMap as Record<string, VocabEntry>;
+
+const normalizePracticeItems = (items?: PracticeItem[]): PracticeItem[] => {
+  if (!items?.length) {
+    return [];
+  }
+  const seen = new Set<string>();
+  return items.reduce<PracticeItem[]>((acc, item) => {
+    const key =
+      item.clipUrl?.trim().toLowerCase() ||
+      item.id?.trim().toLowerCase() ||
+      item.sign.trim().toLowerCase();
+    if (seen.has(key)) {
+      return acc;
+    }
+    seen.add(key);
+    const normalizedSign = item.sign.trim().toUpperCase();
+    const fallbackPoster =
+      item.posterUrl ?? DEMO_SIGN_CLIP_MAP.get(normalizedSign)?.posterUrl;
+    acc.push({
+      ...item,
+      posterUrl: fallbackPoster,
+      sign: normalizedSign,
+    });
+    return acc;
+  }, []);
+};
+
+const normalizePack = (pack: PracticePackSummary): PracticePackSummary => {
+  const items = normalizePracticeItems(pack.items);
+  return {
+    ...pack,
+    items,
+    itemCount: items.length,
+  };
+};
 
 const sanitizeFallbackPacks = (): PracticePackSummary[] => {
   return FALLBACK_PACKS.map((pack) => {
@@ -102,15 +114,17 @@ const sanitizeFallbackPacks = (): PracticePackSummary[] => {
       return true;
     });
 
-    return {
+    return normalizePack({
       ...pack,
       items: filteredItems,
-    };
+    });
   }).filter((pack) => (pack.items?.length ?? 0) > 0);
 };
 
 const BYPASS_WHITELIST = import.meta.env.VITE_PRACTICE_BYPASS_WHITELIST === '1';
-const FALLBACK_SANITISED = BYPASS_WHITELIST ? FALLBACK_PACKS : sanitizeFallbackPacks();
+const FALLBACK_SANITISED = BYPASS_WHITELIST
+  ? FALLBACK_PACKS.map(normalizePack)
+  : sanitizeFallbackPacks();
 
 async function safeFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   try {
@@ -130,6 +144,16 @@ async function safeFetch<T>(path: string, init?: RequestInit): Promise<T | null>
 
 export async function listPracticePacks(): Promise<PracticePackSummary[]> {
   if (!USE_MCP) {
+    // Try local published pack under /public/local/local_pack.json (if present)
+    try {
+      const resp = await fetch('/local/local_pack.json', { cache: 'no-store' });
+      if (resp.ok) {
+        const localPack = normalizePack((await resp.json()) as PracticePackSummary);
+        return [localPack, ...FALLBACK_SANITISED];
+      }
+    } catch {
+      // ignore and fall back
+    }
     return FALLBACK_SANITISED;
   }
 
@@ -137,7 +161,7 @@ export async function listPracticePacks(): Promise<PracticePackSummary[]> {
   if (!result?.packs?.length) {
     return FALLBACK_SANITISED;
   }
-  return result.packs;
+  return result.packs.map(normalizePack);
 }
 
 export async function getPracticePack(id: string): Promise<PracticePackSummary | null> {
@@ -146,7 +170,7 @@ export async function getPracticePack(id: string): Promise<PracticePackSummary |
   }
 
   const result = await safeFetch<{ pack: PracticePackSummary }>(`/packs/${id}`);
-  return result?.pack ?? null;
+  return result?.pack ? normalizePack(result.pack) : null;
 }
 
 export async function getNextPracticeItem(
@@ -164,11 +188,27 @@ export async function getNextPracticeItem(
     return { item: nextItem, pack };
   }
 
-  return safeFetch<{ item: PracticeItem; pack: PracticePackSummary }>('/practice/next', {
+  const result = await safeFetch<{ item: PracticeItem; pack: PracticePackSummary }>(
+    '/practice/next',
+    {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ packId, cursor }),
-  });
+  },
+  );
+
+  if (!result) return null;
+  const pack = normalizePack(result.pack);
+  const item =
+    pack.items?.find((entry) => entry.id === result.item.id) ??
+    {
+      ...result.item,
+      posterUrl:
+        result.item.posterUrl ??
+        DEMO_SIGN_CLIP_MAP.get(result.item.sign.trim().toUpperCase())?.posterUrl,
+      sign: result.item.sign.trim().toUpperCase(),
+    };
+  return { item, pack };
 }
 
 export interface LicenseInfo {
