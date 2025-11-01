@@ -176,7 +176,12 @@ export function PracticePage() {
           <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
             <CameraFeed />
           </div>
-        ) : null}
+        ) : (
+          // Run the sensor offscreen so gestures still work in practice
+          <div className="absolute h-px w-px overflow-hidden opacity-0">
+            <CameraFeed />
+          </div>
+        )}
       </section>
       <section className="flex flex-col gap-4">
         <div>

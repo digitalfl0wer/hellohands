@@ -9,8 +9,10 @@ export function CameraFeed() {
   const lastTypeRef = useRef<string | null>(null);
   const lastStableStartMsRef = useRef<number | null>(null);
   const lastPostMsRef = useRef<number>(0);
-  const HOLD_MS = 2000; // require 2s steady pose
-  const MIRROR = true;
+  const HOLD_MS = Math.max(
+    300,
+    Number((import.meta as any)?.env?.VITE_GESTURE_HOLD_MS ?? 1200),
+  );
 
   useEffect(() => {
     let animationId: number | null = null;

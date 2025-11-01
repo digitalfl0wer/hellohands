@@ -24,19 +24,28 @@ export type HHEvent =
     };
 
 const createBus = (): BroadcastChannel => {
-  if (typeof BroadcastChannel === 'undefined') {
-    return {
-      name: BUS_NAME,
-      postMessage: () => undefined,
-      close: () => undefined,
-      addEventListener: () => undefined,
-      removeEventListener: () => undefined,
-      dispatchEvent: () => false,
-      onmessage: null,
-      onmessageerror: null,
-    } as unknown as BroadcastChannel;
+  if (typeof BroadcastChannel !== 'undefined') {
+    return new BroadcastChannel(BUS_NAME);
   }
-  return new BroadcastChannel(BUS_NAME);
+
+  // Fallback: in-page event bus via EventTarget
+  const target: EventTarget = new EventTarget();
+  const shim: BroadcastChannel = {
+    name: BUS_NAME,
+    postMessage: (data: unknown) => {
+      const evt = new MessageEvent('message', { data });
+      target.dispatchEvent(evt);
+    },
+    close: () => undefined,
+    addEventListener: (type: any, listener: any, options?: any) =>
+      (target.addEventListener as any)(type, listener, options),
+    removeEventListener: (type: any, listener: any, options?: any) =>
+      (target.removeEventListener as any)(type, listener, options),
+    dispatchEvent: (event: Event) => target.dispatchEvent(event),
+    onmessage: null as any,
+    onmessageerror: null as any,
+  } as any;
+  return shim;
 };
 
 export const bus: BroadcastChannel = createBus();
