@@ -1,0 +1,71 @@
+{
+  "version": "1.0",
+  "lottie": {
+    "countdown_finger_adult": {
+      "id": "countdown_finger_adult",
+      "title": "Finger Countdown (Adult)",
+      "path": "/assets/mascot/adult/Finger countdown.lottie",
+      "variant": "adult",
+      "type": "countdown"
+    },
+    "countdown_rocket_kid": {
+      "id": "countdown_rocket_kid",
+      "title": "Rocket Countdown (Kid)",
+      "path": "/assets/mascot/kid/Rocket countdown 2.lottie",
+      "variant": "kid",
+      "type": "countdown"
+    }
+  },
+  "mascot": {
+    "palma_idle": {
+      "id": "palma_idle",
+      "title": "Palma Idle",
+      "path": "/assets/mascot/palma/palmaIdle.png",
+      "state": "idle"
+    },
+    "palma_celebrate": {
+      "id": "palma_celebrate",
+      "title": "Palma Celebrate",
+      "path": "/assets/mascot/palma/palmaCelebrate.png",
+      "state": "success"
+    },
+    "palma_thinking": {
+      "id": "palma_thinking",
+      "title": "Palma Thinking",
+      "path": "/assets/mascot/palma/palmaThinking.png",
+      "state": "thinking"
+    },
+    "palma_try_again": {
+      "id": "palma_try_again",
+      "title": "Palma Try Again",
+      "path": "/assets/mascot/palma/palmaTryAgain.png",
+      "state": "oops"
+    },
+    "palma_loading": {
+      "id": "palma_loading",
+      "title": "Palma Loading",
+      "path": "/assets/mascot/palma/palmaLoading1.png",
+      "state": "loading"
+    },
+    "palma_wave_1": {
+      "id": "palma_wave_1",
+      "title": "Palma Wave 1",
+      "path": "/assets/mascot/palma/palmaWave/palmaWave1.png",
+      "state": "encouraging"
+    },
+    "palma_wave_2": {
+      "id": "palma_wave_2",
+      "title": "Palma Wave 2",
+      "path": "/assets/mascot/palma/palmaWave/palmaWave2.png",
+      "state": "encouraging"
+    },
+    "palma_wave_3": {
+      "id": "palma_wave_3",
+      "title": "Palma Wave 3",
+      "path": "/assets/mascot/palma/palmaWave/palmaWave3.png",
+      "state": "encouraging"
+    }
+  }
+}
+
+

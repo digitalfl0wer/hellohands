@@ -18,6 +18,24 @@ import ProgressBadge from './components/ProgressBadge';
 import UnlockSticker from './components/UnlockSticker';
 import { bus, post, type HHEvent } from './gestures/gestureBus';
 import { logger } from './utils/logger';
+import type { ExpectedGesture } from './gestures/gestureEvaluator';
+import {
+  OnboardingCarousel,
+  hasCompletedOnboarding,
+} from './components/onboarding/OnboardingCarousel';
+import { CalibrationFlow } from './components/calibration/CalibrationFlow';
+import { CountdownRocket } from './components/overlays/CountdownRocket';
+import { CountdownFinger } from './components/overlays/CountdownFinger';
+import { VoicePermissionBanner } from './components/recovery/VoicePermissionBanner';
+
+type CountdownMode = 'lesson_start' | 'accept';
+
+type PendingAccept = {
+  source: 'gesture' | 'voice';
+  gesture?: ExpectedGesture;
+  score?: number;
+  clipId?: string;
+};
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
@@ -27,13 +45,21 @@ function App(): JSX.Element | null {
     variant?: 'info' | 'success' | 'warn';
     duration?: number;
   } | null>(null);
-  const [showCountdown, setShowCountdown] = useState(false);
+  const [countdownMode, setCountdownMode] = useState<CountdownMode | null>(null);
+  const [pendingAccept, setPendingAccept] = useState<PendingAccept | null>(null);
   const [lessonPaused, setLessonPaused] = useState(false);
   const gestureCueTimer = useRef<number | null>(null);
   const [gestureCue, setGestureCue] = useState<string | null>(null);
   const lessonRef = useRef<LessonScreenHandle | null>(null);
   const voiceHintShown = useRef(false);
   const [unlockStickerLevel, setUnlockStickerLevel] = useState<number | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCalibration, setShowCalibration] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const ui2ModesEnabled =
+    import.meta.env.VITE_KID_MODE_V2 === '1' || import.meta.env.VITE_UI2_ENABLED === '1';
+  const isBlockingCountdown =
+    countdownMode === 'lesson_start' || (ui2ModesEnabled && kidMode && countdownMode === 'accept');
 
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
@@ -45,9 +71,20 @@ function App(): JSX.Element | null {
   const stars = useLessonStore((state) => state.stars);
   const maxStars = useLessonStore((state) => state.maxStars);
   const registerResult = useLessonStore((state) => state.registerResult);
+  const countdownEnabled = useLessonStore((state) => state.countdownOn);
 
   useEffect(() => {
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    const ui2Enabled =
+      import.meta.env.VITE_UI2_ONBOARDING === '1' ||
+      import.meta.env.VITE_UI2_ENABLED === '1';
+    if (!ui2Enabled) return;
+    if (!hasCompletedOnboarding()) {
+      setShowOnboarding(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -69,6 +106,43 @@ function App(): JSX.Element | null {
     [],
   );
 
+  const finalizeAcceptFlow = useCallback(
+    (payload?: PendingAccept) => {
+      const target = payload ?? pendingAccept;
+      if (!target) return;
+      logger.info(
+        target.source === 'voice' ? 'voice' : 'gesture',
+        'accept_countdown_complete',
+        target,
+      );
+      if (target.source === 'voice') {
+        registerResult('pass');
+      }
+      lessonRef.current?.nextClip();
+      setPendingAccept(null);
+    },
+    [pendingAccept, registerResult],
+  );
+
+  const beginAcceptCountdown = useCallback(
+    (payload: PendingAccept) => {
+      if (countdownMode !== null) {
+        logger.info('accept_flow', 'countdown_busy', {
+          mode: countdownMode,
+          payload,
+        });
+        return;
+      }
+      setPendingAccept(payload);
+      if (!countdownEnabled) {
+        finalizeAcceptFlow(payload);
+        return;
+      }
+      setCountdownMode('accept');
+    },
+    [countdownEnabled, countdownMode, finalizeAcceptFlow],
+  );
+
   const handleLockedLevel = (lockedLevel: number) => {
     triggerToast(
       `Keep practicing to unlock Level ${lockedLevel} (earn 5 stars).`,
@@ -77,8 +151,13 @@ function App(): JSX.Element | null {
   };
 
   const handleCountdownComplete = () => {
-    setShowCountdown(false);
-    triggerToast('Lesson starting — good luck!', 'success');
+    const mode = countdownMode;
+    setCountdownMode(null);
+    if (mode === 'lesson_start') {
+      triggerToast('Lesson starting — good luck!', 'success');
+    } else if (mode === 'accept') {
+      finalizeAcceptFlow();
+    }
   };
 
   const handleVoiceCommand = (command: VoiceParseResult) => {
@@ -86,8 +165,8 @@ function App(): JSX.Element | null {
       case 'control':
         switch (command.action) {
           case 'next':
-            lessonRef.current?.nextClip();
             flashGestureCue('Next');
+            beginAcceptCountdown({ source: 'voice' });
             break;
           case 'replay':
             lessonRef.current?.replayClip();
@@ -153,6 +232,13 @@ function App(): JSX.Element | null {
     }, duration);
   };
 
+  const handleGestureAcceptRequest = useCallback(
+    (payload: { clipId: string; gesture: ExpectedGesture; score: number }) => {
+      beginAcceptCountdown({ source: 'gesture', ...payload });
+    },
+    [beginAcceptCountdown],
+  );
+
   useEffect(() => {
     return () => {
       if (gestureCueTimer.current) {
@@ -187,7 +273,7 @@ function App(): JSX.Element | null {
   const [showCelebration, setShowCelebration] = useState(false);
   const [goosePanelEnabled, setGoosePanelEnabled] = useState(false);
   useVoiceInput({
-    enabled: view === 'lesson' && voiceOn && !showCountdown,
+    enabled: view === 'lesson' && voiceOn && !isBlockingCountdown,
     paused: lessonPaused,
     onCommand: (result) => handleVoiceCommand(result),
     onUnrecognized: () => triggerToast("Try 'Next' or 'Replay'.", 'info'),
@@ -195,14 +281,16 @@ function App(): JSX.Element | null {
       if (voiceOn) {
         toggleVoice();
       }
-      triggerToast(reason ?? 'Voice input unavailable right now.', 'warn');
+      const message = reason ?? 'Voice input unavailable right now.';
+      setVoiceError(message);
+      triggerToast(message, 'warn');
     },
   });
 
   useGestureInput({
     enabled: view === 'lesson' && gesturesOn,
     paused: lessonPaused && gesturesOn,
-    suspended: showCountdown,
+    suspended: isBlockingCountdown,
     onGesture: (gesture) => {
       switch (gesture) {
         case 'next':
@@ -353,7 +441,7 @@ function App(): JSX.Element | null {
         'Remember: you can pause with a ✋ gesture any time.',
       ]}
       onBegin={() => {
-        setShowCountdown(true);
+        setCountdownMode('lesson_start');
         setView('lesson');
         triggerToast('Get ready! Lesson starting…', 'info');
       }}
@@ -364,20 +452,54 @@ function App(): JSX.Element | null {
     <LessonScreen
       gesturesOn={gesturesOn}
       kidMode={kidMode}
+      gestureCameraEnabled={gesturesOn && !showCalibration}
+      onAcceptRequest={handleGestureAcceptRequest}
       onHint={() => {
         registerResult('almost');
         triggerToast('Slow-mo replay coming soon.', 'info');
       }}
       onNextClip={() => {
-        registerResult('pass');
         triggerToast('Next sign queued.', 'success');
       }}
       onPauseChange={setLessonPaused}
       paused={lessonPaused}
       ref={lessonRef}
       voiceOn={voiceOn}
+      onShowHowToUse={() => {
+        const ui2Enabled =
+          import.meta.env.VITE_UI2_ONBOARDING === '1' ||
+          import.meta.env.VITE_UI2_ENABLED === '1';
+        if (!ui2Enabled) return;
+        setShowOnboarding(true);
+      }}
     />
   );
+
+  const countdownLabel =
+    countdownMode === 'lesson_start'
+      ? 'Lesson starting'
+      : pendingAccept?.source === 'voice'
+        ? 'Voice accept · advancing'
+        : pendingAccept
+        ? 'Gesture accepted · advancing'
+        : undefined;
+
+  let countdownNode: JSX.Element | null = null;
+  if (countdownMode) {
+    if (!ui2ModesEnabled) {
+      countdownNode = (
+        <CountdownOverlay label={countdownLabel} onComplete={handleCountdownComplete} />
+      );
+    } else if (kidMode) {
+      countdownNode = (
+        <CountdownRocket label={countdownLabel} onComplete={handleCountdownComplete} />
+      );
+    } else {
+      countdownNode = (
+        <CountdownFinger label={countdownLabel} onComplete={handleCountdownComplete} />
+      );
+    }
+  }
 
   return (
     <>
@@ -388,7 +510,22 @@ function App(): JSX.Element | null {
               Hello Hands
             </h1>
             <div className="flex flex-wrap items-center justify-end gap-sm">
-              <SettingsPill />
+              <SettingsPill
+                onOpenHowToUse={() => {
+                  const ui2Enabled =
+                    import.meta.env.VITE_UI2_ONBOARDING === '1' ||
+                    import.meta.env.VITE_UI2_ENABLED === '1';
+                  if (!ui2Enabled) return;
+                  setShowOnboarding(true);
+                }}
+                onOpenCalibration={() => {
+                  const ui2Enabled =
+                    import.meta.env.VITE_UI2_CALIBRATION === '1' ||
+                    import.meta.env.VITE_UI2_ENABLED === '1';
+                  if (!ui2Enabled) return;
+                  setShowCalibration(true);
+                }}
+              />
               <ProgressBadge level={level} stars={stars} total={maxStars} />
               {/* Practice entry temporarily removed */}
               <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
@@ -408,6 +545,16 @@ function App(): JSX.Element | null {
         {view === 'lesson' && lessonView}
         {/* Practice view temporarily removed */}
 
+        <VoicePermissionBanner
+          error={voiceError}
+          onRetry={() => {
+            setVoiceError(null);
+            if (!voiceOn) {
+              toggleVoice();
+            }
+          }}
+        />
+
         {showCelebration && (
           <ConfettiOverlay
             message={`Level ${level} unlocked!`}
@@ -415,7 +562,7 @@ function App(): JSX.Element | null {
           />
         )}
 
-        {showCountdown && <CountdownOverlay onComplete={handleCountdownComplete} />}
+        {countdownNode}
         {gestureCue && (
           <div className="pointer-events-none fixed bottom-6 right-6 rounded-full bg-surface-800/80 px-md py-2 text-sm font-semibold text-text-primary shadow-lg ring-1 ring-white/10">
             {gestureCue}
@@ -435,6 +582,28 @@ function App(): JSX.Element | null {
             onHide={() => setUnlockStickerLevel(null)}
           />
         </div>
+        {showOnboarding && (
+          <OnboardingCarousel
+            onComplete={() => {
+              setShowOnboarding(false);
+              logger.info('ui2', 'onboarding_complete');
+            }}
+            onSkip={() => {
+              setShowOnboarding(false);
+              logger.info('ui2', 'onboarding_skipped');
+            }}
+          />
+        )}
+        {showCalibration && (
+          <CalibrationFlow
+            onComplete={() => {
+              setShowCalibration(false);
+            }}
+            onSkip={() => {
+              setShowCalibration(false);
+            }}
+          />
+        )}
       </AppShell>
       {goosePanelEnabled && <SubagentsPanel />}
     </>

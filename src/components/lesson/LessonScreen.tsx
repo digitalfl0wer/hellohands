@@ -27,6 +27,9 @@ import {
 } from '../../services/practiceApi';
 import type { ExpectedGesture } from '../../gestures/gestureEvaluator';
 import { logger } from '../../utils/logger';
+import { NoCameraRecovery } from '../recovery/NoCameraRecovery';
+import { NoHandFoundNotice } from '../recovery/NoHandFoundNotice';
+import { DemoVideoFeed } from '../DemoVideoFeed';
 
 export interface LessonScreenHandle {
   nextClip(): void;
@@ -42,13 +45,34 @@ interface LessonScreenProps {
   paused: boolean;
   voiceOn: boolean;
   gesturesOn: boolean;
+  gestureCameraEnabled?: boolean;
   onPauseChange: (paused: boolean) => void;
   onNextClip: () => void;
   onHint: () => void;
+  onShowHowToUse?: () => void;
+  onAcceptRequest?: (payload: {
+    clipId: string;
+    gesture: ExpectedGesture;
+    score: number;
+  }) => void;
 }
 
 export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
-  ({ kidMode, paused, voiceOn, gesturesOn, onPauseChange, onNextClip, onHint }, ref) => {
+  (
+    {
+      kidMode,
+      paused,
+      voiceOn,
+      gesturesOn,
+      gestureCameraEnabled,
+      onPauseChange,
+      onNextClip,
+      onHint,
+      onShowHowToUse,
+      onAcceptRequest,
+    },
+    ref,
+  ) => {
     const [clips, setClips] = useState<LessonClip[]>(() => SAMPLE_CLIPS);
     const [index, setIndex] = useState(0);
     const [feedback, setFeedback] = useState<'pass' | 'almost' | 'miss'>('pass');
@@ -61,7 +85,10 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       null,
     );
     const [confetti, setConfetti] = useState(false);
-    const advanceTimerRef = useRef<number | null>(null);
+    const [cameraError, setCameraError] = useState<string | null>(null);
+    const [demoMode, setDemoMode] = useState(false);
+    const [noHandFound, setNoHandFound] = useState(false);
+    const [highGain, setHighGain] = useState(false);
 
     const currentClip = clips[index];
 
@@ -114,9 +141,6 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         if (confettiTimerRef.current) {
           window.clearTimeout(confettiTimerRef.current);
         }
-        if (advanceTimerRef.current) {
-          window.clearTimeout(advanceTimerRef.current);
-        }
       },
       [],
     );
@@ -137,6 +161,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           onPauseChange(false);
           playerRef.current?.resume();
         }
+        setNoHandFound(false);
         registerResult('pass');
         setFeedback('pass');
         setToast({ message: 'Great match!', duration: 1200 });
@@ -151,14 +176,13 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           expected: currentClip.expectedGesture,
           score,
         });
-        if (!advanceTimerRef.current) {
-          advanceTimerRef.current = window.setTimeout(() => {
-            advanceTimerRef.current = null;
-            goToNextClip();
-          }, 1600);
-        }
+        onAcceptRequest?.({
+          clipId: currentClip.id,
+          gesture,
+          score,
+        });
       },
-      [currentClip, goToNextClip, onPauseChange, paused, registerResult],
+      [currentClip, onAcceptRequest, onPauseChange, paused, registerResult],
     );
 
     const handleReplay = () => {
@@ -203,8 +227,6 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       },
     }));
 
-    // (removed duplicate auto-advance listener)
-
     return (
       <section className="space-y-lg">
         <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
@@ -225,19 +247,50 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
               <header className="mb-sm flex items-center justify-between">
                 <h3 className="text-base font-semibold">Gesture camera</h3>
                 <span className="text-xs uppercase tracking-wide text-accent-teal">
-                  On
+                  {demoMode ? 'Demo' : 'On'}
                 </span>
               </header>
               <p className="text-xs text-text-secondary">
                 Keep within the frame and hold each gesture briefly for the best match.
               </p>
               <div className="mt-md overflow-hidden rounded-xl border border-white/10">
-                <CameraFeed
-                  enabled={gesturesOn}
-                  expectedGesture={currentClip.expectedGesture ?? null}
-                  onMatch={handleGestureMatch}
-                />
+                {demoMode ? (
+                  <DemoVideoFeed />
+                ) : cameraError ? (
+                  <NoCameraRecovery
+                    message={cameraError}
+                    onRetry={() => {
+                      setCameraError(null);
+                      setDemoMode(false);
+                    }}
+                    onUseDemo={() => {
+                      setDemoMode(true);
+                    }}
+                  />
+                ) : (
+                  <CameraFeed
+                    enabled={gestureCameraEnabled ?? gesturesOn}
+                    kidMode={kidMode}
+                    highGain={highGain}
+                    expectedGesture={currentClip.expectedGesture ?? null}
+                    onMatch={handleGestureMatch}
+                    onCameraError={(msg) => {
+                      setCameraError(msg);
+                      setDemoMode(false);
+                    }}
+                    onNoHandTimeout={() => {
+                      setNoHandFound(true);
+                    }}
+                  />
+                )}
               </div>
+              {!demoMode && noHandFound && !cameraError && (
+                <NoHandFoundNotice
+                  highGainEnabled={highGain}
+                  onRetry={() => setNoHandFound(false)}
+                  onToggleHighGain={() => setHighGain((v) => !v)}
+                />
+              )}
               <div className="mt-md">
                 <VoiceGuide visible={voiceOn} />
               </div>
@@ -291,6 +344,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
             kidMode={kidMode}
             mediaAlt={`Help clip for ${currentClip.title}`}
             mediaPoster={currentClip.poster}
+            onHowToUse={onShowHowToUse}
             onReplaySlow={onHint}
             onResume={() => setShowHelp(false)}
             tip="Lift your hand near your head, palm out, and give a friendly wave."

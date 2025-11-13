@@ -1,17 +1,43 @@
 import { useEffect, useRef, useState } from 'react';
 import { post } from '../gestures/gestureBus';
 import { isCorrectGesture, type ExpectedGesture } from '../gestures/gestureEvaluator';
+import { logger } from '../utils/logger';
+import { useLessonStore } from '../state/useLessonStore';
+import {
+  GestureWorkerClient,
+  createGestureWorkerClient,
+} from '../workers/gestureWorkerClient';
+import {
+  DEFAULT_GESTURE_WORKER_CONFIG,
+  type GestureWorkerEvent,
+  type RecognizedGesture,
+} from '../workers/gestureWorker.types';
 
 type CameraFeedProps = {
   enabled?: boolean;
   expectedGesture?: ExpectedGesture | null;
   onMatch?: (payload: { gesture: ExpectedGesture; score: number }) => void;
+  onCandidate?: (payload: { gesture: RecognizedGesture; score: number }) => void;
+  kidMode?: boolean;
+  highGain?: boolean;
+  onCameraError?: (message: string) => void;
+  onNoHandTimeout?: () => void;
 };
+
+const GESTURE_TASK_URL = (import.meta as any)?.env?.VITE_GESTURE_TASK_URL;
+const TASKS_FPS_TARGET =
+  Number((import.meta as any)?.env?.VITE_GESTURE_FPS_TARGET) ||
+  DEFAULT_GESTURE_WORKER_CONFIG.fpsTarget;
 
 export function CameraFeed({
   enabled = true,
   expectedGesture = null,
   onMatch,
+  onCandidate,
+  kidMode = false,
+  highGain = false,
+  onCameraError,
+  onNoHandTimeout,
 }: CameraFeedProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
@@ -20,10 +46,24 @@ export function CameraFeed({
   const lastTypeRef = useRef<string | null>(null);
   const lastStableStartMsRef = useRef<number | null>(null);
   const lastPostMsRef = useRef<number>(0);
-  const HOLD_MS = Math.max(
+  const workerClientRef = useRef<GestureWorkerClient | null>(null);
+  const workerLastFrameSentRef = useRef<number>(0);
+  const baseHoldMs = Math.max(
     300,
     Number((import.meta as any)?.env?.VITE_GESTURE_HOLD_MS ?? 1200),
   );
+  const holdMs = kidMode ? Math.max(2000, baseHoldMs) : baseHoldMs;
+  const baseFpsTarget =
+    Number((import.meta as any)?.env?.VITE_GESTURE_FPS_TARGET) ||
+    DEFAULT_GESTURE_WORKER_CONFIG.fpsTarget;
+  const fpsTarget = kidMode
+    ? Math.min(12, Math.max(8, baseFpsTarget))
+    : baseFpsTarget;
+  const runtimeMode = useLessonStore((state) => state.runtimeMode);
+  const workerOn = useLessonStore((state) => state.workerOn);
+  const useTasksRuntime = runtimeMode === 'tasks' && workerOn;
+  const lastHandSeenAtRef = useRef<number | null>(null);
+  const noHandNotifiedRef = useRef(false);
 
   const matchCallbackRef = useRef<
     ((payload: { gesture: ExpectedGesture; score: number }) => void) | null
@@ -33,6 +73,14 @@ export function CameraFeed({
   useEffect(() => {
     matchCallbackRef.current = onMatch ?? null;
   }, [onMatch]);
+
+  const candidateCallbackRef = useRef<
+    ((payload: { gesture: RecognizedGesture; score: number }) => void) | null
+  >(onCandidate ?? null);
+
+  useEffect(() => {
+    candidateCallbackRef.current = onCandidate ?? null;
+  }, [onCandidate]);
 
   useEffect(() => {
     expectedGestureRef.current = expectedGesture ?? null;
@@ -44,6 +92,10 @@ export function CameraFeed({
       setError(null);
       lastTypeRef.current = null;
       lastStableStartMsRef.current = null;
+      lastHandSeenAtRef.current = null;
+      noHandNotifiedRef.current = false;
+      workerClientRef.current?.terminate();
+      workerClientRef.current = null;
       return;
     }
 
@@ -52,18 +104,36 @@ export function CameraFeed({
     let detector: any = null;
     let active = true;
 
-    const start = async () => {
+    const cleanup = () => {
+      active = false;
+      if (animationId) {
+        window.cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      stream?.getTracks().forEach((track) => track.stop());
+      detector?.close?.();
+      workerClientRef.current?.terminate();
+      workerClientRef.current = null;
+    };
+
+    const setupCamera = async () => {
       try {
         if (!navigator.mediaDevices?.getUserMedia) {
-          setError('Camera API unavailable.');
-          return;
+          const message = 'Camera API unavailable.';
+          setError(message);
+          onCameraError?.(message);
+          return false;
         }
-
+        const videoConstraints: MediaTrackConstraints = highGain
+          ? {
+              facingMode: 'user',
+              advanced: [{ exposureMode: 'continuous' } as any],
+            }
+          : { facingMode: 'user' };
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: videoConstraints,
           audio: false,
         });
-
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch((err) => {
@@ -72,15 +142,121 @@ export function CameraFeed({
             }
           });
         }
+        return true;
       } catch (err) {
         const errorMessage =
           err instanceof Error
             ? `${err.name ?? 'Error'}: ${err.message}`
             : 'Unable to access camera';
         setError(errorMessage);
-        return;
+        onCameraError?.(errorMessage);
+        return false;
       }
+    };
 
+    const emitAcceptedGesture = (gesture: RecognizedGesture, score: number) => {
+      const now = performance.now();
+      lastPostMsRef.current = now;
+      post({
+        intent: 'gesture',
+        type: gesture,
+        score,
+      });
+      const expected = expectedGestureRef.current;
+      const matchHandler = matchCallbackRef.current;
+      if (
+        matchHandler &&
+        expected &&
+        isCorrectGesture(expected, gesture, score, kidMode)
+      ) {
+        matchHandler({ gesture, score });
+      }
+    };
+
+    const handleWorkerEvent = (event: GestureWorkerEvent) => {
+      switch (event.type) {
+        case 'status':
+          setHud(`worker: ${event.status}`);
+          break;
+        case 'log':
+          logger.info('gesture_worker', event.message);
+          break;
+        case 'candidate': {
+          const pct = Math.round((event.score || 0) * 100);
+          setHud(`candidate: ${event.gesture} (${pct}%)`);
+          lastHandSeenAtRef.current = performance.now();
+          noHandNotifiedRef.current = false;
+          const candidateHandler = candidateCallbackRef.current;
+          if (candidateHandler) {
+            candidateHandler({
+              gesture: event.gesture,
+              score: event.score ?? 0,
+            });
+          }
+          break;
+        }
+        case 'accepted':
+          setHud(`accepted: ${event.gesture}`);
+          lastHandSeenAtRef.current = performance.now();
+          noHandNotifiedRef.current = false;
+          emitAcceptedGesture(event.gesture, event.score);
+          break;
+        case 'lost':
+          setHud(null);
+          break;
+        case 'countdown_done':
+          logger.info('gesture_worker', 'countdown_done');
+          break;
+        default:
+          break;
+      }
+    };
+
+    const startWorkerRuntime = async () => {
+      const client = createGestureWorkerClient({
+        onEvent: handleWorkerEvent,
+      });
+      workerClientRef.current = client;
+      workerLastFrameSentRef.current = 0;
+      client.init({
+        modelAssetUrl: GESTURE_TASK_URL,
+      });
+      client.configure({
+        fpsTarget,
+        holdMs,
+      });
+
+      const frameIntervalMs = 1000 / fpsTarget;
+      const pumpWorker = async () => {
+        if (!active || !videoRef.current) {
+          return;
+        }
+        const now = performance.now();
+        if (now - workerLastFrameSentRef.current < frameIntervalMs) {
+          animationId = window.requestAnimationFrame(() => {
+            void pumpWorker();
+          });
+          return;
+        }
+        workerLastFrameSentRef.current = now;
+        try {
+          const bitmap = await createImageBitmap(videoRef.current);
+          client.sendFrame({ frame: bitmap, sentAt: now });
+        } catch (err) {
+          logger.warn('gesture', 'frame_capture_failed', { err });
+        }
+
+        animationId = window.requestAnimationFrame(() => {
+          void pumpWorker();
+        });
+      };
+
+      animationId = window.requestAnimationFrame(() => {
+        void pumpWorker();
+      });
+    };
+
+    const startLegacyRuntime = async () => {
       try {
         const handsBaseUsed = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/';
         const loadHands = async () =>
@@ -166,8 +342,6 @@ export function CameraFeed({
         } | null = null;
         for (const pts of landmarks) {
           if (!pts) continue;
-          // Heuristics (lenient): tune distances a bit broader
-          // Pinch: index-to-thumb OR middle-to-thumb close
           if (dist(pts[4], pts[8]) < 0.08) {
             const cand = { type: 'pinch' as const, score: 0.9 };
             best = !best || cand.score > best.score ? cand : best;
@@ -194,13 +368,16 @@ export function CameraFeed({
         return best;
       };
 
-      // Legacy Hands solution callback gives multiHandLandmarks
       (detector as any).onResults((results: any) => {
         try {
           const lm = results?.multiHandLandmarks ?? [];
-          setHud(lm.length > 0 ? `hands: ${lm.length}` : null);
+          const hasHands = lm.length > 0;
+          setHud(hasHands ? `hands: ${lm.length}` : null);
+          if (hasHands) {
+            lastHandSeenAtRef.current = performance.now();
+            noHandNotifiedRef.current = false;
+          }
 
-          // Draw overlay
           const canvas = overlayRef.current;
           const video = videoRef.current;
           const ctx = canvas?.getContext('2d');
@@ -238,7 +415,6 @@ export function CameraFeed({
                     lineWidth: 2,
                     radius: 3,
                   });
-                  // Emphasize index finger joints (5-8)
                   ctx.fillStyle = '#FFD166';
                   for (const idx of [5, 6, 7, 8]) {
                     const p = pts[idx];
@@ -256,7 +432,6 @@ export function CameraFeed({
                 } catch {}
               }
             } else {
-              // Fallback: draw simple landmarks if drawing_utils not available
               const line = (a: any, b: any) => {
                 ctx.beginPath();
                 ctx.moveTo(a.x * canvas.width, a.y * canvas.height);
@@ -267,19 +442,12 @@ export function CameraFeed({
                 if (!pts || pts.length < 21) return;
                 ctx.strokeStyle = '#00FF66';
                 ctx.lineWidth = 5;
-                // Palm fan
-                line(pts[0], pts[1]);
-                line(pts[0], pts[5]);
-                line(pts[0], pts[9]);
-                line(pts[0], pts[13]);
-                line(pts[0], pts[17]);
-                // Fingers
                 const chains = [
-                  [1, 2, 3, 4], // thumb
-                  [5, 6, 7, 8], // index
-                  [9, 10, 11, 12], // middle
-                  [13, 14, 15, 16], // ring
-                  [17, 18, 19, 20], // pinky
+                  [1, 2, 3, 4],
+                  [5, 6, 7, 8],
+                  [9, 10, 11, 12],
+                  [13, 14, 15, 16],
+                  [17, 18, 19, 20],
                 ];
                 for (const chain of chains) {
                   for (let i = 0; i < chain.length - 1; i++) {
@@ -287,7 +455,6 @@ export function CameraFeed({
                   }
                 }
 
-                // Landmarks
                 for (let i = 0; i < pts.length; i++) {
                   const p = pts[i];
                   ctx.beginPath();
@@ -303,8 +470,6 @@ export function CameraFeed({
           }
 
           const classification = classifyLandmarks(lm);
-          const expected = expectedGestureRef.current;
-          const matchHandler = matchCallbackRef.current;
           if (classification) {
             const now = performance.now();
             if (lastTypeRef.current !== classification.type) {
@@ -314,26 +479,13 @@ export function CameraFeed({
 
             const started = lastStableStartMsRef.current ?? now;
             const stableFor = Math.max(0, now - started);
-            if (stableFor >= HOLD_MS && now - lastPostMsRef.current >= HOLD_MS) {
-              post({ intent: 'gesture', ...classification });
-              lastPostMsRef.current = now;
-              // reset to require another hold window
+            if (stableFor >= holdMs && now - lastPostMsRef.current >= holdMs) {
+              emitAcceptedGesture(classification.type, classification.score);
               lastStableStartMsRef.current = now;
-
-              if (
-                matchHandler &&
-                expected &&
-                isCorrectGesture(expected, classification.type, classification.score)
-              ) {
-                matchHandler({
-                  gesture: classification.type,
-                  score: classification.score,
-                });
-              }
             }
 
             const remainingMs =
-              HOLD_MS -
+              holdMs -
               (lastStableStartMsRef.current ? now - lastStableStartMsRef.current : 0);
             const holdSeconds = Math.ceil(Math.max(0, remainingMs) / 1000);
             const goalSuffix =
@@ -372,17 +524,37 @@ export function CameraFeed({
       });
     };
 
-    void start();
-
-    return () => {
-      active = false;
-      if (animationId) {
-        window.cancelAnimationFrame(animationId);
+    const boot = async () => {
+      const cameraReady = await setupCamera();
+      if (!cameraReady) return;
+      if (useTasksRuntime) {
+        await startWorkerRuntime();
+      } else {
+        await startLegacyRuntime();
       }
-      stream?.getTracks().forEach((track) => track.stop());
-      detector?.close?.();
     };
-  }, [enabled]);
+
+    void boot();
+
+    return cleanup;
+  }, [enabled, holdMs, fpsTarget, kidMode, useTasksRuntime, highGain, onCameraError]);
+
+  useEffect(() => {
+    if (!enabled || !onNoHandTimeout) {
+      return;
+    }
+    const interval = window.setInterval(() => {
+      if (!enabled) return;
+      const lastSeen = lastHandSeenAtRef.current;
+      if (!lastSeen) return;
+      const now = performance.now();
+      if (!noHandNotifiedRef.current && now - lastSeen > 8000) {
+        noHandNotifiedRef.current = true;
+        onNoHandTimeout();
+      }
+    }, 2500);
+    return () => window.clearInterval(interval);
+  }, [enabled, onNoHandTimeout]);
 
   return (
     <div className="relative">
