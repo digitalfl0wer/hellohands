@@ -126,3 +126,32 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [x] Add voice agent behind `VITE_USE_VOICE=1`, gesture evaluator, planner attribution tagging, and practice expected gesture wiring.
 - [x] Create SubagentsPanel right rail with collapsible controls, progress bars, live event console, and hook in Goose SSE stream.
 - [x] Add practice page wiring expected gestures + camera, bootstrap planner/voice at app entry, and register new pnpm scripts (`dev`, `goose:proxy`, `dev:all`) with express-based SSE proxy plus dependencies.
+
+## 18. Gesture Runtime Migration (in progress)
+
+- [ ] **gesture | L:** Scaffold `gesture-worker` module, establish `candidate/accepted/lost/countdown_done` message contract, add integration test stub.
+- [ ] **infra | M:** Implement frame throttling/backpressure (15–24 fps governor, queue depth monitor, droppable frame policy).
+- [ ] **gesture | M:** Add EMA + One-Euro smoothing utilities and per-gesture hysteresis envelopes (entry/exit thresholds, dwell timers).
+- [ ] **gesture | M:** Introduce `hold_ms`, `release_ms`, `refractory_ms` timers, freeze HUD on accept, emit enriched payloads.
+- [ ] **ui | S:** Refresh countdown overlay (shared 3-2-1 visual/audio + SR copy) triggered by both gesture and voice accepts.
+- [ ] **voice | M:** Route voice accepts through the same Accept → Countdown → Next pipeline with conflict resolution rules.
+- [ ] **config | S:** Publish shared runtime tunables (`packages/config/runtime.ts`) with desktop/mobile/low_power presets.
+- [ ] **metrics | M:** Log fps, per-stage timings, dropped frames, queue depth, accept jitter to logger/bus/Subagents panel.
+- [ ] **flag | S:** Add `WORKER_ON`, `COUNTDOWN`, `REFRACTORY`, `RUNTIME=hands|tasks` env + store toggles.
+- [ ] **docs | S:** Update README/playbook with worker import guidance, asset hosting, troubleshooting, QA steps.
+- [ ] **qa | M:** Build perf harness comparing legacy vs tasks runtime (frame time, Accept→Next latency, flap rate).
+
+## 19. ASLLVD Integration (in progress)
+
+- [ ] **docs | S:** Capture ASLLVD license text, add attribution modal copy, update README/playbook.
+- [ ] **data | S:** Finalize Essentials & Social Basics gloss/alias mapping (ASLLVD → pack IDs) under `practice/`.
+- [ ] **data | M:** Build ingest manifest tooling (CSV/JSON with gloss, signer, token_id, camera, src, start/end frames, fps, checksum).
+- [ ] **data | M:** Encode canonical view rules (front A/B preferred, fallback side) and persist `view_id`.
+- [ ] **infra | L:** Create normalization pipeline (ffmpeg trim/resize to target fps/size, deterministic filenames `asllvd/{gloss}/{signer}/{token}_{cam}.mp4`, checksum verification).
+- [ ] **ui | S:** Generate posters (mid-sign frame, face + hands visible) per clip.
+- [ ] **data | M:** Emit `data/processed/asllvd/labels.jsonl` with clip metadata (clip_id, gloss, signer, view, bounds, fps, license, checksum).
+- [ ] **data | M:** Produce `practice/packs.generated.json` variants including ASLLVD clips; validate coverage and paths.
+- [ ] **data | S:** Add coverage report script logging expected vs found, top gaps per pack, saved artifact.
+- [ ] **infra | S:** Implement `DATASET=MSASL|ASLLVD` flag; ensure Planner/Prefetch/Attribution respect selection.
+- [ ] **qa | M:** Extend QA checklist (framing, playback, countdown flow, attribution, logs export) and run spot checks.
+- [ ] **docs | S:** Document ingest steps, storage guidance, coverage checks, and dataset flag usage.
