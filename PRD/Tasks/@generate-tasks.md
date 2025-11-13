@@ -216,5 +216,3 @@
 4. Turn on background/motion and progress in increments.
 
 > Done = no hydration warnings, a11y checks pass, reduced‑motion honored, and happy‑path E2E flows run for Adult + Kid.
-
-

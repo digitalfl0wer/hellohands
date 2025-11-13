@@ -24,5 +24,3 @@ export function DemoVideoFeed({ label = 'Demo mode' }: DemoVideoFeedProps) {
     </div>
   );
 }
-
-

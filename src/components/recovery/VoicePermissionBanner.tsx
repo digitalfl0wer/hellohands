@@ -15,8 +15,8 @@ export function VoicePermissionBanner({ error, onRetry }: VoicePermissionBannerP
         Voice is off because the browser blocked the microphone.
       </p>
       <p className="mt-1 text-[11px] text-text-secondary">
-        Check your browser’s site settings and allow microphone access for Hello Hands. Then
-        turn voice back on.
+        Check your browser’s site settings and allow microphone access for Hello Hands.
+        Then turn voice back on.
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button
@@ -33,5 +33,3 @@ export function VoicePermissionBanner({ error, onRetry }: VoicePermissionBannerP
     </div>
   );
 }
-
-

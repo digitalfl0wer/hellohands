@@ -7,6 +7,7 @@
 ## 🎯 What's New in UI 2.0
 
 **Big Additions:**
+
 - 🎨 Dual themes (Adult A2 + Kid K2) with automatic switching
 - 🤖 Palma mascot (6 states: idle, listening, thinking, encouraging, success, oops)
 - 📊 Camera HUD (status chip, progress ring, confidence bar, tips rail)
@@ -23,15 +24,18 @@
 ### `PRD/hellohands-prd-current.md`
 
 **Add to "Experience Goals" (line ~15):**
+
 - Adult and Kid Modes provide distinct visual palettes and pacing
 - Onboarding + calibration establish device-specific gesture thresholds
 - Gamification motivates continued practice
 
 **Add to "Primary Flows" (line ~22):**
+
 - Flow 1.5: Permissions Gate (camera+mic unified)
 - Flow 2.5: Onboarding & Calibration (3 slides + 4 gestures)
 
 **Add to "Feature Inventory" (line ~30):**
+
 - Design System v2 (dual themes, motion tokens, reduced-motion)
 - Camera/Voice HUD (chips, rings, orbs, transcripts)
 - Palma Mascot (6-state animation system)
@@ -39,6 +43,7 @@
 - Recovery Patterns (no camera, no hand, low light, voice denied)
 
 **Add new section "Outstanding Work - UI 2.0":**
+
 - Reference `@generate-tasks.md` Phases 0-10
 
 ---
@@ -46,6 +51,7 @@
 ### `PRD/Tasks/task-list.md`
 
 **Add 12 new sections (Sections 18-29):**
+
 ```
 18. UI 2.0 Foundations (Phase 0) — 3 tasks
 19. UI 2.0 Entry & Permissions (Phase 1) — 2 tasks
@@ -68,6 +74,7 @@
 ## 🗂️ New Files to Create
 
 ### Components (21 new files)
+
 ```
 src/components/
   hud/
@@ -98,6 +105,7 @@ src/components/
 ```
 
 ### State & Hooks (4 new files)
+
 ```
 src/hooks/useReducedMotion.ts
 src/state/kidMode.ts
@@ -106,11 +114,13 @@ src/state/progress.ts
 ```
 
 ### Styles (1 new file)
+
 ```
 src/styles/backgrounds.css
 ```
 
 ### Assets & Docs (2 new files + asset folders)
+
 ```
 ATTRIBUTION.md
 public/assets/registry.json
@@ -125,62 +135,68 @@ public/assets/stickers/ (12-16 files)
 
 ## 🔄 Files to Modify
 
-| File | Change Type | What to Update |
-|------|------------|---------------|
-| `tailwind.config.ts` | Major | Add A2/K2 palette tokens + motion tokens |
-| `src/styles/tokens.css` | Major | Add CSS vars for dual themes |
-| `src/App.tsx` | Major | Wire permissions gate, top rail, mode switching |
-| `src/components/AppShell.tsx` | Minor | Support theme class switching |
-| `src/state/useLessonStore.ts` | Minor | Add streak tracking + milestone state |
-| `src/hooks/useVoiceInput.ts` | Minor | Integrate transcript bubble |
-| `src/gestures/gestureEvaluator.ts` | Minor | Add kid mode pacing (FPS throttle, hold duration) |
-| `README.md` | Minor | Document UI 2.0 features + feature flags |
+| File                               | Change Type | What to Update                                    |
+| ---------------------------------- | ----------- | ------------------------------------------------- |
+| `tailwind.config.ts`               | Major       | Add A2/K2 palette tokens + motion tokens          |
+| `src/styles/tokens.css`            | Major       | Add CSS vars for dual themes                      |
+| `src/App.tsx`                      | Major       | Wire permissions gate, top rail, mode switching   |
+| `src/components/AppShell.tsx`      | Minor       | Support theme class switching                     |
+| `src/state/useLessonStore.ts`      | Minor       | Add streak tracking + milestone state             |
+| `src/hooks/useVoiceInput.ts`       | Minor       | Integrate transcript bubble                       |
+| `src/gestures/gestureEvaluator.ts` | Minor       | Add kid mode pacing (FPS throttle, hold duration) |
+| `README.md`                        | Minor       | Document UI 2.0 features + feature flags          |
 
 ---
 
 ## 🚧 Key Gaps (What's Missing vs UI 2.0)
 
-| Area | Current State | Required | Effort |
-|------|--------------|----------|--------|
-| **Theming** | Single palette | Dual A2/K2 palettes with mode switching | 🔴 Major |
-| **HUDs** | None | Camera status + voice listening HUDs | 🔴 Major |
-| **Mascot** | None | Palma with 6 states + event wiring | 🔴 Major |
-| **Permissions** | Separate camera | Unified camera+mic gate | 🟡 Medium |
-| **Onboarding** | Directions sheet | 3-slide carousel + calibration | 🟡 Medium |
-| **Gamification** | Stars only | Sticker board + milestones + streaks | 🟡 Medium |
-| **Kid Mode** | Boolean flag | Full behavioral + visual engine | 🟡 Medium |
-| **Recovery** | Basic errors | 4 recovery patterns with UI | 🟢 Small |
-| **Backgrounds** | Single gradient | Adult/kid variants with parallax | 🟢 Small |
-| **Accessibility** | Partial | ARIA-live, reduced-motion, VTT | 🟢 Small |
+| Area              | Current State    | Required                                | Effort    |
+| ----------------- | ---------------- | --------------------------------------- | --------- |
+| **Theming**       | Single palette   | Dual A2/K2 palettes with mode switching | 🔴 Major  |
+| **HUDs**          | None             | Camera status + voice listening HUDs    | 🔴 Major  |
+| **Mascot**        | None             | Palma with 6 states + event wiring      | 🔴 Major  |
+| **Permissions**   | Separate camera  | Unified camera+mic gate                 | 🟡 Medium |
+| **Onboarding**    | Directions sheet | 3-slide carousel + calibration          | 🟡 Medium |
+| **Gamification**  | Stars only       | Sticker board + milestones + streaks    | 🟡 Medium |
+| **Kid Mode**      | Boolean flag     | Full behavioral + visual engine         | 🟡 Medium |
+| **Recovery**      | Basic errors     | 4 recovery patterns with UI             | 🟢 Small  |
+| **Backgrounds**   | Single gradient  | Adult/kid variants with parallax        | 🟢 Small  |
+| **Accessibility** | Partial          | ARIA-live, reduced-motion, VTT          | 🟢 Small  |
 
 ---
 
 ## 📅 Suggested Timeline (6-Week Phased Rollout)
 
 ### Week 1: Foundation
+
 - Theme tokens v2 + reduced-motion hook
 - Assets registry + ATTRIBUTION.md
 
 ### Week 2: Entry & Layout
+
 - Unified permissions screen
 - Top rail + bottom actions + split view
 
 ### Week 3: HUDs & Mascot
+
 - Camera Status HUD (4 components)
 - Voice Listening HUD (2 components)
 - Palma mascot + PalmaManager
 
 ### Week 4: Onboarding & Modes
+
 - Onboarding carousel + calibration
 - Kid Mode engine (rocket, pacing, theme)
 - Adult countdown (finger)
 
 ### Week 5: Gamification & Polish
+
 - Sticker board + milestone cards
 - Streak system
 - Recovery patterns + backgrounds
 
 ### Week 6: Accessibility & QA
+
 - ARIA-live regions
 - Keyboard audit + VTT captions
 - Analytics expansion
@@ -222,9 +238,9 @@ public/assets/stickers/ (12-16 files)
 ---
 
 **Quick Links:**
+
 - Full analysis: `@ui2-migration-analysis.md`
 - New PRD: `@create-prd.md`
 - New tasks: `@generate-tasks.md`
 - Current PRD: `PRD/hellohands-prd-current.md`
 - Current tasks: `PRD/Tasks/task-list.md`
-

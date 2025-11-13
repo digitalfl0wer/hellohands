@@ -38,5 +38,3 @@ export function NoHandFoundNotice({
     </div>
   );
 }
-
-

@@ -105,12 +105,15 @@ export function CalibrationFlow({ onComplete, onSkip }: CalibrationFlowProps) {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-teal">
                 Quick calibration
               </p>
-              <h2 className="mt-1 text-2xl font-semibold text-text-primary" id="calibration-title">
+              <h2
+                className="mt-1 text-2xl font-semibold text-text-primary"
+                id="calibration-title"
+              >
                 Tune your gesture match
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Hold each gesture steady until the bar fills. We will adjust the sensitivity for
-                this device so matches feel stable but not picky.
+                Hold each gesture steady until the bar fills. We will adjust the
+                sensitivity for this device so matches feel stable but not picky.
               </p>
             </div>
             <button
@@ -127,7 +130,8 @@ export function CalibrationFlow({ onComplete, onSkip }: CalibrationFlowProps) {
               Step {stepIndex + 1} of {ORDER.length}
             </p>
             <p className="mt-1 text-sm font-medium text-text-primary">
-              Show a <span className="font-semibold">{formatGestureLabel(currentGesture)}</span>{' '}
+              Show a{' '}
+              <span className="font-semibold">{formatGestureLabel(currentGesture)}</span>{' '}
               near your camera and hold it steady.
             </p>
           </div>
@@ -144,8 +148,8 @@ export function CalibrationFlow({ onComplete, onSkip }: CalibrationFlowProps) {
               />
             </div>
             <p className="text-xs text-text-muted">
-              Try to keep your hand in the frame and avoid strong backlighting. We will remember
-              this calibration for this browser.
+              Try to keep your hand in the frame and avoid strong backlighting. We will
+              remember this calibration for this browser.
             </p>
           </div>
 
@@ -184,5 +188,3 @@ export function CalibrationFlow({ onComplete, onSkip }: CalibrationFlowProps) {
     </div>
   );
 }
-
-

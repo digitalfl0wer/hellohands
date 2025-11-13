@@ -56,9 +56,7 @@ export function CameraFeed({
   const baseFpsTarget =
     Number((import.meta as any)?.env?.VITE_GESTURE_FPS_TARGET) ||
     DEFAULT_GESTURE_WORKER_CONFIG.fpsTarget;
-  const fpsTarget = kidMode
-    ? Math.min(12, Math.max(8, baseFpsTarget))
-    : baseFpsTarget;
+  const fpsTarget = kidMode ? Math.min(12, Math.max(8, baseFpsTarget)) : baseFpsTarget;
   const runtimeMode = useLessonStore((state) => state.runtimeMode);
   const workerOn = useLessonStore((state) => state.workerOn);
   const useTasksRuntime = runtimeMode === 'tasks' && workerOn;

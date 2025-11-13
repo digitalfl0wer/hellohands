@@ -20,11 +20,13 @@
 ### **Phase 0: Foundation (Week 1, Days 1-3)**
 
 #### Day 1: Theme System
+
 ```bash
 git checkout -b feat/ui2/themes
 ```
 
 **Tasks:**
+
 1. Update `tailwind.config.ts`
    - Add Adult A2 palette: `#0E0E0E`, `#1F1F1F`, `#7B2CBF`, `#5FC4B6`, `#CDAA62`, `#FF4DA1`
    - Add Kid K2 palette: `#FFF8EE`, `#FFF1DC`, `#FF7A59`, `#6ADCA0`, `#3A8DFF`, `#845EF7`, `#FFC94A`
@@ -40,6 +42,7 @@ git checkout -b feat/ui2/themes
    - Test theme switching
 
 **Acceptance:**
+
 - Theme switches without page reload
 - All existing components render in both themes
 - No visual regressions
@@ -47,30 +50,34 @@ git checkout -b feat/ui2/themes
 ---
 
 #### Day 2: Reduced Motion
+
 ```bash
 git checkout -b feat/ui2/reduced-motion
 ```
 
 **Tasks:**
+
 1. Create `src/hooks/useReducedMotion.ts`
+
 ```typescript
 export function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  
+
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
-    
+
     const handler = () => setPrefersReducedMotion(mediaQuery.matches);
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);
-  
+
   return prefersReducedMotion;
 }
 ```
 
 2. Add global CSS class in `src/index.css`
+
 ```css
 .reduce-motion * {
   animation-duration: 0.01ms !important;
@@ -81,18 +88,22 @@ export function useReducedMotion() {
 3. Wire to `AppShell` or `App.tsx`
 
 **Acceptance:**
+
 - System setting disables animations
 - Lottie assets have static fallback path (stub for now)
 
 ---
 
 #### Day 3: Assets Registry
+
 ```bash
 git checkout -b feat/ui2/assets-registry
 ```
 
 **Tasks:**
+
 1. Create `public/assets/registry.json` (stub)
+
 ```json
 {
   "lottie": {
@@ -110,25 +121,31 @@ git checkout -b feat/ui2/assets-registry
 ```
 
 2. Create `ATTRIBUTION.md` at root
+
 ```markdown
 # Attribution & Licenses
 
 ## Lottie Animations
+
 - **Rocket Countdown**: [Source TBD] - License: [TBD]
 - **Finger Countdown**: [Source TBD] - License: [TBD]
 
 ## Palma Mascot
+
 - Design: HelloHands Team
 - License: Proprietary
 
 ## Stickers
+
 - [TBD]
 
 ## Icons & Illustrations
+
 - [TBD]
 ```
 
 3. Create placeholder asset directories
+
 ```bash
 mkdir -p public/assets/lottie/kid
 mkdir -p public/assets/lottie/adult
@@ -138,6 +155,7 @@ mkdir -p public/assets/stickers
 ```
 
 **Acceptance:**
+
 - Registry loads without errors
 - ATTRIBUTION.md exists and is linked in app footer
 
@@ -146,11 +164,13 @@ mkdir -p public/assets/stickers
 ### **Phase 1: Entry & Permissions (Week 1, Days 4-5)**
 
 #### Day 4: Unified Permissions Screen
+
 ```bash
 git checkout -b feat/ui2/permissions
 ```
 
 **Tasks:**
+
 1. Create `src/components/PermissionsScreen.tsx`
    - Camera + mic request UI
    - Privacy note with link to policy
@@ -166,6 +186,7 @@ git checkout -b feat/ui2/permissions
    - Show PermissionsScreen before Welcome
 
 **Acceptance:**
+
 - Grants both permissions on approval
 - Denied state shows retry + demo path
 - Demo video path works for practice
@@ -175,11 +196,13 @@ git checkout -b feat/ui2/permissions
 ---
 
 #### Day 5: Recovery Patterns
+
 ```bash
 git checkout -b feat/ui2/recovery
 ```
 
 **Tasks:**
+
 1. Create `src/components/recovery/NoHandFoundScreen.tsx`
    - Big "Try again" button
    - 3 quick tips (lighting, distance, background)
@@ -197,6 +220,7 @@ git checkout -b feat/ui2/recovery
 4. Wire to existing error states in `CameraFeed` and voice hooks
 
 **Acceptance:**
+
 - Each recovery pattern reachable via dev tools
 - No page reload required to recover
 
@@ -205,11 +229,13 @@ git checkout -b feat/ui2/recovery
 ### **Phase 2: Layout & IA (Week 2)**
 
 #### Day 6-7: Top Rail & Bottom Actions
+
 ```bash
 git checkout -b feat/ui2/layout
 ```
 
 **Tasks:**
+
 1. Create `src/components/layout/TopRail.tsx`
    - Navigation: Learn | Practice
    - Toggles: Kid Mode, Voice, Settings (⋯)
@@ -232,6 +258,7 @@ git checkout -b feat/ui2/layout
    - Mobile: `max-width: 1023px` → bottom actions
 
 **Acceptance:**
+
 - Top rail renders on all pages
 - Bottom actions show only on mobile
 - Keyboard navigation works
@@ -240,11 +267,13 @@ git checkout -b feat/ui2/layout
 ---
 
 #### Day 8: Learn Mode & Path Cards
+
 ```bash
 git checkout -b feat/ui2/learn-mode
 ```
 
 **Tasks:**
+
 1. Create `src/components/PathCard.tsx`
    - Card design (title, description, star goal, badge)
    - Adult/Kid visual variants
@@ -260,6 +289,7 @@ git checkout -b feat/ui2/learn-mode
    - Wire to Top Rail "Learn" link
 
 **Acceptance:**
+
 - Path cards grid renders
 - Locked paths show motivational copy
 - Star progress updates
@@ -269,11 +299,13 @@ git checkout -b feat/ui2/learn-mode
 ### **Phase 3: HUDs & Overlays (Week 3)**
 
 #### Day 9-11: Camera Status HUD
+
 ```bash
 git checkout -b feat/ui2/camera-hud
 ```
 
 **Tasks:**
+
 1. Create `src/components/hud/StatusChip.tsx`
    - States: Scanning | Hand found | Hold steady | Nice!
    - Top-left overlay
@@ -299,6 +331,7 @@ git checkout -b feat/ui2/camera-hud
    - Update HUD on detection events
 
 **Acceptance:**
+
 - HUD updates through scanning→success flow
 - Reduced-motion disables ring animation
 - Tips relevant to current state
@@ -308,11 +341,13 @@ git checkout -b feat/ui2/camera-hud
 ---
 
 #### Day 12-13: Voice Listening HUD
+
 ```bash
 git checkout -b feat/ui2/voice-hud
 ```
 
 **Tasks:**
+
 1. Create `src/components/voice/MicOrb.tsx`
    - States: idle, listening (pulse), command (glow)
    - CSS animations with reduced-motion fallback
@@ -332,6 +367,7 @@ git checkout -b feat/ui2/voice-hud
 4. Wire to `src/App.tsx` or practice page
 
 **Acceptance:**
+
 - Transcript bubble shows heard phrases
 - Hint appears after 2 misfires
 - Screen reader announces transcripts
@@ -343,11 +379,13 @@ git checkout -b feat/ui2/voice-hud
 ### **Phase 3.5: Palma Mascot (Week 3, Days 14-15)**
 
 #### Day 14-15: Palma System
+
 ```bash
 git checkout -b feat/ui2/palma
 ```
 
 **Tasks:**
+
 1. Create `src/components/mascot/Palma.tsx`
    - Render SVG or Lottie based on current state
    - States: idle, listening, thinking, encouraging, success, oops
@@ -374,6 +412,7 @@ git checkout -b feat/ui2/palma
    - Decorative by default (`aria-hidden="true"`)
 
 **Acceptance:**
+
 - Palma responds to voice/gesture events
 - Switches states smoothly
 - Paused when off-screen
@@ -386,11 +425,13 @@ git checkout -b feat/ui2/palma
 ### **Phase 4: Onboarding & Calibration (Week 4)**
 
 #### Day 16-17: Onboarding Carousel
+
 ```bash
 git checkout -b feat/ui2/onboarding
 ```
 
 **Tasks:**
+
 1. Create `src/components/onboarding/OnboardingCarousel.tsx`
    - Slide 1: Camera + mic magic (why we need permissions)
    - Slide 2: The 4 gestures (tiny loops or SVG frames)
@@ -404,6 +445,7 @@ git checkout -b feat/ui2/onboarding
    - Check completion flag
 
 **Acceptance:**
+
 - 3 slides navigate smoothly
 - Skip works
 - Doesn't show on repeat visits
@@ -411,11 +453,13 @@ git checkout -b feat/ui2/onboarding
 ---
 
 #### Day 18-19: Calibration Flow
+
 ```bash
 git checkout -b feat/ui2/calibration
 ```
 
 **Tasks:**
+
 1. Create `src/components/calibration/CalibrationFlow.tsx`
    - 4 gesture prompts: thumbs_up, open_palm, point, pinch
    - Live meter showing detection confidence
@@ -431,6 +475,7 @@ git checkout -b feat/ui2/calibration
 3. Wire to onboarding (optional step) or Settings
 
 **Acceptance:**
+
 - Calibration saves thresholds
 - Thresholds applied on next practice session
 - Re-runnable from Settings
@@ -442,11 +487,13 @@ git checkout -b feat/ui2/calibration
 ### **Phase 5: Kid Mode Engine (Week 4, Days 20-22)**
 
 #### Day 20-21: Kid Mode Behavioral Engine
+
 ```bash
 git checkout -b feat/ui2/kid-mode
 ```
 
 **Tasks:**
+
 1. Create `src/state/kidMode.ts`
    - Config: theme, pacing (FPS, hold duration, margins)
    - Helpers: `getKidConfig()`, `isKidMode()`
@@ -463,6 +510,7 @@ git checkout -b feat/ui2/kid-mode
    - Larger transcript bubble
 
 **Acceptance:**
+
 - Kid mode applies pacing changes
 - UI visually distinct
 - FPS throttle observable in console
@@ -472,11 +520,13 @@ git checkout -b feat/ui2/kid-mode
 ---
 
 #### Day 22: Countdown Variants
+
 ```bash
 git checkout -b feat/ui2/countdowns
 ```
 
 **Tasks:**
+
 1. Create `src/components/overlays/CountdownRocket.tsx` (kid)
    - Lottie rocket animation (stub with static SVG for now)
    - 3-2-1-Go sequence
@@ -493,6 +543,7 @@ git checkout -b feat/ui2/countdowns
    - Show Finger in adult mode
 
 **Acceptance:**
+
 - Rocket countdown shows in kid mode
 - Finger countdown shows in adult mode
 - Grace period works (1s no-detect after Go)
@@ -504,11 +555,13 @@ git checkout -b feat/ui2/countdowns
 ### **Phase 6: Gamification (Week 5)**
 
 #### Day 23-24: Sticker Board
+
 ```bash
 git checkout -b feat/ui2/stickers
 ```
 
 **Tasks:**
+
 1. Create `src/components/progress/StickerBoard.tsx`
    - Grid or canvas for placeable stickers
    - Drag-and-drop (desktop) or tap-to-place (mobile)
@@ -528,6 +581,7 @@ git checkout -b feat/ui2/stickers
    - Award sticker on first time mastering a sign
 
 **Acceptance:**
+
 - Stickers placeable and persist
 - Awards trigger on events
 - Board accessible from settings or profile
@@ -537,11 +591,13 @@ git checkout -b feat/ui2/stickers
 ---
 
 #### Day 25: Milestone Cards
+
 ```bash
 git checkout -b feat/ui2/milestones
 ```
 
 **Tasks:**
+
 1. Create `src/components/progress/MilestoneCard.tsx`
    - Toast/card design
    - Types: 5 signs, 10 signs, path complete, Golden Spark (perfect form)
@@ -556,6 +612,7 @@ git checkout -b feat/ui2/milestones
    - Check thresholds on each pass
 
 **Acceptance:**
+
 - Milestone cards appear on triggers
 - Golden Spark shows on perfect form (100% confidence)
 - Cards dismiss cleanly
@@ -565,11 +622,13 @@ git checkout -b feat/ui2/milestones
 ---
 
 #### Day 26: Streak System
+
 ```bash
 git checkout -b feat/ui2/streaks
 ```
 
 **Tasks:**
+
 1. Update `src/state/progress.ts`
    - Track last activity date
    - Increment streak on daily activity
@@ -585,6 +644,7 @@ git checkout -b feat/ui2/streaks
    - Update streak on any activity
 
 **Acceptance:**
+
 - Streak increments daily
 - Grace day auto-applied once per week
 - Resets after 2 missed days
@@ -594,11 +654,13 @@ git checkout -b feat/ui2/streaks
 ### **Phase 7: Backgrounds & Polish (Week 5, Days 27-28)**
 
 #### Day 27: Backgrounds
+
 ```bash
 git checkout -b feat/ui2/backgrounds
 ```
 
 **Tasks:**
+
 1. Create `src/styles/backgrounds.css`
    - Adult: radial gradient using `--color-accent`, soft grain (CSS noise or SVG)
    - Kid: light gradient `#FFF8EE → #FFEBCB` with sun/star tiling (opacity 6-8%)
@@ -611,6 +673,7 @@ git checkout -b feat/ui2/backgrounds
 3. Wire to `AppShell` or body class
 
 **Acceptance:**
+
 - Adult background has neon rim + grain
 - Kid background has playful pattern
 - Parallax disabled on reduced-motion
@@ -618,11 +681,13 @@ git checkout -b feat/ui2/backgrounds
 ---
 
 #### Day 28: Motion & Performance Audit
+
 ```bash
 git checkout -b feat/ui2/performance
 ```
 
 **Tasks:**
+
 1. Enforce motion tokens
    - Audit all animations
    - Replace hard-coded durations with tokens
@@ -639,6 +704,7 @@ git checkout -b feat/ui2/performance
    - 60fps scrolling
 
 **Acceptance:**
+
 - All animations honor motion tokens
 - Lottie pauses when off-screen
 - Mobile performance acceptable
@@ -648,11 +714,13 @@ git checkout -b feat/ui2/performance
 ### **Phase 8: Accessibility & QA (Week 6)**
 
 #### Day 29: ARIA-live Regions
+
 ```bash
 git checkout -b feat/ui2/aria-live
 ```
 
 **Tasks:**
+
 1. Add `aria-live="polite"` to:
    - StatusChip (HUD state changes)
    - TranscriptBubble (voice heard)
@@ -668,6 +736,7 @@ git checkout -b feat/ui2/aria-live
    - Same checks as VoiceOver
 
 **Acceptance:**
+
 - Screen reader announces HUD changes
 - Voice transcripts announced
 - Milestones announced
@@ -676,11 +745,13 @@ git checkout -b feat/ui2/aria-live
 ---
 
 #### Day 30: Keyboard & Captions
+
 ```bash
 git checkout -b feat/ui2/keyboard-captions
 ```
 
 **Tasks:**
+
 1. Keyboard audit
    - Tab through all controls
    - Verify focus order
@@ -697,6 +768,7 @@ git checkout -b feat/ui2/keyboard-captions
    - Test in high-contrast mode
 
 **Acceptance:**
+
 - Keyboard navigates all critical flows
 - Captions render correctly
 - Focus outlines visible
@@ -704,11 +776,13 @@ git checkout -b feat/ui2/keyboard-captions
 ---
 
 #### Day 31-32: Analytics & Final QA
+
 ```bash
 git checkout -b feat/ui2/analytics-qa
 ```
 
 **Tasks:**
+
 1. Expand logger with UI 2.0 events
    - All events from PRD taxonomy
    - Voice text hashing for privacy
@@ -731,6 +805,7 @@ git checkout -b feat/ui2/analytics-qa
    - Network profiling (asset sizes)
 
 **Acceptance:**
+
 - All UI 2.0 flows complete without errors
 - No regressions in existing features
 - Analytics events fire correctly
@@ -762,6 +837,7 @@ git checkout -b feat/ui2/analytics-qa
 ## 📊 Success Metrics (Post-Launch)
 
 **Track for 2 weeks:**
+
 - [ ] Time-to-first-scan < 15s (Adult), < 30s (Kid)
 - [ ] Lesson completion rate +15% vs baseline
 - [ ] Error exits < 5%
@@ -772,12 +848,12 @@ git checkout -b feat/ui2/analytics-qa
 
 ## 🐛 Known Issues & Workarounds
 
-| Issue | Workaround | Priority |
-|-------|-----------|----------|
-| Lottie assets TBD | Use static SVG placeholders | P0 |
-| Safari voice recognition flaky | Fall back to manual | P1 |
-| Parallax jank on low-end mobile | Disable on reduced-motion | P2 |
-| Calibration confusing | Add skip option + better copy | P2 |
+| Issue                           | Workaround                    | Priority |
+| ------------------------------- | ----------------------------- | -------- |
+| Lottie assets TBD               | Use static SVG placeholders   | P0       |
+| Safari voice recognition flaky  | Fall back to manual           | P1       |
+| Parallax jank on low-end mobile | Disable on reduced-motion     | P2       |
+| Calibration confusing           | Add skip option + better copy | P2       |
 
 ---
 
@@ -807,11 +883,13 @@ git checkout -b feat/ui2/analytics-qa
 ## 🎉 Launch Day
 
 **Announce:**
+
 - Blog post or release notes
 - Social media (if applicable)
 - Team celebration 🎊
 
 **Monitor:**
+
 - Error tracking (Sentry/etc.)
 - Analytics dashboard
 - User feedback channels
@@ -819,4 +897,3 @@ git checkout -b feat/ui2/analytics-qa
 ---
 
 **Good luck! 🚀**
-

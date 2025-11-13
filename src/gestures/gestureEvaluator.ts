@@ -83,4 +83,3 @@ export const isCorrectGesture = (
   const threshold = kidMode ? Math.max(0, baseThreshold - 0.05) : baseThreshold;
   return expected === actual && score >= threshold;
 };
-

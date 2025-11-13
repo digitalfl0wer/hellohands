@@ -44,10 +44,10 @@ interface LessonState {
 const MAX_STARS_PER_LEVEL = 5;
 
 const DEFAULT_RUNTIME_MODE: RuntimeMode =
-  (String((import.meta as any)?.env?.VITE_GESTURE_RUNTIME ?? 'hands').toLowerCase() ===
+  String((import.meta as any)?.env?.VITE_GESTURE_RUNTIME ?? 'hands').toLowerCase() ===
   'tasks'
     ? 'tasks'
-    : 'hands');
+    : 'hands';
 const DEFAULT_WORKER_ON =
   String(
     (import.meta as any)?.env?.VITE_GESTURE_WORKER_ON ??

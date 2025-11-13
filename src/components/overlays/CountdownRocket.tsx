@@ -47,5 +47,3 @@ export function CountdownRocket({ onComplete, label }: CountdownRocketProps) {
     </div>
   );
 }
-
-

@@ -59,7 +59,8 @@ function App(): JSX.Element | null {
   const ui2ModesEnabled =
     import.meta.env.VITE_KID_MODE_V2 === '1' || import.meta.env.VITE_UI2_ENABLED === '1';
   const isBlockingCountdown =
-    countdownMode === 'lesson_start' || (ui2ModesEnabled && kidMode && countdownMode === 'accept');
+    countdownMode === 'lesson_start' ||
+    (ui2ModesEnabled && kidMode && countdownMode === 'accept');
 
   const kidMode = useLessonStore((state) => state.kidMode);
   const setKidMode = useLessonStore((state) => state.setKidMode);
@@ -481,8 +482,8 @@ function App(): JSX.Element | null {
       : pendingAccept?.source === 'voice'
         ? 'Voice accept · advancing'
         : pendingAccept
-        ? 'Gesture accepted · advancing'
-        : undefined;
+          ? 'Gesture accepted · advancing'
+          : undefined;
 
   let countdownNode: JSX.Element | null = null;
   if (countdownMode) {

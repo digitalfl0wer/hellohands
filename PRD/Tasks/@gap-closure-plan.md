@@ -16,11 +16,13 @@ Close all 21 component gaps, 4 state gaps, and 10 feature gaps to achieve full U
 ## 📊 Gap Inventory
 
 ### Critical Gaps (Blocks Everything)
+
 - ❌ Dual-theme system (Adult A2 + Kid K2)
 - ❌ Reduced-motion infrastructure
 - ❌ Assets registry
 
 ### High Priority Gaps (Blocks Major Features)
+
 - ❌ Unified permissions screen
 - ❌ Camera Status HUD (4 components)
 - ❌ Voice Listening HUD (2 components)
@@ -28,6 +30,7 @@ Close all 21 component gaps, 4 state gaps, and 10 feature gaps to achieve full U
 - ❌ Palma mascot system
 
 ### Medium Priority Gaps (User-Facing Features)
+
 - ❌ Top rail navigation
 - ❌ Onboarding carousel
 - ❌ Calibration flow
@@ -36,6 +39,7 @@ Close all 21 component gaps, 4 state gaps, and 10 feature gaps to achieve full U
 - ❌ Countdown variants (Rocket/Finger)
 
 ### Low Priority Gaps (Polish)
+
 - ❌ Recovery patterns (4 screens)
 - ❌ Backgrounds
 - ❌ Streak system
@@ -47,13 +51,15 @@ Close all 21 component gaps, 4 state gaps, and 10 feature gaps to achieve full U
 ## 🚀 Implementation Strategy
 
 ### Phase Structure
+
 ```
-Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days) 
-→ Mascot (2 days) → Onboarding (3 days) → Modes (4 days) → Gamification (5 days) 
+Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
+→ Mascot (2 days) → Onboarding (3 days) → Modes (4 days) → Gamification (5 days)
 → Polish (3 days) → QA (2 days) = 32 days
 ```
 
 ### Parallel Tracks
+
 - **Track A (Frontend):** Components, layout, UI
 - **Track B (State/Logic):** Store, hooks, evaluators
 - **Track C (Assets):** Lottie, stickers, registry (YOU)
@@ -65,9 +71,12 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 1: Foundation + Entry (Days 1-5)**
 
 #### Day 1 — Track A: Theme System ⭐ CRITICAL
+
 **Gap:** No dual-theme system
 **Tasks:**
+
 1. Update `tailwind.config.ts`
+
    ```typescript
    theme: {
      extend: {
@@ -102,30 +111,32 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
    ```
 
 2. Update `src/styles/tokens.css`
+
    ```css
-   :root[data-theme="adult"] {
-     --color-bg: #0E0E0E;
-     --color-surface: #1F1F1F;
-     --color-text: #F2F2F2;
-     --color-primary: #7B2CBF;
-     --color-accent: #5FC4B6;
+   :root[data-theme='adult'] {
+     --color-bg: #0e0e0e;
+     --color-surface: #1f1f1f;
+     --color-text: #f2f2f2;
+     --color-primary: #7b2cbf;
+     --color-accent: #5fc4b6;
      --hud-accent: var(--color-primary);
    }
-   
-   :root[data-theme="kid"] {
-     --color-bg: #FFF8EE;
-     --color-surface: #FFF1DC;
-     --color-text: #1B1B1B;
-     --color-primary: #FF7A59;
-     --color-accent: #6ADCA0;
+
+   :root[data-theme='kid'] {
+     --color-bg: #fff8ee;
+     --color-surface: #fff1dc;
+     --color-text: #1b1b1b;
+     --color-primary: #ff7a59;
+     --color-accent: #6adca0;
      --hud-accent: var(--color-primary);
    }
    ```
 
 3. Update `src/components/AppShell.tsx`
+
    ```typescript
    const theme = useLessonStore(state => state.kidMode ? 'kid' : 'adult');
-   
+
    return (
      <div data-theme={theme} className="app-shell">
        {children}
@@ -138,8 +149,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 1 — Track B: Reduced Motion ⭐ CRITICAL
+
 **Gap:** No reduced-motion infrastructure
 **Tasks:**
+
 1. Create `src/hooks/useReducedMotion.ts`
 2. Add `.reduce-motion` CSS class
 3. Wire to `AppShell`
@@ -149,9 +162,12 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 1 — Track C: Assets Registry ⭐ CRITICAL (YOU)
+
 **Gap:** No asset registry
 **Tasks:**
+
 1. Update `public/assets/registry.json`
+
    ```json
    {
      "version": "1.0",
@@ -193,8 +209,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 2 — Track A: Permissions Screen 🔴 HIGH
+
 **Gap:** No unified permissions screen
 **Tasks:**
+
 1. Create `src/components/PermissionsScreen.tsx`
    - Camera + mic request UI
    - Privacy note
@@ -213,8 +231,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 2 — Track A: Demo Video Fallback 🔴 HIGH
+
 **Gap:** No demo video fallback
 **Tasks:**
+
 1. Create `src/components/DemoVideoFeed.tsx`
    - Loop demo video
    - Show "Demo Mode" badge
@@ -225,8 +245,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 3 — Track A: Top Rail Navigation 🟡 MEDIUM
+
 **Gap:** No top rail
 **Tasks:**
+
 1. Create `src/components/layout/TopRail.tsx`
    - Navigation: Learn | Practice
    - Kid Mode toggle
@@ -240,8 +262,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 3 — Track A: Bottom Actions 🟡 MEDIUM
+
 **Gap:** No bottom action bar
 **Tasks:**
+
 1. Create `src/components/layout/BottomActions.tsx`
    - Mobile-only
    - Buttons: Replay, Slow, Next, Help
@@ -252,8 +276,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 4 — Track A: Learn Mode Paths 🟡 MEDIUM
+
 **Gap:** No Learn mode paths
 **Tasks:**
+
 1. Create `src/components/PathCard.tsx`
 2. Create `src/screens/LearnScreen.tsx`
    - Paths: Basics, Everyday, Feelings
@@ -265,8 +291,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 5 — Track A: Recovery Patterns 🟢 LOW
+
 **Gap:** Limited recovery UI
 **Tasks:**
+
 1. Create `src/components/recovery/NoHandFoundScreen.tsx`
 2. Create `src/components/recovery/LowLightToggle.tsx`
 3. Create `src/components/recovery/VoicePermissionBanner.tsx`
@@ -278,8 +306,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 2: HUDs (Days 6-10)**
 
 #### Day 6-7 — Track A: Camera Status HUD 🔴 HIGH
+
 **Gap:** No camera HUD
 **Tasks:**
+
 1. Create `src/components/hud/StatusChip.tsx`
    - States: Scanning | Hand found | Hold steady | Nice!
    - Top-left overlay
@@ -300,8 +330,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 8-9 — Track A: Voice Listening HUD 🔴 HIGH
+
 **Gap:** No voice HUD
 **Tasks:**
+
 1. Create `src/components/voice/MicOrb.tsx`
    - States: idle, listening, command
    - Pulse animation
@@ -319,8 +351,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 10 — Track B: Voice Wake Phrase 🟡 MEDIUM
+
 **Gap:** No wake phrase
 **Tasks:**
+
 1. Update `src/hooks/useVoiceInput.ts`
    - Add wake phrase detection ("Hey Palma" or "Hello Hands")
    - Activate listening on wake phrase
@@ -333,8 +367,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 3: Mascot + Onboarding (Days 11-15)**
 
 #### Day 11-12 — Track A: Palma Mascot System 🔴 HIGH
+
 **Gap:** No mascot
 **Tasks:**
+
 1. Create `src/components/mascot/Palma.tsx`
    - Render Lottie or SVG based on state
    - 6 states: idle, listening, thinking, encouraging, success, oops
@@ -360,8 +396,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 13 — Track A: Onboarding Carousel 🟡 MEDIUM
+
 **Gap:** No onboarding
 **Tasks:**
+
 1. Create `src/components/onboarding/OnboardingCarousel.tsx`
    - Slide 1: Camera + mic (why we need them)
    - Slide 2: 4 gestures overview
@@ -377,8 +415,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 14-15 — Track A: Calibration Flow 🟡 MEDIUM
+
 **Gap:** No calibration
 **Tasks:**
+
 1. Create `src/components/calibration/CalibrationFlow.tsx`
    - 4 gesture prompts (thumbs_up, open_palm, point, pinch)
    - Live confidence meter
@@ -397,9 +437,12 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 4: Kid Mode + Countdowns (Days 16-20)**
 
 #### Day 16-17 — Track B: Kid Mode Engine 🔴 HIGH
+
 **Gap:** No kid mode behavioral engine
 **Tasks:**
+
 1. Create `src/state/kidMode.ts`
+
    ```typescript
    export const getKidConfig = () => ({
      fps: 10,
@@ -424,8 +467,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 18 — Track A: Countdown Variants 🟡 MEDIUM
+
 **Gap:** No mode-specific countdowns
 **Tasks:**
+
 1. Create `src/components/overlays/CountdownRocket.tsx`
    - Lottie rocket animation
    - 3-2-1-Go
@@ -445,8 +490,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 19 — Track A: Backgrounds 🟢 LOW
+
 **Gap:** No themed backgrounds
 **Tasks:**
+
 1. Create `src/styles/backgrounds.css`
    - Adult: radial gradient + grain
    - Kid: light gradient + sun/star pattern
@@ -458,8 +505,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 20 — Track A: Split View Layout 🟡 MEDIUM
+
 **Gap:** No responsive split view
 **Tasks:**
+
 1. Update `AppShell` or lesson pages
    - Desktop: left camera, right steps
    - Mobile: stack + bottom actions
@@ -472,14 +521,17 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 5: Gamification (Days 21-25)**
 
 #### Day 21-22 — Track A: Sticker Board 🟡 MEDIUM
+
 **Gap:** No sticker board
 **Tasks:**
+
 1. Create `src/components/progress/StickerBoard.tsx`
    - Grid for stickers
    - Drag-and-drop (desktop) or tap-to-place (mobile)
    - Save layout to localStorage
 
 2. Create `src/state/progress.ts`
+
    ```typescript
    interface ProgressState {
      stickers: { id: string; unlocked: boolean; placed: boolean; x: number; y: number }[];
@@ -496,8 +548,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 23 — Track A: Milestone Cards 🟡 MEDIUM
+
 **Gap:** No milestone cards
 **Tasks:**
+
 1. Create `src/components/progress/MilestoneCard.tsx`
    - Types: 5 signs, 10 signs, path complete, Golden Spark
    - Toast/card design
@@ -510,8 +564,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 24 — Track B: Streak System 🟢 LOW
+
 **Gap:** No streak system
 **Tasks:**
+
 1. Update `src/state/progress.ts`
    - Track last activity date
    - Increment streak daily
@@ -525,8 +581,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 25 — Track C: Sticker Assets (YOU)
+
 **Gap:** No sticker files
 **Tasks:**
+
 1. Create 12-16 stickers (SVG or Lottie)
    - Common (8): star, checkmark, trophy, ribbon, medal, thumbs up, sparkle, heart
    - Rare (4): crown, diamond, rocket, rainbow
@@ -541,8 +599,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **WEEK 6: Accessibility + QA (Days 26-30)**
 
 #### Day 26 — Track A: ARIA-live Regions 🟢 LOW
+
 **Gap:** No ARIA-live
 **Tasks:**
+
 1. Add `aria-live="polite"` to:
    - StatusChip
    - TranscriptBubble
@@ -556,8 +616,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 27 — Track A: VTT Captions 🟢 LOW
+
 **Gap:** No captions
 **Tasks:**
+
 1. Create `.vtt` files for lesson videos
 2. Update `SignVideo.tsx` to load captions
 3. Enable by default
@@ -567,8 +629,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 28 — Track A: "How to Use" Button 🟢 LOW
+
 **Gap:** No persistent help
 **Tasks:**
+
 1. Add "How to Use" button to:
    - Top rail (Settings menu)
    - Help sheet
@@ -581,8 +645,10 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 29 — Track B: Analytics Expansion 🟢 LOW
+
 **Gap:** Limited analytics
 **Tasks:**
+
 1. Update `src/utils/logger.ts`
    - Add UI 2.0 event taxonomy
    - Voice text hashing
@@ -594,7 +660,9 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 #### Day 30 — Track A+B: QA & Testing 🟢 LOW
+
 **Tasks:**
+
 1. End-to-end testing
    - Adult mode flow
    - Kid mode flow
@@ -612,11 +680,13 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### **DAYS 31-32: Rollout**
 
 #### Day 31 — Internal QA
+
 - Enable `VITE_UI2_ENABLED=1` for team
 - Gather feedback
 - Fix critical bugs
 
 #### Day 32 — Beta Launch
+
 - Enable for 10% users
 - Monitor analytics
 - Plan full rollout
@@ -628,40 +698,43 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ### By Week
 
 | Week | Gaps Closed | Components Created | State Files | Remaining Gaps |
-|------|-------------|-------------------|-------------|----------------|
-| 1 | 10 | 7 | 1 | 28 |
-| 2 | 8 | 6 | 1 | 20 |
-| 3 | 5 | 4 | 0 | 15 |
-| 4 | 6 | 4 | 1 | 9 |
-| 5 | 5 | 3 | 1 | 4 |
-| 6 | 4 | 0 | 0 | 0 ✅ |
+| ---- | ----------- | ------------------ | ----------- | -------------- |
+| 1    | 10          | 7                  | 1           | 28             |
+| 2    | 8           | 6                  | 1           | 20             |
+| 3    | 5           | 4                  | 0           | 15             |
+| 4    | 6           | 4                  | 1           | 9              |
+| 5    | 5           | 3                  | 1           | 4              |
+| 6    | 4           | 0                  | 0           | 0 ✅           |
 
 ### By Priority
 
 | Priority | Total Gaps | Closed Week 1-2 | Closed Week 3-4 | Closed Week 5-6 |
-|----------|-----------|-----------------|-----------------|-----------------|
-| Critical | 3 | 3 ✅ | 0 | 0 |
-| High | 5 | 3 | 2 ✅ | 0 |
-| Medium | 12 | 2 | 6 | 4 ✅ |
-| Low | 8 | 2 | 0 | 6 ✅ |
+| -------- | ---------- | --------------- | --------------- | --------------- |
+| Critical | 3          | 3 ✅            | 0               | 0               |
+| High     | 5          | 3               | 2 ✅            | 0               |
+| Medium   | 12         | 2               | 6               | 4 ✅            |
+| Low      | 8          | 2               | 0               | 6 ✅            |
 
 ---
 
 ## ✅ Success Criteria
 
 ### Daily
+
 - [ ] No build errors
 - [ ] No linter errors
 - [ ] Git commit with clear message
 - [ ] Manual smoke test of new feature
 
 ### Weekly
+
 - [ ] Feature demo to team
 - [ ] Update progress in task tracker
 - [ ] Performance check (Lighthouse)
 - [ ] Accessibility spot check
 
 ### Final (Day 32)
+
 - [ ] All 38 gaps closed
 - [ ] All tests passing
 - [ ] VoiceOver/NVDA happy paths work
@@ -673,27 +746,30 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 
 ## 🚨 Risk Mitigation
 
-| Risk | Mitigation | Owner |
-|------|-----------|-------|
-| Asset delays | Use SVG placeholders | You (Track C) |
-| Theme breaks UI | Feature flag + incremental testing | Dev (Track A) |
+| Risk               | Mitigation                              | Owner         |
+| ------------------ | --------------------------------------- | ------------- |
+| Asset delays       | Use SVG placeholders                    | You (Track C) |
+| Theme breaks UI    | Feature flag + incremental testing      | Dev (Track A) |
 | Performance issues | 30fps cap, lazy load, pause when hidden | Dev (Track A) |
-| Accessibility gaps | Weekly VoiceOver tests | Dev (Track A) |
-| Scope creep | Stick to this plan, defer enhancements | PM |
+| Accessibility gaps | Weekly VoiceOver tests                  | Dev (Track A) |
+| Scope creep        | Stick to this plan, defer enhancements  | PM            |
 
 ---
 
 ## 🎯 Current Status
 
 **Assets Ready (You):**
+
 - ✅ Palma files in `/public/palma/`
 - 🟡 Lottie files (adding now)
 - 🟡 Stickers (1 hour timeline)
 
 **Code Status:**
+
 - ❌ Not started (waiting on this plan approval)
 
 **Next Action:**
+
 - Start Day 1 (Theme + Reduced Motion + Registry) immediately
 
 ---
@@ -701,6 +777,7 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ## 📞 Daily Standups
 
 **Format:**
+
 - Yesterday: What gaps closed?
 - Today: Which gaps targeting?
 - Blockers: Any issues?
@@ -708,4 +785,3 @@ Foundation (3 days) → Entry (2 days) → Layout (3 days) → HUDs (5 days)
 ---
 
 **Ready to start? Let's close these gaps! 🚀**
-

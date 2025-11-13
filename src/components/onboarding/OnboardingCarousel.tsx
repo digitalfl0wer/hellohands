@@ -101,7 +101,10 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-teal">
               How to use Hello Hands
             </p>
-            <h2 className="mt-1 text-2xl font-semibold text-text-primary" id="onboarding-title">
+            <h2
+              className="mt-1 text-2xl font-semibold text-text-primary"
+              id="onboarding-title"
+            >
               {slide.title}
             </h2>
           </div>
@@ -143,11 +146,10 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
         </div>
 
         <p className="mt-4 text-[11px] text-text-muted">
-          You can always reopen this guide later from the settings menu or the Help section.
+          You can always reopen this guide later from the settings menu or the Help
+          section.
         </p>
       </section>
     </div>
   );
 }
-
-

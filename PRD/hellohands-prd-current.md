@@ -58,17 +58,17 @@ Hello Hands offers a guided, multimodal ASL micro-lesson focused on a five-star 
 
 ## Outstanding Work (New Milestones)
 
-| Area | Milestone | Status | Notes |
-| --- | --- | --- | --- |
-| Gesture Runtime | **M0** Worker skeleton + contract + fps throttle | ⏳ | `gesture-worker` entrypoint + `candidate/accepted/lost/countdown_done` message schema. |
-| Gesture Runtime | **M1** GestureRecognizer + smoothing + hysteresis | ⏳ | Tasks API integration, EMA/One-Euro filters, entry/exit thresholds. |
-| Gesture Runtime | **M2** Hold/refractory + countdown parity | ⏳ | Shared Accept → Countdown flow for gesture + voice, HUD freeze, tunables centralized. |
-| Gesture Runtime | **M3** Metrics + flags + docs | ⏳ | fps/dropped frame telemetry, logger dashboards, `WORKER_ON|COUNTDOWN|REFRACTORY|RUNTIME` toggles, troubleshooting guide. |
-| ASLLVD Integration | **M0** Licensing + attribution + sign lists | ⏳ | Capture citation text, README/playbook updates, Essentials/Social Basics mapping. |
-| ASLLVD Integration | **M1** Ingest manifests + normalization rules | ⏳ | `asllvd_manifest.{csv,json}` with canonical view selection + trimming specs. |
-| ASLLVD Integration | **M2** Pack generation + coverage validation | ⏳ | `labels.jsonl`, `packs.generated.json`, coverage ≥90%, poster generation. |
-| ASLLVD Integration | **M3** App integration + QA | ⏳ | Dataset flag wiring, countdown flow validation on new clips, QA checklist + logs. |
-| Baseline Model (optional) | Sequence classifier + metrics export | 🔄 | Blocked until ASLLVD/gesture telemetry stabilizes; revisit after M3 gates. |
+| Area                      | Milestone                                         | Status | Notes                                                                                  |
+| ------------------------- | ------------------------------------------------- | ------ | -------------------------------------------------------------------------------------- | --------- | ---------- | ---------------------------------------- |
+| Gesture Runtime           | **M0** Worker skeleton + contract + fps throttle  | ⏳     | `gesture-worker` entrypoint + `candidate/accepted/lost/countdown_done` message schema. |
+| Gesture Runtime           | **M1** GestureRecognizer + smoothing + hysteresis | ⏳     | Tasks API integration, EMA/One-Euro filters, entry/exit thresholds.                    |
+| Gesture Runtime           | **M2** Hold/refractory + countdown parity         | ⏳     | Shared Accept → Countdown flow for gesture + voice, HUD freeze, tunables centralized.  |
+| Gesture Runtime           | **M3** Metrics + flags + docs                     | ⏳     | fps/dropped frame telemetry, logger dashboards, `WORKER_ON                             | COUNTDOWN | REFRACTORY | RUNTIME` toggles, troubleshooting guide. |
+| ASLLVD Integration        | **M0** Licensing + attribution + sign lists       | ⏳     | Capture citation text, README/playbook updates, Essentials/Social Basics mapping.      |
+| ASLLVD Integration        | **M1** Ingest manifests + normalization rules     | ⏳     | `asllvd_manifest.{csv,json}` with canonical view selection + trimming specs.           |
+| ASLLVD Integration        | **M2** Pack generation + coverage validation      | ⏳     | `labels.jsonl`, `packs.generated.json`, coverage ≥90%, poster generation.              |
+| ASLLVD Integration        | **M3** App integration + QA                       | ⏳     | Dataset flag wiring, countdown flow validation on new clips, QA checklist + logs.      |
+| Baseline Model (optional) | Sequence classifier + metrics export              | 🔄     | Blocked until ASLLVD/gesture telemetry stabilizes; revisit after M3 gates.             |
 
 ## Launch Checklist
 

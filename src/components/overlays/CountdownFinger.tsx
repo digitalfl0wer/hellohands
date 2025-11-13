@@ -34,11 +34,11 @@ export function CountdownFinger({
           <span className="text-[11px] uppercase tracking-[0.18em] text-text-muted">
             {label ?? 'Next sign coming up'}
           </span>
-          <span className="text-xs text-text-secondary">Finger countdown in progress</span>
+          <span className="text-xs text-text-secondary">
+            Finger countdown in progress
+          </span>
         </div>
       </div>
     </div>
   );
 }
-
-
