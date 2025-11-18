@@ -1,0 +1,45 @@
+version: "1.0.0"
+title: "ASLLVD_Normalize"
+description: "Trim, normalize, and generate posters for ASLLVD videos"
+
+instructions: |
+  Perform ASLLVD asset normalization:
+  1. Process raw videos from data/raw/asllvd/
+  2. Trim clips by frame boundaries
+  3. Normalize to 30fps, 320px width MP4
+  4. Generate PNG posters from mid-sign frames
+  5. Output to data/processed/asllvd/
+
+prompt: |
+  Execute ASLLVD normalization pipeline:
+  - Read manifest from {{ manifest_path }}
+  - Process videos from {{ raw_dir }}
+  - Output processed assets to {{ processed_dir }}
+  - Process each video with ffmpeg
+  - Generate standardized clips and posters
+  - Ensure deterministic naming
+
+  Output: Processing summary with success/failure counts.
+
+parameters:
+  - key: manifest_path
+    input_type: string
+    requirement: optional
+    default: "data/asllvd_manifest.csv"
+    description: "Path to ASLLVD manifest CSV file"
+  - key: raw_dir
+    input_type: string
+    requirement: optional
+    default: "data/raw/asllvd"
+    description: "Directory containing raw videos"
+  - key: processed_dir
+    input_type: string
+    requirement: optional
+    default: "data/processed/asllvd"
+    description: "Directory for processed assets"
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 1200

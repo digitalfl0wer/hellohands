@@ -1,0 +1,1208 @@
+[
+  {
+    "id": "msasl_val_200000",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200000.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "76",
+    "start": 0,
+    "end": 3.67,
+    "box": [
+      0.05037271976470947,
+      0.2994125783443451,
+      1,
+      0.6968145966529846
+    ]
+  },
+  {
+    "id": "msasl_val_200039",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200039.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "3",
+    "start": 0,
+    "end": 2.333,
+    "box": [
+      0.1812058985233307,
+      0.2950950860977173,
+      1,
+      0.7678565382957458
+    ]
+  },
+  {
+    "id": "msasl_val_200089",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200089.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "87",
+    "start": 0,
+    "end": 3.524,
+    "box": [
+      0.002299189567565918,
+      0.03223484754562378,
+      1,
+      0.909037709236145
+    ]
+  },
+  {
+    "id": "msasl_val_200182",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200182.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "87",
+    "start": 0,
+    "end": 2.567,
+    "box": [
+      0,
+      0.022413164377212524,
+      1,
+      0.9001381397247314
+    ]
+  },
+  {
+    "id": "msasl_val_200183",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200183.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "66",
+    "start": 0,
+    "end": 3.12,
+    "box": [
+      0.044264376163482666,
+      0.20482976734638214,
+      1,
+      0.7376105189323425
+    ]
+  },
+  {
+    "id": "msasl_val_200185",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200185.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "66",
+    "start": 0,
+    "end": 2.32,
+    "box": [
+      0.06713935732841492,
+      0.25672632455825806,
+      1,
+      0.7048420906066895
+    ]
+  },
+  {
+    "id": "msasl_val_200191",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200191.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "163",
+    "start": 71.633,
+    "end": 75.433,
+    "box": [
+      0.02526453137397766,
+      0.09382730722427368,
+      1,
+      0.8358455896377563
+    ]
+  },
+  {
+    "id": "msasl_val_200195",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200195.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "164",
+    "start": 0.467,
+    "end": 2.436,
+    "box": [
+      0.12895208597183228,
+      0.0997893214225769,
+      1,
+      0.8973934650421143
+    ]
+  },
+  {
+    "id": "msasl_val_200196",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200196.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "164",
+    "start": 25.392,
+    "end": 28.328,
+    "box": [
+      0.12272179126739502,
+      0.14663997292518616,
+      1,
+      0.9007272720336914
+    ]
+  },
+  {
+    "id": "msasl_val_200197",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200197.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "164",
+    "start": 28.662,
+    "end": 31.632,
+    "box": [
+      0.1292363703250885,
+      0.13402682542800903,
+      1,
+      0.8959126472473145
+    ]
+  },
+  {
+    "id": "msasl_val_200198",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200198.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "164",
+    "start": 34.301,
+    "end": 36.27,
+    "box": [
+      0.11822119355201721,
+      0.09767386317253113,
+      1,
+      0.9092209339141846
+    ]
+  },
+  {
+    "id": "msasl_val_200202",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200202.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "76",
+    "start": 0,
+    "end": 2.769,
+    "box": [
+      0.05283665657043457,
+      0.294588178396225,
+      1,
+      0.6696392893791199
+    ]
+  },
+  {
+    "id": "msasl_val_200240",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200240.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "125",
+    "start": 104.171,
+    "end": 108.208,
+    "box": [
+      0.17839103937149048,
+      0.21352511644363403,
+      0.8863436579704285,
+      0.9737863540649414
+    ]
+  },
+  {
+    "id": "msasl_val_200241",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200241.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "125",
+    "start": 107.874,
+    "end": 109.609,
+    "box": [
+      0.18493294715881348,
+      0.21282804012298584,
+      0.8753141164779663,
+      0.9049719572067261
+    ]
+  },
+  {
+    "id": "msasl_val_200242",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200242.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "125",
+    "start": 109.543,
+    "end": 110.344,
+    "box": [
+      0.19057118892669678,
+      0.22106358408927917,
+      0.8759032487869263,
+      0.9288681745529175
+    ]
+  },
+  {
+    "id": "msasl_val_200243",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200243.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "125",
+    "start": 111.278,
+    "end": 112.212,
+    "box": [
+      0.18781426548957825,
+      0.2990420460700989,
+      0.8784905076026917,
+      0.9182929396629333
+    ]
+  },
+  {
+    "id": "msasl_val_200244",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200244.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "125",
+    "start": 112.145,
+    "end": 113.447,
+    "box": [
+      0.21435976028442383,
+      0.27330875396728516,
+      0.8795027732849121,
+      0.9059970378875732
+    ]
+  },
+  {
+    "id": "msasl_val_200245",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200245.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "125",
+    "start": 112.913,
+    "end": 114.681,
+    "box": [
+      0.19813406467437744,
+      0.2499919831752777,
+      0.8813022971153259,
+      0.9090965390205383
+    ]
+  },
+  {
+    "id": "msasl_val_200254",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200254.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "3",
+    "start": 0,
+    "end": 2.933,
+    "box": [
+      0.16321486234664917,
+      0.2778986394405365,
+      1,
+      0.8783726692199707
+    ]
+  },
+  {
+    "id": "msasl_val_200324",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200324.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "227",
+    "start": 201.835,
+    "end": 203.336,
+    "box": [
+      0.006330907344818115,
+      0.024119704961776733,
+      0.9939023852348328,
+      0.8799246549606323
+    ]
+  },
+  {
+    "id": "msasl_val_200329",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200329.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "227",
+    "start": 241.508,
+    "end": 242.976,
+    "box": [
+      0,
+      0.006818860769271851,
+      0.9953362941741943,
+      0.8691695332527161
+    ]
+  },
+  {
+    "id": "msasl_val_200330",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200330.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "227",
+    "start": 244.044,
+    "end": 245.512,
+    "box": [
+      0,
+      0.09501203894615173,
+      0.9932461977005005,
+      0.8788496255874634
+    ]
+  },
+  {
+    "id": "msasl_val_200331",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200331.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "227",
+    "start": 246.012,
+    "end": 247.481,
+    "box": [
+      0,
+      0.0643688440322876,
+      0.9932740330696106,
+      0.8760933876037598
+    ]
+  },
+  {
+    "id": "msasl_val_200333",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200333.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "63",
+    "start": 0.2,
+    "end": 1.3,
+    "box": [
+      0.0746941864490509,
+      0.09081491827964783,
+      0.9960488080978394,
+      0.7834726572036743
+    ]
+  },
+  {
+    "id": "msasl_val_200342",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200342.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "80",
+    "start": 205.272,
+    "end": 206.94,
+    "box": [
+      0.04215899109840393,
+      0.10072597861289978,
+      1,
+      0.672581136226654
+    ]
+  },
+  {
+    "id": "msasl_val_200343",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200343.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "80",
+    "start": 208.942,
+    "end": 210.61,
+    "box": [
+      0.04215899109840393,
+      0.10072597861289978,
+      1,
+      0.672581136226654
+    ]
+  },
+  {
+    "id": "msasl_val_200365",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200365.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "125",
+    "start": 224.758,
+    "end": 228.174,
+    "box": [
+      0.23365986347198486,
+      0.44123971462249756,
+      0.9878643751144409,
+      0.9522048234939575
+    ]
+  },
+  {
+    "id": "msasl_val_200369",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200369.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "163",
+    "start": 72.7,
+    "end": 76.833,
+    "box": [
+      0.040983498096466064,
+      0.22808408737182617,
+      0.9971977472305298,
+      0.7607847452163696
+    ]
+  },
+  {
+    "id": "msasl_val_200371",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200371.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "163",
+    "start": 169.033,
+    "end": 172.1,
+    "box": [
+      0.04009631276130676,
+      0.21097010374069214,
+      1,
+      0.7677377462387085
+    ]
+  },
+  {
+    "id": "msasl_val_200377",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200377.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "163",
+    "start": 261.333,
+    "end": 265.367,
+    "box": [
+      0.037019938230514526,
+      0.17224889993667603,
+      1,
+      0.7918810248374939
+    ]
+  },
+  {
+    "id": "msasl_val_200378",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200378.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "63",
+    "start": 0.067,
+    "end": 1.567,
+    "box": [
+      0,
+      0,
+      1,
+      0.7508479356765747
+    ]
+  },
+  {
+    "id": "msasl_val_200393",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200393.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "63",
+    "start": 264.2,
+    "end": 265.8,
+    "box": [
+      0.045345157384872437,
+      0.014241218566894531,
+      0.9992071986198425,
+      0.7579721212387085
+    ]
+  },
+  {
+    "id": "msasl_val_200436",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200436.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "63",
+    "start": 818.567,
+    "end": 820.6,
+    "box": [
+      0.011531054973602295,
+      0.06971323490142822,
+      0.9994844198226929,
+      0.7529795169830322
+    ]
+  },
+  {
+    "id": "msasl_val_200442",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200442.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "80",
+    "start": 101.034,
+    "end": 103.704,
+    "box": [
+      0.10048243403434753,
+      0.08662736415863037,
+      1,
+      0.5883554220199585
+    ]
+  },
+  {
+    "id": "msasl_val_200443",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200443.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "80",
+    "start": 104.037,
+    "end": 107.04,
+    "box": [
+      0.10048243403434753,
+      0.08662736415863037,
+      1,
+      0.5883554220199585
+    ]
+  },
+  {
+    "id": "msasl_val_200446",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200446.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "80",
+    "start": 216.183,
+    "end": 218.285,
+    "box": [
+      0.09868109226226807,
+      0.011435925960540771,
+      1,
+      0.753703236579895
+    ]
+  },
+  {
+    "id": "msasl_val_200447",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200447.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "80",
+    "start": 219.286,
+    "end": 221.955,
+    "box": [
+      0.09868109226226807,
+      0.011435925960540771,
+      1,
+      0.753703236579895
+    ]
+  },
+  {
+    "id": "msasl_val_200454",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200454.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "140",
+    "start": 10.711,
+    "end": 13.447,
+    "box": [
+      0.05598711967468262,
+      0.2583874464035034,
+      1,
+      0.7306782007217407
+    ]
+  },
+  {
+    "id": "msasl_val_200499",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200499.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "80",
+    "start": 356.723,
+    "end": 362.696,
+    "box": [
+      0.06943544745445251,
+      0.19450759887695312,
+      1,
+      0.7152400016784668
+    ]
+  },
+  {
+    "id": "msasl_val_200503",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200503.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "80",
+    "start": 421.988,
+    "end": 428.094,
+    "box": [
+      0.03368663787841797,
+      0.18060782551765442,
+      1,
+      0.7270069122314453
+    ]
+  },
+  {
+    "id": "msasl_val_200510",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200510.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "164",
+    "start": 2.103,
+    "end": 2.759,
+    "box": [
+      0.08161506056785583,
+      0.14258000254631042,
+      0.9986720085144043,
+      0.8926843404769897
+    ]
+  },
+  {
+    "id": "msasl_val_200520",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200520.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "164",
+    "start": 306.551,
+    "end": 309.379,
+    "box": [
+      0.07807725667953491,
+      0.14610710740089417,
+      1,
+      0.8661688566207886
+    ]
+  },
+  {
+    "id": "msasl_val_200528",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200528.mp4",
+    "label": 4,
+    "class_name": "no",
+    "signer_id": "164",
+    "start": 455.241,
+    "end": 456.379,
+    "box": [
+      0.07540348172187805,
+      0.3155277967453003,
+      0.9949651956558228,
+      0.7954291105270386
+    ]
+  },
+  {
+    "id": "msasl_val_200531",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200531.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "164",
+    "start": 507.999,
+    "end": 510.448,
+    "box": [
+      0.05133676528930664,
+      0.205644428730011,
+      0.9999322891235352,
+      0.8288979530334473
+    ]
+  },
+  {
+    "id": "msasl_val_200532",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200532.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "164",
+    "start": 523.516,
+    "end": 527.034,
+    "box": [
+      0.05029776692390442,
+      0.23398929834365845,
+      1,
+      0.8195749521255493
+    ]
+  },
+  {
+    "id": "msasl_val_200535",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200535.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "164",
+    "start": 544.723,
+    "end": 547.103,
+    "box": [
+      0.046213626861572266,
+      0.21226966381072998,
+      1,
+      0.8544661998748779
+    ]
+  },
+  {
+    "id": "msasl_val_200549",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200549.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "163",
+    "start": 168.533,
+    "end": 171.367,
+    "box": [
+      0.22412046790122986,
+      0.305444598197937,
+      1,
+      0.8168289661407471
+    ]
+  },
+  {
+    "id": "msasl_val_200584",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200584.mp4",
+    "label": 0,
+    "class_name": "hello",
+    "signer_id": "251",
+    "start": 452.152,
+    "end": 453.386,
+    "box": [
+      0,
+      0.07796779274940491,
+      1,
+      0.8660461902618408
+    ]
+  },
+  {
+    "id": "msasl_val_200605",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200605.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "251",
+    "start": 937.403,
+    "end": 938.471,
+    "box": [
+      0,
+      0.016990959644317627,
+      1,
+      0.808068037033081
+    ]
+  },
+  {
+    "id": "msasl_val_200606",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200606.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "251",
+    "start": 939.172,
+    "end": 942.975,
+    "box": [
+      0,
+      0.016990959644317627,
+      1,
+      0.808068037033081
+    ]
+  },
+  {
+    "id": "msasl_val_200624",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200624.mp4",
+    "label": 20,
+    "class_name": "yes",
+    "signer_id": "251",
+    "start": 1330.129,
+    "end": 1332.798,
+    "box": [
+      0,
+      0.0893254280090332,
+      0.9993555545806885,
+      0.8391329050064087
+    ]
+  },
+  {
+    "id": "msasl_val_200629",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200629.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "53",
+    "start": 0,
+    "end": 3.437,
+    "box": [
+      0,
+      0.23597928881645203,
+      1,
+      0.8382189273834229
+    ]
+  },
+  {
+    "id": "msasl_val_200645",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200645.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "261",
+    "start": 254.921,
+    "end": 256.223,
+    "box": [
+      0.108469158411026,
+      0,
+      1,
+      0.8128951191902161
+    ]
+  },
+  {
+    "id": "msasl_val_200681",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200681.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "63",
+    "start": 42.433,
+    "end": 46.9,
+    "box": [
+      0.07775011658668518,
+      0.20559754967689514,
+      1,
+      0.7671562433242798
+    ]
+  },
+  {
+    "id": "msasl_val_200686",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200686.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "66",
+    "start": 0,
+    "end": 2.68,
+    "box": [
+      0.006644725799560547,
+      0.24798575043678284,
+      1,
+      0.7977808713912964
+    ]
+  },
+  {
+    "id": "msasl_val_200742",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200742.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "76",
+    "start": 0,
+    "end": 3.17,
+    "box": [
+      0.07514774799346924,
+      0.1996348649263382,
+      1,
+      0.6484568119049072
+    ]
+  },
+  {
+    "id": "msasl_val_200762",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200762.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "80",
+    "start": 13.78,
+    "end": 20.22,
+    "box": [
+      0,
+      0.2046765685081482,
+      1,
+      0.6482183933258057
+    ]
+  },
+  {
+    "id": "msasl_val_200784",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200784.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "66",
+    "start": 0,
+    "end": 1.64,
+    "box": [
+      0.002736121416091919,
+      0.21269425749778748,
+      1,
+      0.7358647584915161
+    ]
+  },
+  {
+    "id": "msasl_val_200820",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200820.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "140",
+    "start": 19.599,
+    "end": 22.792,
+    "box": [
+      0.05811041593551636,
+      0.118827223777771,
+      1,
+      0.8917360305786133
+    ]
+  },
+  {
+    "id": "msasl_val_200826",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200826.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "140",
+    "start": 47.179,
+    "end": 49.455,
+    "box": [
+      0.05975222587585449,
+      0.13087907433509827,
+      0.9957147240638733,
+      0.8766206502914429
+    ]
+  },
+  {
+    "id": "msasl_val_200853",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200853.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "125",
+    "start": 113.292,
+    "end": 117.167,
+    "box": [
+      0.15727737545967102,
+      0.4662242829799652,
+      1,
+      0.8935914039611816
+    ]
+  },
+  {
+    "id": "msasl_val_200956",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/200/200956.mp4",
+    "label": 50,
+    "class_name": "help",
+    "signer_id": "227",
+    "start": 182.315,
+    "end": 183.283,
+    "box": [
+      0,
+      0.12212717533111572,
+      0.9969478845596313,
+      0.8309667110443115
+    ]
+  },
+  {
+    "id": "msasl_val_201028",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/201/201028.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "407",
+    "start": 99.931,
+    "end": 103.69,
+    "box": [
+      0.02509555220603943,
+      0.2915157079696655,
+      1,
+      0.6330857276916504
+    ]
+  },
+  {
+    "id": "msasl_val_201070",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/201/201070.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "15",
+    "start": 0,
+    "end": 1.752,
+    "box": [
+      0.07451656460762024,
+      0.3500674366950989,
+      1,
+      0.8136630654335022
+    ]
+  },
+  {
+    "id": "msasl_val_201105",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/201/201105.mp4",
+    "label": 3,
+    "class_name": "eat",
+    "signer_id": "265",
+    "start": 876.776,
+    "end": 879.445,
+    "box": [
+      0.07281994819641113,
+      0.25051096081733704,
+      1,
+      0.7474819421768188
+    ]
+  },
+  {
+    "id": "msasl_val_201107",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/201/201107.mp4",
+    "label": 56,
+    "class_name": "drink",
+    "signer_id": "265",
+    "start": 893.493,
+    "end": 895.828,
+    "box": [
+      0.052569955587387085,
+      0.2572869658470154,
+      1,
+      0.813718318939209
+    ]
+  },
+  {
+    "id": "msasl_val_201177",
+    "dataset": "msasl",
+    "subset": "MS-ASL100",
+    "split": "val",
+    "path": "data/processed/msasl/clips/201/201177.mp4",
+    "label": 47,
+    "class_name": "please",
+    "signer_id": "265",
+    "start": 730.33,
+    "end": 734.334,
+    "box": [
+      0.05017143487930298,
+      0.1835472583770752,
+      1,
+      0.8088901042938232
+    ]
+  }
+]

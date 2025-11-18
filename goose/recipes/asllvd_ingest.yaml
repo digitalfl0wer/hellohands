@@ -1,0 +1,39 @@
+version: "1.0.0"
+title: "ASLLVD_Ingest"
+description: "Download ASLLVD videos from manifest with auth check"
+
+instructions: |
+  Perform ASLLVD dataset ingestion:
+  1. Check ASLLVD_COOKIE environment variable
+  2. Read data/asllvd_manifest.csv
+  3. Download videos to data/raw/asllvd/
+  4. Apply canonical view selection (front A/B > side)
+  5. Report download success/failures
+
+prompt: |
+  Execute ASLLVD ingestion pipeline:
+  - Verify ASLLVD_COOKIE is set
+  - Parse manifest from {{ manifest_path }}
+  - Download videos to {{ raw_dir }}
+  - Handle auth failures gracefully
+  - Skip existing files
+
+  Output: Summary of downloads attempted/completed/failed.
+
+parameters:
+  - key: manifest_path
+    input_type: string
+    requirement: optional
+    default: "data/asllvd_manifest.csv"
+    description: "Path to ASLLVD manifest CSV file"
+  - key: raw_dir
+    input_type: string
+    requirement: optional
+    default: "data/raw/asllvd"
+    description: "Directory to store raw downloaded videos"
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 600
