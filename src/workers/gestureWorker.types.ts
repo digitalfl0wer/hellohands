@@ -102,10 +102,36 @@ export type GestureWorkerLogEvent = {
   ts: number;
 };
 
+export type GestureWorkerMetricsEvent = {
+  type: 'metrics';
+  fps: number;
+  latencyMs: number;
+  droppedFrames: number;
+  ts: number;
+};
+
+export type GestureWorkerMpErrorEvent = {
+  type: 'mp:error';
+  code: 'model_load_fail' | 'gpu_unavailable' | 'no_frames' | 'permission_denied';
+  ts: number;
+  details?: string;
+};
+
+export type GestureWorkerHandsEvent = {
+  type: 'hands';
+  multiHandLandmarks: any[];
+  multiHandedness: any[];
+  frameId: number;
+  ts: number;
+};
+
 export type GestureWorkerEvent =
   | GestureWorkerCandidateEvent
   | GestureWorkerAcceptedEvent
   | GestureWorkerLostEvent
   | GestureWorkerCountdownEvent
   | GestureWorkerStatusEvent
-  | GestureWorkerLogEvent;
+  | GestureWorkerLogEvent
+  | GestureWorkerMetricsEvent
+  | GestureWorkerHandsEvent
+  | GestureWorkerMpErrorEvent;

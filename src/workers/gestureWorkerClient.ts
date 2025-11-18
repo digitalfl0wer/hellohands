@@ -5,13 +5,26 @@ import {
   type GestureWorkerEvent,
   type GestureWorkerStatus,
 } from './gestureWorker.types';
-
 export type GestureWorkerClientEventHandler = (event: GestureWorkerEvent) => void;
 
 export interface GestureWorkerClientOptions {
   onEvent?: GestureWorkerClientEventHandler;
   createWorker?: () => Worker;
 }
+
+// Detection currently runs on the main thread; keep the worker
+// implementation parked for future use.
+const USE_GESTURE_WORKER = false;
+
+const createDefaultWorker = () => {
+  if ((import.meta as any)?.env?.DEV) {
+    // eslint-disable-next-line no-console
+    console.info('[gesture_worker_client] using module worker');
+  }
+  return new Worker(new URL('./gesture-worker.ts', import.meta.url), {
+    type: 'module',
+  });
+};
 
 export interface SendFrameOptions {
   frame: ImageBitmap;
@@ -75,22 +88,26 @@ export class GestureWorkerClient {
   }
 
   private ensureWorker() {
+    if (!USE_GESTURE_WORKER) {
+      if ((import.meta as any)?.env?.DEV) {
+        // eslint-disable-next-line no-console
+        console.info(
+          '[gesture_worker_client] worker disabled; detection runs on main thread',
+        );
+      }
+      return;
+    }
     if (this.worker) return;
-    const create =
-      this.options.createWorker ??
-      (() =>
-        new Worker(new URL('./gesture-worker.ts', import.meta.url), {
-          type: 'module',
-        }));
+    const create = this.options.createWorker ?? createDefaultWorker;
     this.worker = create();
-    this.worker.addEventListener('message', (event: MessageEvent<GestureWorkerEvent>) => {
+    this.worker!.addEventListener('message', (event: MessageEvent<GestureWorkerEvent>) => {
       const data = event.data;
       if (data.type === 'status') {
         this.status = data.status;
       }
       this.options.onEvent?.(data);
     });
-    this.worker.addEventListener('error', (error) => {
+    this.worker!.addEventListener('error', (error) => {
       this.status = 'error';
       this.options.onEvent?.({
         type: 'status',
