@@ -3,7 +3,7 @@ export const BUS_NAME = 'hh_bus';
 export type HHEvent =
   | {
       intent: 'gesture';
-      type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
+      type: 'thumbs_up' | 'open_palm' | 'point' | 'pinch' | 'countdown_done';
       score?: number;
     }
   | { intent: 'voice'; text: string }

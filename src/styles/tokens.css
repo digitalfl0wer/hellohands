@@ -29,6 +29,14 @@
     'Segoe UI', sans-serif;
 }
 
+:root[data-theme='kid'] {
+  --text-primary: #030712;
+  --text-secondary: #1f2937;
+  --text-muted: #475569;
+  --accent-lime: #02164d;
+  --accent-teal: #0ea5e9;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     scroll-behavior: auto;

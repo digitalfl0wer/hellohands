@@ -13,10 +13,6 @@ export function SettingsPill({ onOpenHowToUse, onOpenCalibration }: SettingsPill
   const toggleVoice = useLessonStore((state) => state.toggleVoice);
   const gesturesOn = useLessonStore((state) => state.gesturesOn);
   const toggleGestures = useLessonStore((state) => state.toggleGestures);
-  const runtimeMode = useLessonStore((state) => state.runtimeMode);
-  const setRuntimeMode = useLessonStore((state) => state.setRuntimeMode);
-  const workerOn = useLessonStore((state) => state.workerOn);
-  const toggleWorkerOn = useLessonStore((state) => state.toggleWorkerOn);
   const countdownOn = useLessonStore((state) => state.countdownOn);
   const toggleCountdown = useLessonStore((state) => state.toggleCountdown);
   const refractoryOn = useLessonStore((state) => state.refractoryOn);
@@ -102,30 +98,6 @@ export function SettingsPill({ onOpenHowToUse, onOpenCalibration }: SettingsPill
               Runtime flags
             </p>
             <div className="grid grid-cols-2 gap-3">
-              <AppButton
-                onClick={() =>
-                  setRuntimeMode(runtimeMode === 'hands' ? 'tasks' : 'hands')
-                }
-                type="button"
-                variant="adult"
-                className="justify-between px-4 py-2 text-sm font-semibold shadow-md transition border border-white/15 bg-surface-800/80 text-text-primary hover:border-accent-teal/60"
-              >
-                <span>Runtime</span>
-                <span>{runtimeMode}</span>
-              </AppButton>
-              <AppButton
-                onClick={toggleWorkerOn}
-                type="button"
-                variant="adult"
-                className={`justify-between px-4 py-2 text-sm font-semibold shadow-md transition ${
-                  workerOn
-                    ? 'border border-accent-teal bg-accent-teal/30 text-accent-teal'
-                    : 'border border-white/15 bg-surface-800/80 text-text-primary hover:border-accent-teal/60'
-                }`}
-              >
-                <span>Worker</span>
-                <span>{workerOn ? 'On' : 'Off'}</span>
-              </AppButton>
               <AppButton
                 onClick={toggleCountdown}
                 type="button"

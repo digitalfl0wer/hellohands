@@ -15,7 +15,7 @@ export function DirectionsSheet({
   const [ctaVisible, setCtaVisible] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setCtaVisible(true), 3000);
+    const timer = window.setTimeout(() => setCtaVisible(true), 1000);
     return () => window.clearTimeout(timer);
   }, []);
 

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { AppShell } from './components/AppShell';
-import { SettingsPill } from './components/SettingsPill';
 import { AppButton } from './components/Button';
 import { Toast } from './components/Toast';
 import { LessonScreen, LessonScreenHandle } from './components/lesson/LessonScreen';
@@ -11,11 +10,15 @@ import type { VoiceParseResult } from './hooks/voiceCommandParser';
 import { DirectionsSheet } from './components/sheets/DirectionsSheet';
 import { CountdownOverlay } from './components/sheets/CountdownOverlay';
 import { WelcomeScreen } from './screens/WelcomeScreen';
+import { LevelStackScreen } from './screens/LevelStackScreen';
+import { PackStackScreen } from './screens/PackStackScreen';
+import { LessonPackStackScreen } from './screens/LessonPackStackScreen';
+import { PracticePage } from './pages/PracticePage';
 import { useLessonStore } from './state/useLessonStore';
 import { ConfettiOverlay } from './components/ConfettiOverlay';
 import SubagentsPanel from './components/SubagentsPanel';
 import ProgressBadge from './components/ProgressBadge';
-import UnlockSticker from './components/UnlockSticker';
+import { StickerUnlockOverlay } from './components/StickerUnlockOverlay';
 import { bus, post, type HHEvent } from './gestures/gestureBus';
 import { logger } from './utils/logger';
 import type { ExpectedGesture } from './gestures/gestureEvaluator';
@@ -27,6 +30,9 @@ import { CalibrationFlow } from './components/calibration/CalibrationFlow';
 import { CountdownRocket } from './components/overlays/CountdownRocket';
 import { CountdownFinger } from './components/overlays/CountdownFinger';
 import { VoicePermissionBanner } from './components/recovery/VoicePermissionBanner';
+import { StickerBoard } from './components/progress/StickerBoard';
+import { MilestoneCard } from './components/progress/MilestoneCard';
+import { useProgressStore } from './state/progress';
 
 type CountdownMode = 'lesson_start' | 'accept';
 
@@ -39,7 +45,12 @@ type PendingAccept = {
 
 function App(): JSX.Element | null {
   const [hydrated, setHydrated] = useState(false);
-  const [view, setView] = useState<'welcome' | 'directions' | 'lesson'>('welcome');
+  const [view, setView] = useState<
+    'welcome' | 'lesson-pack-stack' | 'level-stack' | 'pack-stack' | 'lesson' | 'practice'
+  >('welcome');
+  const [selectedPath, setSelectedPath] = useState<'lesson' | 'practice' | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  const [selectedPack, setSelectedPack] = useState<string | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     variant?: 'info' | 'success' | 'warn';
@@ -52,17 +63,25 @@ function App(): JSX.Element | null {
   const [gestureCue, setGestureCue] = useState<string | null>(null);
   const lessonRef = useRef<LessonScreenHandle | null>(null);
   const voiceHintShown = useRef(false);
-  const [unlockStickerLevel, setUnlockStickerLevel] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showCalibration, setShowCalibration] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
-  const ui2ModesEnabled =
-    import.meta.env.VITE_KID_MODE_V2 === '1' || import.meta.env.VITE_UI2_ENABLED === '1';
-  const isBlockingCountdown =
-    countdownMode === 'lesson_start' ||
-    (ui2ModesEnabled && kidMode && countdownMode === 'accept');
+  const [showStickerBoard, setShowStickerBoard] = useState(false);
+  const [sideMenuOpen, setSideMenuOpen] = useState(false);
+
+  // UI 2.0 feature flags default to ON; set env var to "0" to explicitly disable.
+  const ui2Enabled = import.meta.env.VITE_UI2_ENABLED !== '0';
+  const ui2ModesEnabled = (import.meta.env.VITE_KID_MODE_V2 ?? '1') !== '0' && ui2Enabled;
+  const ui2OnboardingEnabled =
+    (import.meta.env.VITE_UI2_ONBOARDING ?? '1') !== '0' && ui2Enabled;
+  const ui2CalibrationEnabled =
+    (import.meta.env.VITE_UI2_CALIBRATION ?? '1') !== '0' && ui2Enabled;
+  const ui2StickersEnabled =
+    (import.meta.env.VITE_UI2_STICKERS ?? '1') !== '0' && ui2Enabled;
 
   const kidMode = useLessonStore((state) => state.kidMode);
+  const isBlockingCountdown =
+    countdownMode === 'lesson_start' || (ui2ModesEnabled && countdownMode === 'accept');
   const setKidMode = useLessonStore((state) => state.setKidMode);
   const voiceOn = useLessonStore((state) => state.voiceOn);
   const toggleVoice = useLessonStore((state) => state.toggleVoice);
@@ -73,20 +92,26 @@ function App(): JSX.Element | null {
   const maxStars = useLessonStore((state) => state.maxStars);
   const registerResult = useLessonStore((state) => state.registerResult);
   const countdownEnabled = useLessonStore((state) => state.countdownOn);
+  const countdownOn = useLessonStore((state) => state.countdownOn);
+  const toggleCountdown = useLessonStore((state) => state.toggleCountdown);
+  const refractoryOn = useLessonStore((state) => state.refractoryOn);
+  const toggleRefractory = useLessonStore((state) => state.toggleRefractory);
+  const milestones = useProgressStore((s) => s.milestones);
+  const dismissMilestone = useProgressStore((s) => s.dismissMilestone);
+  const newlyUnlockedStickers = useProgressStore((s) => s.newlyUnlockedStickers);
+  const dismissStickerUnlock = useProgressStore((s) => s.dismissStickerUnlock);
+  const recordPathCompletion = useProgressStore((s) => s.recordPathCompletion);
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    const ui2Enabled =
-      import.meta.env.VITE_UI2_ONBOARDING === '1' ||
-      import.meta.env.VITE_UI2_ENABLED === '1';
-    if (!ui2Enabled) return;
+    if (!ui2OnboardingEnabled) return;
     if (!hasCompletedOnboarding()) {
       setShowOnboarding(true);
     }
-  }, []);
+  }, [ui2OnboardingEnabled]);
 
   useEffect(() => {
     if (!toast) return;
@@ -151,7 +176,34 @@ function App(): JSX.Element | null {
     );
   };
 
-  const handleCountdownComplete = () => {
+  const handleSelectLessonPath = () => {
+    setSelectedPath('lesson');
+    setSideMenuOpen(false);
+    setView('lesson-pack-stack');
+  };
+
+  const handleSelectPracticePath = () => {
+    setSelectedPath('practice');
+    setSideMenuOpen(false);
+    setView('pack-stack');
+  };
+
+  const handleSelectLevel = (level: number) => {
+    setSelectedLevel(level);
+    setView('lesson');
+  };
+
+  const handleLessonPackSelect = (packId: string) => {
+    setSelectedPack(packId);
+    setView('level-stack');
+  };
+
+  const handleSelectPack = (packId: string) => {
+    setSelectedPack(packId);
+    setView('practice');
+  };
+
+  const handleCountdownComplete = useCallback(() => {
     const mode = countdownMode;
     setCountdownMode(null);
     if (mode === 'lesson_start') {
@@ -159,7 +211,7 @@ function App(): JSX.Element | null {
     } else if (mode === 'accept') {
       finalizeAcceptFlow();
     }
-  };
+  }, [countdownMode, finalizeAcceptFlow, triggerToast]);
 
   const handleVoiceCommand = (command: VoiceParseResult) => {
     switch (command.type) {
@@ -208,6 +260,8 @@ function App(): JSX.Element | null {
         break;
       case 'level':
         if (command.level === 1) {
+          setSelectedPath('lesson');
+          setSideMenuOpen(false);
           setView('directions');
           triggerToast('Opening Level 1.', 'info');
         } else {
@@ -265,11 +319,11 @@ function App(): JSX.Element | null {
       triggerToast(`Level ${level} unlocked!`, 'success', 2800);
       setShowCelebration(true);
       logger.info('progress', 'level_unlocked', { level });
-      setUnlockStickerLevel(level);
+      recordPathCompletion(level);
       // auto-hide handled inside ConfettiOverlay
     }
     prevLevelRef.current = level;
-  }, [level]);
+  }, [level, recordPathCompletion]);
 
   const [showCelebration, setShowCelebration] = useState(false);
   const [goosePanelEnabled, setGoosePanelEnabled] = useState(false);
@@ -331,24 +385,22 @@ function App(): JSX.Element | null {
   });
 
   useEffect(() => {
-    const handlePlanner = ({ data }: MessageEvent<HHEvent>) => {
-      if (!data || data.intent !== 'planner') {
-        return;
-      }
-
-      // Ignore practice navigation while the Practice tab is disabled
-
-      if (data.action === 'PRACTICE_CORRECT') {
+    const handleBus = ({ data }: MessageEvent<HHEvent>) => {
+      if (!data) return;
+      if (data.intent === 'planner' && data.action === 'PRACTICE_CORRECT') {
         triggerToast('Great match!', 'success');
         logger.info('practice', 'correct_gesture', data.meta);
       }
+      if (data.intent === 'gesture' && data.type === 'countdown_done') {
+        handleCountdownComplete();
+      }
     };
 
-    bus.addEventListener('message', handlePlanner);
+    bus.addEventListener('message', handleBus);
     return () => {
-      bus.removeEventListener('message', handlePlanner);
+      bus.removeEventListener('message', handleBus);
     };
-  }, [triggerToast]);
+  }, [handleCountdownComplete, triggerToast]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof EventSource === 'undefined') {
@@ -428,10 +480,19 @@ function App(): JSX.Element | null {
       level={level}
       stars={stars}
       totalStars={maxStars}
-      onLockedLevel={handleLockedLevel}
-      onStart={() => setView('directions')}
+      onSelectLesson={handleSelectLessonPath}
+      onSelectPractice={handleSelectPracticePath}
     />
   );
+
+  const countdownLabel =
+    countdownMode === 'lesson_start'
+      ? 'Lesson starting'
+      : pendingAccept?.source === 'voice'
+        ? 'Voice accept · advancing'
+        : pendingAccept
+          ? 'Gesture accepted · advancing'
+          : undefined;
 
   const directionsView = (
     <DirectionsSheet
@@ -447,6 +508,24 @@ function App(): JSX.Element | null {
         triggerToast('Get ready! Lesson starting…', 'info');
       }}
     />
+  );
+
+  const lessonPackView = (
+    <LessonPackStackScreen
+      onSelectPack={handleLessonPackSelect}
+      onBack={() => setView('welcome')}
+    />
+  );
+
+  const levelStackView = (
+    <LevelStackScreen
+      onSelectLevel={handleSelectLevel}
+      onBack={() => setView('welcome')}
+    />
+  );
+
+  const packStackView = (
+    <PackStackScreen onSelectPack={handleSelectPack} onBack={() => setView('welcome')} />
   );
 
   const lessonView = (
@@ -467,68 +546,54 @@ function App(): JSX.Element | null {
       ref={lessonRef}
       voiceOn={voiceOn}
       onShowHowToUse={() => {
-        const ui2Enabled =
-          import.meta.env.VITE_UI2_ONBOARDING === '1' ||
-          import.meta.env.VITE_UI2_ENABLED === '1';
-        if (!ui2Enabled) return;
+        if (!ui2OnboardingEnabled) return;
         setShowOnboarding(true);
       }}
+      countdownLabel={countdownLabel}
+      kidCountdownActive={ui2ModesEnabled && kidMode && countdownMode !== null}
+      onKidCountdownComplete={handleCountdownComplete}
+      adultCountdownActive={ui2ModesEnabled && !kidMode && countdownMode !== null}
+      onAdultCountdownComplete={handleCountdownComplete}
     />
   );
 
-  const countdownLabel =
-    countdownMode === 'lesson_start'
-      ? 'Lesson starting'
-      : pendingAccept?.source === 'voice'
-        ? 'Voice accept · advancing'
-        : pendingAccept
-          ? 'Gesture accepted · advancing'
-          : undefined;
+  const practiceView = <PracticePage selectedPack={selectedPack} />;
 
-  let countdownNode: JSX.Element | null = null;
-  if (countdownMode) {
-    if (!ui2ModesEnabled) {
-      countdownNode = (
-        <CountdownOverlay label={countdownLabel} onComplete={handleCountdownComplete} />
-      );
-    } else if (kidMode) {
-      countdownNode = (
-        <CountdownRocket label={countdownLabel} onComplete={handleCountdownComplete} />
-      );
-    } else {
-      countdownNode = (
-        <CountdownFinger label={countdownLabel} onComplete={handleCountdownComplete} />
-      );
-    }
-  }
+  const nextMilestone = milestones.find((m) => !m.seen);
 
   return (
     <>
       <AppShell
+        kidMode={kidMode}
         header={
           <div className="flex flex-wrap items-center justify-between gap-sm">
-            <h1 className="text-3xl font-bold tracking-tight text-accent-lime">
-              Hello Hands
-            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSideMenuOpen((prev) => !prev)}
+                className={`burger-btn ${sideMenuOpen ? 'open' : ''}`}
+                aria-label="Toggle side panel"
+              >
+                <span className="burger-bar" />
+                <span className="burger-bar" />
+                <span className="burger-bar" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPath(null);
+                  setSideMenuOpen(false);
+                  setView('welcome');
+                  triggerToast('Back to main menu.', 'info');
+                }}
+                className={`main-logo ${kidMode ? 'kid-logo' : 'adult-logo'} text-left font-bold tracking-tight text-accent-lime focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal`}
+                aria-label="Back to main menu"
+              >
+                Hello Hands
+              </button>
+            </div>
             <div className="flex flex-wrap items-center justify-end gap-sm">
-              <SettingsPill
-                onOpenHowToUse={() => {
-                  const ui2Enabled =
-                    import.meta.env.VITE_UI2_ONBOARDING === '1' ||
-                    import.meta.env.VITE_UI2_ENABLED === '1';
-                  if (!ui2Enabled) return;
-                  setShowOnboarding(true);
-                }}
-                onOpenCalibration={() => {
-                  const ui2Enabled =
-                    import.meta.env.VITE_UI2_CALIBRATION === '1' ||
-                    import.meta.env.VITE_UI2_ENABLED === '1';
-                  if (!ui2Enabled) return;
-                  setShowCalibration(true);
-                }}
-              />
               <ProgressBadge level={level} stars={stars} total={maxStars} />
-              {/* Practice entry temporarily removed */}
               <AppButton onClick={() => setKidMode(!kidMode)} type="button" variant="kid">
                 Kid Mode: {kidMode ? 'On' : 'Off'}
               </AppButton>
@@ -542,8 +607,11 @@ function App(): JSX.Element | null {
         }
       >
         {view === 'welcome' && welcomeView}
-        {view === 'directions' && directionsView}
+        {view === 'lesson-pack-stack' && lessonPackView}
+        {view === 'level-stack' && levelStackView}
+        {view === 'pack-stack' && packStackView}
         {view === 'lesson' && lessonView}
+        {view === 'practice' && practiceView}
         {/* Practice view temporarily removed */}
 
         <VoicePermissionBanner
@@ -556,6 +624,21 @@ function App(): JSX.Element | null {
           }}
         />
 
+        {showStickerBoard && (
+          <StickerBoard
+            onClose={() => {
+              setShowStickerBoard(false);
+            }}
+          />
+        )}
+
+        {nextMilestone && (
+          <MilestoneCard
+            milestone={nextMilestone}
+            onDismiss={() => dismissMilestone(nextMilestone.id)}
+          />
+        )}
+
         {showCelebration && (
           <ConfettiOverlay
             message={`Level ${level} unlocked!`}
@@ -563,7 +646,6 @@ function App(): JSX.Element | null {
           />
         )}
 
-        {countdownNode}
         {gestureCue && (
           <div className="pointer-events-none fixed bottom-6 right-6 rounded-full bg-surface-800/80 px-md py-2 text-sm font-semibold text-text-primary shadow-lg ring-1 ring-white/10">
             {gestureCue}
@@ -576,13 +658,12 @@ function App(): JSX.Element | null {
             variant={toast.variant ?? 'info'}
           />
         )}
-        <div className="pointer-events-none fixed top-6 left-1/2 z-[65] -translate-x-1/2">
-          <UnlockSticker
-            level={unlockStickerLevel ?? 0}
-            visible={unlockStickerLevel !== null}
-            onHide={() => setUnlockStickerLevel(null)}
+        {newlyUnlockedStickers.length > 0 && (
+          <StickerUnlockOverlay
+            stickerId={newlyUnlockedStickers[0]}
+            onComplete={() => dismissStickerUnlock(newlyUnlockedStickers[0])}
           />
-        </div>
+        )}
         {showOnboarding && (
           <OnboardingCarousel
             onComplete={() => {
@@ -606,6 +687,142 @@ function App(): JSX.Element | null {
           />
         )}
       </AppShell>
+      <aside
+        className={`fixed inset-y-0 left-0 z-[70] w-64 border-r border-white/10 bg-surface-900/95 p-5 text-sm text-text-primary shadow-2xl transition-transform duration-300 ${
+          sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        aria-hidden={!sideMenuOpen}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-xs uppercase tracking-[0.4em] text-accent-teal">
+            Menu
+          </span>
+          <button
+            type="button"
+            onClick={() => setSideMenuOpen(false)}
+            className="text-xs font-semibold text-accent-teal hover:underline"
+          >
+            Close
+          </button>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
+              Quick settings
+            </p>
+            <div className="mt-2 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  toggleVoice();
+                  logger.info('ui2', `voice:${voiceOn ? 'off' : 'on'}`);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Voice: {voiceOn ? 'On' : 'Off'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  toggleGestures();
+                  logger.info('ui2', `gesture:${gesturesOn ? 'off' : 'on'}`);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Gestures: {gesturesOn ? 'On' : 'Off'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  toggleCountdown();
+                  logger.info('ui2', `countdown:${countdownOn ? 'off' : 'on'}`);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Countdown: {countdownOn ? 'On' : 'Off'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  toggleRefractory();
+                  logger.info('ui2', `refractory:${refractoryOn ? 'off' : 'on'}`);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Refractory: {refractoryOn ? 'On' : 'Off'}
+              </button>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Lessons</p>
+            <div className="mt-2 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setView('welcome');
+                  setSideMenuOpen(false);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Welcome
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setView('directions');
+                  setSideMenuOpen(false);
+                }}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60"
+              >
+                Directions
+              </button>
+            </div>
+          </div>
+          {ui2StickersEnabled && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowStickerBoard(true);
+                setSideMenuOpen(false);
+              }}
+              className="w-full rounded-lg border border-dashed border-white/40 bg-surface-800/70 px-3 py-2 text-left font-semibold text-accent-lime transition hover:border-accent-lime/70"
+            >
+              Open Stickers
+            </button>
+          )}
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Tools</p>
+            <div className="mt-2 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (ui2OnboardingEnabled) {
+                    setShowOnboarding(true);
+                  }
+                  setSideMenuOpen(false);
+                }}
+                disabled={!ui2OnboardingEnabled}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60 disabled:opacity-50"
+              >
+                How to use
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (ui2CalibrationEnabled) {
+                    setShowCalibration(true);
+                  }
+                  setSideMenuOpen(false);
+                }}
+                disabled={!ui2CalibrationEnabled}
+                className="w-full rounded-lg border border-white/15 bg-surface-800/70 px-3 py-2 text-left font-semibold text-text-primary transition hover:border-accent-teal/60 disabled:opacity-50"
+              >
+                Calibration
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
       {goosePanelEnabled && <SubagentsPanel />}
     </>
   );

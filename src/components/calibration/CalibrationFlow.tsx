@@ -179,7 +179,6 @@ export function CalibrationFlow({ onComplete, onSkip }: CalibrationFlowProps) {
             <CameraFeed
               enabled
               expectedGesture={currentGesture}
-              // @ts-expect-error RecognizedGesture is compatible with ExpectedGesture here
               onCandidate={handleCandidate}
             />
           </div>

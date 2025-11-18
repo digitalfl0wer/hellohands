@@ -7,7 +7,7 @@ type IntroMessageProps = {
 
 export function IntroMessage({ onDismiss, learnMore }: IntroMessageProps) {
   return (
-    <section className="rounded-xl border border-white/10 bg-surface-800/70 p-lg text-text-primary shadow-brand ring-1 ring-white/5">
+    <section className="rounded-xl border border-white/10 bg-surface-800/95 p-lg text-text-primary shadow-brand ring-1 ring-white/5">
       <h2 className="text-xl font-semibold">Welcome to Hello Hands</h2>
       <p className="mt-sm text-sm text-text-secondary">
         Practice friendly ASL signs with visual posters and simple hand gestures. Hold

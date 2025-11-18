@@ -1,63 +1,97 @@
-import type { ReactNode } from 'react';
+import { useLessonStore } from '../state/useLessonStore';
 
 interface LevelCardProps {
-  title: string;
-  description: string;
-  starsEarned: number;
-  totalStars: number;
-  locked?: boolean;
-  action?: ReactNode;
+  level: number;
+  onClick: () => void;
+  className?: string;
+  mode?: 'full' | 'corner';
+  selected?: boolean;
+}
+
+function StarProgress({ earned, total }: { earned: number; total: number }) {
+  return (
+    <div className="flex gap-1">
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={`text-lg ${i < earned ? 'text-accent-lime' : 'text-surface-600'}`}
+        >
+          ⭐
+        </span>
+      ))}
+    </div>
+  );
 }
 
 export function LevelCard({
-  title,
-  description,
-  starsEarned,
-  totalStars,
-  locked = false,
-  action,
+  level,
+  onClick,
+  className = '',
+  mode = 'full',
+  selected = false,
 }: LevelCardProps) {
-  const starFill = Math.round((starsEarned / totalStars) * 100);
+  const currentLevel = useLessonStore((state) => state.level);
+  const stars = useLessonStore((state) => state.stars);
+  const maxStars = useLessonStore((state) => state.maxStars);
+
+  const isCurrentLevel = level === currentLevel;
+  const isCompleted = level < currentLevel;
+  const isLocked = level > currentLevel;
+
+  const starsEarned = isCurrentLevel ? stars : isCompleted ? maxStars : 0;
+
+  const handleClick = () => {
+    if (!isLocked && mode === 'full') {
+      onClick();
+    }
+  };
+
+  // For carousel mode, always render full cards
+  // The carousel handles scaling and positioning
+
   return (
-    <article
-      aria-live="polite"
-      className="flex flex-col gap-md rounded-lg border border-white/10 bg-surface-800/70 p-lg shadow-brand ring-1 ring-white/5"
-      data-locked={locked ? 'true' : 'false'}
+    <div
+      className={`relative w-full rounded-2xl border-2 p-6 cursor-pointer transition-all duration-200 ${
+        selected
+          ? 'bg-surface-800 border-accent-teal shadow-lg shadow-accent-teal/20'
+          : isLocked
+            ? 'bg-surface-800/80 border-surface-600 cursor-not-allowed opacity-60'
+            : isCurrentLevel
+              ? 'bg-surface-800/90 border-accent-teal shadow-lg shadow-accent-teal/20 hover:shadow-accent-teal/30'
+              : 'bg-surface-800/85 border-surface-700 hover:border-accent-teal/60'
+      } ${className}`}
+      onClick={handleClick}
     >
-      <header className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-text-primary">{title}</h2>
-          <p className="text-sm text-text-secondary">{description}</p>
+      {/* Lock overlay for locked levels */}
+      {isLocked && (
+        <div className="absolute inset-0 bg-black/50 rounded-2xl flex items-center justify-center">
+          <div className="text-center">
+            <span className="text-3xl mb-2 block">🔒</span>
+            <p className="text-xs text-white/80">Complete Level {level - 1} to unlock</p>
+          </div>
         </div>
-        {locked ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-primary">
-            Locked
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 rounded-full bg-accent-teal/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-lime">
-            Unlocked
-          </span>
+      )}
+
+      <div className="text-center">
+        <h3 className="text-2xl font-bold text-text-primary mb-2">Level {level}</h3>
+
+        <div className="mb-4">
+          <StarProgress earned={starsEarned} total={maxStars} />
+          <p className="text-xs text-text-secondary mt-2">
+            {isCurrentLevel
+              ? `${starsEarned}/${maxStars} stars`
+              : isCompleted
+                ? 'Completed'
+                : 'Locked'}
+          </p>
+        </div>
+
+        {isCurrentLevel && (
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-teal/20 border border-accent-teal/40">
+            <span className="text-sm text-accent-teal font-semibold">Current</span>
+          </div>
         )}
-      </header>
-      <div className="flex items-center gap-sm">
-        <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-          <div
-            className="absolute inset-y-0 left-0 bg-accent-orange transition-all"
-            style={{ width: `${Math.min(100, Math.max(0, starFill))}%` }}
-          />
-        </div>
-        <span className="text-sm font-semibold text-text-secondary">
-          {starsEarned} / {totalStars}
-        </span>
       </div>
-      <footer className="flex items-center justify-between">
-        <p className="text-sm text-text-muted">
-          {locked
-            ? 'Earn five stars in the current level to unlock.'
-            : "You're on fire! Keep the streak going."}
-        </p>
-        {action}
-      </footer>
-    </article>
+    </div>
   );
 }

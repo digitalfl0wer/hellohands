@@ -95,7 +95,7 @@ export function OnboardingCarousel({ onComplete, onSkip }: OnboardingCarouselPro
       role="dialog"
       aria-labelledby="onboarding-title"
     >
-      <section className="w-full max-w-xl rounded-2xl border border-white/10 bg-surface-800/95 p-6 shadow-2xl ring-1 ring-white/10">
+      <section className="w-full max-w-xl rounded-2xl border border-white/10 bg-surface-800 p-6 shadow-2xl ring-1 ring-white/10">
         <header className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent-teal">

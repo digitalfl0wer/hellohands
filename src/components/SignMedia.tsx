@@ -25,11 +25,20 @@ import SignVideo from './SignVideo';
 export default function SignMedia({ sign, expectedGesture, clipUrl, posterUrl }: Props) {
   const normalized = sign.toUpperCase();
   const m = mediaFor(normalized);
+  const lower = normalized.toLowerCase();
+  const captionsPath = `/signs/level1/${lower}/captions.vtt`;
+
   return (
     <figure className="w-64">
       {clipUrl ? (
         <div className="h-64 w-64">
-          <SignVideo src={clipUrl} poster={posterUrl} autoPlay />
+          <SignVideo
+            src={clipUrl}
+            poster={posterUrl}
+            autoPlay
+            captionsSrc={captionsPath}
+            captionsLang="en"
+          />
         </div>
       ) : (
         <picture>

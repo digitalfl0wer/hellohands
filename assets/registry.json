@@ -65,7 +65,35 @@
       "path": "/assets/mascot/palma/palmaWave/palmaWave3.png",
       "state": "encouraging"
     }
+  },
+  "stickers": {
+    "star_common": {
+      "id": "star_common",
+      "title": "Star Sticker",
+      "path": "/assets/stickers/star.lottie",
+      "rarity": "common",
+      "alt": "Star reward sticker"
+    },
+    "heart_common": {
+      "id": "heart_common",
+      "title": "Heart Sticker",
+      "path": "/assets/stickers/heart.lottie",
+      "rarity": "common",
+      "alt": "Heart reward sticker"
+    },
+    "rocket_rare": {
+      "id": "rocket_rare",
+      "title": "Rocket Sticker",
+      "path": "/assets/stickers/Rocket loader.lottie",
+      "rarity": "rare",
+      "alt": "Rocket reward sticker"
+    },
+    "golden_spark_epic": {
+      "id": "golden_spark_epic",
+      "title": "Golden Spark Sticker",
+      "path": "/assets/stickers/Spark.lottie",
+      "rarity": "epic",
+      "alt": "Golden spark epic reward sticker"
+    }
   }
 }
-
-

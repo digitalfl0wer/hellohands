@@ -129,7 +129,7 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 
 ## 18. Gesture Runtime Migration (in progress)
 
-- [ ] **gesture | L:** Scaffold `gesture-worker` module, establish `candidate/accepted/lost/countdown_done` message contract, add integration test stub.
+- [x] **gesture | L:** Scaffold `gesture-worker` module, establish `candidate/accepted/lost/countdown_done` message contract, add integration test stub.
 - [ ] **infra | M:** Implement frame throttling/backpressure (15–24 fps governor, queue depth monitor, droppable frame policy).
 - [ ] **gesture | M:** Add EMA + One-Euro smoothing utilities and per-gesture hysteresis envelopes (entry/exit thresholds, dwell timers).
 - [ ] **gesture | M:** Introduce `hold_ms`, `release_ms`, `refractory_ms` timers, freeze HUD on accept, emit enriched payloads.
@@ -137,7 +137,7 @@ Labels: `feat`, `ui`, `mcp`, `infra`, `docs`, `test`, `polish` • Estimates: `S
 - [ ] **voice | M:** Route voice accepts through the same Accept → Countdown → Next pipeline with conflict resolution rules.
 - [ ] **config | S:** Publish shared runtime tunables (`packages/config/runtime.ts`) with desktop/mobile/low_power presets.
 - [ ] **metrics | M:** Log fps, per-stage timings, dropped frames, queue depth, accept jitter to logger/bus/Subagents panel.
-- [ ] **flag | S:** Add `WORKER_ON`, `COUNTDOWN`, `REFRACTORY`, `RUNTIME=hands|tasks` env + store toggles.
+- [x] **flag | S:** Add `WORKER_ON`, `COUNTDOWN`, `REFRACTORY`, `RUNTIME=hands|tasks` env + store toggles.
 - [ ] **docs | S:** Update README/playbook with worker import guidance, asset hosting, troubleshooting, QA steps.
 - [ ] **qa | M:** Build perf harness comparing legacy vs tasks runtime (frame time, Accept→Next latency, flap rate).
 

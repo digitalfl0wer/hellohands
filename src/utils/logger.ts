@@ -35,7 +35,27 @@ function makeEntry(
   };
 }
 
+export function hashForTelemetry(input: string, salt = 'hh_voice'): string {
+  const text = `${salt}:${input.trim().toLowerCase()}`;
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash * 31 + text.charCodeAt(i)) | 0;
+  }
+  return `h${Math.abs(hash)}`;
+}
+
 export const logger = {
+  mp: {
+    info(message: string, data?: unknown): void {
+      logger.info('mp', message, data);
+    },
+    warn(message: string, data?: unknown): void {
+      logger.warn('mp', message, data);
+    },
+    error(message: string, data?: unknown): void {
+      logger.error('mp', message, data);
+    },
+  },
   info(tag: string, message: string, data?: unknown): void {
     const entry = makeEntry('info', tag, message, data);
     push(entry);

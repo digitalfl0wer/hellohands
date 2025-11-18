@@ -16,10 +16,16 @@ import {
 import { useLessonStore } from '../state/useLessonStore';
 import { logger } from '../utils/logger';
 
-export function PracticePage() {
+interface PracticePageProps {
+  selectedPack?: string | null;
+}
+
+export function PracticePage({ selectedPack }: PracticePageProps) {
   const gesturesOn = useLessonStore((state) => state.gesturesOn);
   const [packs, setPacks] = useState<PracticePackSummary[]>([]);
-  const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
+  const [selectedPackId, setSelectedPackId] = useState<string | null>(
+    selectedPack || null,
+  );
   const [items, setItems] = useState<PracticeItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [license, setLicense] = useState<{
@@ -45,6 +51,13 @@ export function PracticePage() {
     },
     [],
   );
+
+  // Update selected pack when prop changes
+  useEffect(() => {
+    if (selectedPack !== undefined) {
+      setSelectedPackId(selectedPack);
+    }
+  }, [selectedPack]);
 
   useEffect(() => {
     let mounted = true;

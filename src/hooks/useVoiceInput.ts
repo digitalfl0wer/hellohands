@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { parseVoiceCommand, VoiceParseResult } from './voiceCommandParser';
-import { logger } from '../utils/logger';
+import { hashForTelemetry, logger } from '../utils/logger';
 
 interface VoiceInputOptions {
   enabled: boolean;
@@ -82,11 +82,13 @@ export function useVoiceInput({
       const { onCommand: handleCommand, onUnrecognized: handleUnrecognized } =
         callbacksRef.current;
 
+      const hashed = hashForTelemetry(transcript);
+
       if (parsed === 'uncertain') {
-        logger.info('voice', 'uncertain', { transcript });
+        logger.info('voice', 'voice:heard', { textHash: hashed });
         handleUnrecognized();
       } else {
-        logger.info('voice', 'recognized', parsed);
+        logger.info('voice', 'voice:heard', { textHash: hashed, intent: parsed });
         handleCommand(parsed);
       }
     };

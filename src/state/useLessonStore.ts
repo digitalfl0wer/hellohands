@@ -2,8 +2,6 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type FeedbackState = 'idle' | 'pass' | 'almost' | 'miss';
-export type RuntimeMode = 'hands' | 'tasks';
-
 export interface ClipDescriptor {
   id: string;
   poster: string;
@@ -22,8 +20,6 @@ interface LessonState {
   index: number;
   clips: ClipDescriptor[];
   feedback: FeedbackState;
-  runtimeMode: RuntimeMode;
-  workerOn: boolean;
   countdownOn: boolean;
   refractoryOn: boolean;
   setKidMode: (enabled: boolean) => void;
@@ -35,24 +31,12 @@ interface LessonState {
   registerResult: (result: FeedbackState) => void;
   nextClip: () => void;
   setFeedback: (state: FeedbackState) => void;
-  setRuntimeMode: (mode: RuntimeMode) => void;
-  toggleWorkerOn: () => void;
   toggleCountdown: () => void;
   toggleRefractory: () => void;
 }
 
 const MAX_STARS_PER_LEVEL = 5;
 
-const DEFAULT_RUNTIME_MODE: RuntimeMode =
-  String((import.meta as any)?.env?.VITE_GESTURE_RUNTIME ?? 'hands').toLowerCase() ===
-  'tasks'
-    ? 'tasks'
-    : 'hands';
-const DEFAULT_WORKER_ON =
-  String(
-    (import.meta as any)?.env?.VITE_GESTURE_WORKER_ON ??
-      (DEFAULT_RUNTIME_MODE === 'tasks' ? '1' : '0'),
-  ) === '1';
 const DEFAULT_COUNTDOWN_ON =
   String((import.meta as any)?.env?.VITE_ENABLE_COUNTDOWN ?? '1') === '1';
 const DEFAULT_REFRACTORY_ON =
@@ -80,8 +64,6 @@ export const useLessonStore = create<LessonState>()(
       index: 0,
       clips: [],
       feedback: 'idle',
-      runtimeMode: DEFAULT_RUNTIME_MODE,
-      workerOn: DEFAULT_WORKER_ON,
       countdownOn: DEFAULT_COUNTDOWN_ON,
       refractoryOn: DEFAULT_REFRACTORY_ON,
       setKidMode: (enabled) => set(() => ({ kidMode: enabled })),
@@ -137,8 +119,6 @@ export const useLessonStore = create<LessonState>()(
         }));
       },
       setFeedback: (state) => set(() => ({ feedback: state })),
-      setRuntimeMode: (mode) => set(() => ({ runtimeMode: mode })),
-      toggleWorkerOn: () => set((state) => ({ workerOn: !state.workerOn })),
       toggleCountdown: () => set((state) => ({ countdownOn: !state.countdownOn })),
       toggleRefractory: () => set((state) => ({ refractoryOn: !state.refractoryOn })),
     }),
@@ -155,8 +135,6 @@ export const useLessonStore = create<LessonState>()(
         introDismissed: state.introDismissed,
         level: state.level,
         stars: state.stars,
-        runtimeMode: state.runtimeMode,
-        workerOn: state.workerOn,
         countdownOn: state.countdownOn,
         refractoryOn: state.refractoryOn,
       }),

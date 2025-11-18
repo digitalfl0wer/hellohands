@@ -4,9 +4,17 @@ type SignVideoProps = {
   src: string;
   poster?: string;
   autoPlay?: boolean;
+  captionsSrc?: string;
+  captionsLang?: string;
 };
 
-export function SignVideo({ src, poster, autoPlay = true }: SignVideoProps) {
+export function SignVideo({
+  src,
+  poster,
+  autoPlay = true,
+  captionsSrc,
+  captionsLang = 'en',
+}: SignVideoProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -61,6 +69,15 @@ export function SignVideo({ src, poster, autoPlay = true }: SignVideoProps) {
       poster={poster}
       src={src}
     >
+      {captionsSrc ? (
+        <track
+          label="English captions"
+          kind="captions"
+          srcLang={captionsLang}
+          src={captionsSrc}
+          default
+        />
+      ) : null}
       Your browser can’t play this video.
     </video>
   );

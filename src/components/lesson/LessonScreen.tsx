@@ -17,6 +17,8 @@ import { useLessonStore } from '../../state/useLessonStore';
 import { AttributionChip } from '../attribution/AttributionChip';
 import { CameraFeed } from '../CameraFeed';
 import { VoiceGuide } from '../VoiceGuide';
+import { CountdownRocket } from '../overlays/CountdownRocket';
+import { CountdownFinger } from '../overlays/CountdownFinger';
 import { Toast } from '../Toast';
 import { ConfettiOverlay } from '../ConfettiOverlay';
 import {
@@ -27,9 +29,53 @@ import {
 } from '../../services/practiceApi';
 import type { ExpectedGesture } from '../../gestures/gestureEvaluator';
 import { logger } from '../../utils/logger';
+import { useProgressStore } from '../../state/progress';
 import { NoCameraRecovery } from '../recovery/NoCameraRecovery';
 import { NoHandFoundNotice } from '../recovery/NoHandFoundNotice';
 import { DemoVideoFeed } from '../DemoVideoFeed';
+import { Palma } from '../mascot/Palma';
+
+function StarProgress({
+  earned,
+  total,
+  kidMode = false,
+}: {
+  earned: number;
+  total: number;
+  kidMode?: boolean;
+}) {
+  if (kidMode) {
+    // Kid mode: bigger, more colorful stars
+    return (
+      <div className="flex justify-center gap-2">
+        {Array.from({ length: total }, (_, i) => (
+          <span
+            key={i}
+            className={`text-2xl transition-colors duration-300 ${
+              i < earned ? 'text-yellow-400 drop-shadow-lg' : 'text-surface-600'
+            }`}
+          >
+            ⭐
+          </span>
+        ))}
+      </div>
+    );
+  }
+
+  // Adult mode: standard stars
+  return (
+    <div className="flex justify-center gap-1">
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={`text-lg ${i < earned ? 'text-accent-lime' : 'text-surface-600'}`}
+        >
+          ⭐
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export interface LessonScreenHandle {
   nextClip(): void;
@@ -55,6 +101,11 @@ interface LessonScreenProps {
     gesture: ExpectedGesture;
     score: number;
   }) => void;
+  countdownLabel?: string;
+  kidCountdownActive?: boolean;
+  onKidCountdownComplete?: () => void;
+  adultCountdownActive?: boolean;
+  onAdultCountdownComplete?: () => void;
 }
 
 export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
@@ -70,6 +121,11 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       onHint,
       onShowHowToUse,
       onAcceptRequest,
+      countdownLabel,
+      kidCountdownActive,
+      onKidCountdownComplete,
+      adultCountdownActive,
+      onAdultCountdownComplete,
     },
     ref,
   ) => {
@@ -79,6 +135,11 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
     const [showHelp, setShowHelp] = useState(false);
     const playerRef = useRef<LessonPlayerHandle | null>(null);
     const registerResult = useLessonStore((s) => s.registerResult);
+    const currentLevel = useLessonStore((s) => s.level);
+    const currentStars = useLessonStore((s) => s.stars);
+    const maxStars = useLessonStore((s) => s.maxStars);
+    const registerPassInProgress = useProgressStore((s) => s.registerPass);
+    const recordSessionActivity = useProgressStore((s) => s.recordSessionActivity);
     const approveGuardRef = useRef<number>(0);
     const confettiTimerRef = useRef<number | null>(null);
     const [toast, setToast] = useState<{ message: string; duration?: number } | null>(
@@ -107,17 +168,36 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       const load = async () => {
         try {
           const packs = await listPracticePacks();
+          const level = useLessonStore.getState().level;
           if (!mounted || !packs.length) return;
-          const items = await resolveItems(packs[0]);
-          if (!mounted || !items.length) return;
-          const lessonClips = lessonClipsFromPracticeItems(items);
+
+          // Filter packs based on user level
+          // Level 1: L1 packs only
+          // Level 2: L1 + L2 packs
+          // Level 3+: All packs
+          const availablePacks = packs.filter((pack) => {
+            const packLevel = pack.id.startsWith('L') ? parseInt(pack.id.charAt(1)) : 1;
+            return packLevel <= level;
+          });
+
+          if (!availablePacks.length) return;
+
+          // Combine items from all available packs for this level
+          const allItems: PracticeItem[] = [];
+          for (const pack of availablePacks) {
+            const items = await resolveItems(pack);
+            allItems.push(...items);
+          }
+
+          if (!mounted || !allItems.length) return;
+          const lessonClips = lessonClipsFromPracticeItems(allItems);
           if (!lessonClips.length) return;
           setClips(lessonClips);
           setIndex(0);
         } catch (error) {
           if (import.meta.env.DEV) {
             // eslint-disable-next-line no-console
-            console.warn('[LessonScreen] failed to load practice pack', error);
+            console.warn('[LessonScreen] failed to load practice packs', error);
           }
         }
       };
@@ -163,6 +243,8 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         }
         setNoHandFound(false);
         registerResult('pass');
+        registerPassInProgress(currentClip.id, score);
+        recordSessionActivity();
         setFeedback('pass');
         setToast({ message: 'Great match!', duration: 1200 });
         setConfetti(true);
@@ -229,7 +311,22 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
 
     return (
       <section className="space-y-lg">
-        <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+        {/* Star Progress Display */}
+        <div className="flex justify-center">
+          <div className="rounded-2xl border border-white/10 bg-surface-800/70 p-4 shadow-lg ring-1 ring-white/5">
+            <div className="text-center">
+              <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
+                Level {currentLevel} Progress
+              </h3>
+              <StarProgress earned={currentStars} total={maxStars} kidMode={kidMode} />
+              <p className="text-xs text-text-secondary mt-2">
+                {currentStars} / {maxStars} stars
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] items-start">
           <LessonPlayer
             kidMode={kidMode}
             onNext={goToNextClip}
@@ -243,7 +340,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           />
 
           {gesturesOn ? (
-            <aside className="rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
+            <aside className="relative flex min-h-[420px] flex-1 flex-col rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
               <header className="mb-sm flex items-center justify-between">
                 <h3 className="text-base font-semibold">Gesture camera</h3>
                 <span className="text-xs uppercase tracking-wide text-accent-teal">
@@ -253,7 +350,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
               <p className="text-xs text-text-secondary">
                 Keep within the frame and hold each gesture briefly for the best match.
               </p>
-              <div className="mt-md overflow-hidden rounded-xl border border-white/10">
+              <div className="mt-sm flex-1 overflow-hidden rounded-xl border border-white/10 bg-surface-900/90 relative">
                 {demoMode ? (
                   <DemoVideoFeed />
                 ) : cameraError ? (
@@ -268,20 +365,41 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
                     }}
                   />
                 ) : (
-                  <CameraFeed
-                    enabled={gestureCameraEnabled ?? gesturesOn}
-                    kidMode={kidMode}
-                    highGain={highGain}
-                    expectedGesture={currentClip.expectedGesture ?? null}
-                    onMatch={handleGestureMatch}
-                    onCameraError={(msg) => {
-                      setCameraError(msg);
-                      setDemoMode(false);
-                    }}
-                    onNoHandTimeout={() => {
-                      setNoHandFound(true);
-                    }}
-                  />
+                  <>
+                    <CameraFeed
+                      enabled={gestureCameraEnabled ?? gesturesOn}
+                      kidMode={kidMode}
+                      highGain={highGain}
+                      expectedGesture={currentClip.expectedGesture ?? null}
+                      onMatch={handleGestureMatch}
+                      onCameraError={(msg) => {
+                        setCameraError(msg);
+                        setDemoMode(false);
+                      }}
+                      onNoHandTimeout={() => {
+                        setNoHandFound(true);
+                      }}
+                      suppressHud={
+                        (kidMode && kidCountdownActive) ||
+                        (!kidMode && adultCountdownActive)
+                      }
+                    />
+                    {kidMode && kidCountdownActive && onKidCountdownComplete ? (
+                      <CountdownRocket
+                        overlayMode="camera"
+                        label={countdownLabel}
+                        onComplete={onKidCountdownComplete}
+                      />
+                    ) : null}
+                    {!kidMode && adultCountdownActive && onAdultCountdownComplete ? (
+                      <CountdownFinger
+                        overlayMode="camera"
+                        label={countdownLabel}
+                        durationMs={4500}
+                        onComplete={onAdultCountdownComplete}
+                      />
+                    ) : null}
+                  </>
                 )}
               </div>
               {!demoMode && noHandFound && !cameraError && (
@@ -291,8 +409,21 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
                   onToggleHighGain={() => setHighGain((v) => !v)}
                 />
               )}
-              <div className="mt-md">
+              <div className="mt-sm">
                 <VoiceGuide visible={voiceOn} />
+              </div>
+              <div className="pointer-events-none absolute -bottom-4 -right-2 hidden h-16 w-16 md:block">
+                <Palma
+                  state={
+                    cameraError
+                      ? 'oops'
+                      : confetti
+                        ? 'success'
+                        : noHandFound
+                          ? 'encouraging'
+                          : 'idle'
+                  }
+                />
               </div>
             </aside>
           ) : (

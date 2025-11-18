@@ -23,20 +23,21 @@ Hello Hands offers a guided, multimodal ASL micro-lesson focused on a five-star 
 
 1. **Welcome & Level Select** – Level cards communicate progress, Kid Mode, attribution context, and indicate which dataset (MS-ASL vs ASLLVD) is active via feature flag.
 2. **Directions Gate** – Manual fallback plus 3-2-1 countdown into the lesson establishes pacing; gate now primes the worker runtime + voice parity countdown path.
-3. **Lesson Loop** – Poster preview, clip playback, Replay/Slow/Next, feedback banner, help sheet, unlock celebrations, and the shared **Accept → Countdown → Next clip** flow for gesture/voice.
-4. **Practice Workspace** – Live camera feed (or worker-provided landmarks) mirrors gestures, aligns expected intent, streams recognitions (candidate/accepted/lost/countdown) onto the planner bus.
-5. **Agent Console** – Right-rail Goose subagents panel visualizes event flow, fps metrics, dropped frames, dataset flag changes, and exposes exportable logs.
+3. **Onboarding & Calibration** – First-time users see a three-step “How Hello Hands works” carousel followed by a mini calibration flow (thumbs_up, open_palm, point, pinch) that tunes gesture thresholds per device and can be re-run from Settings.
+4. **Lesson Loop** – Poster preview, clip playback, Replay/Slow/Next, feedback banner, help sheet, unlock celebrations, and the shared **Accept → Countdown → Next clip** flow for gesture/voice, with kid/adult pacing differences and mode-specific countdown overlays.
+5. **Practice Workspace** – Live camera feed (or worker-provided landmarks) mirrors gestures, aligns expected intent, streams recognitions (candidate/accepted/lost/countdown) onto the planner bus, and surfaces recovery UI for no camera, no hand, and low-light cases.
+6. **Agent Console** – Right-rail Goose subagents panel visualizes event flow, fps metrics, dropped frames, dataset flag changes, and exposes exportable logs.
 
 ## Feature Inventory (Implemented)
 
 - **Design System & Shell** – Tailwind tokens and the `AppShell` frame enforce gradients, safe areas, and focus-visible styles (`src/components/AppShell.tsx`, `src/styles/tokens.css`, `tailwind.config.ts`).
 - **State Management** – Zustand store persists Kid Mode, toggles, levels, stars, and clip queue with hydration guard and tests (`src/state/useLessonStore.ts`, `src/state/__tests__/useLessonStore.test.tsx`).
 - **Welcome Experience** – Responsive Level cards, Kid toggle messaging, and dataset attribution summary (`src/screens/WelcomeScreen.tsx`).
-- **Lesson Player** – Poster/video playback pipeline with pause, slow-mo, help sheet, and feedback banner integration (`src/components/lesson/LessonScreen.tsx`, `src/components/lesson/LessonPlayer.tsx`).
-- **Gesture Layer** – Pointer-based swipe heuristics for navigation plus MediaPipe Hands detector with HUD, hold-to-emit logic, and BroadcastChannel posts (`src/hooks/useGestureInput.ts`, `src/components/CameraFeed.tsx`, `src/gestures/gestureBus.ts`).
-- **Voice Layer** – Web Speech integration handling control commands, Kid Mode, level navigation, and toast hints on uncertainty (`src/hooks/useVoiceInput.ts`, `src/hooks/voiceCommandParser.ts`).
+- **Lesson Player** – Poster/video playback pipeline with pause, slow-mo, help sheet, feedback banner integration, optional captions via VTT, and kid/adult copy variants (`src/components/lesson/LessonScreen.tsx`, `src/components/lesson/LessonPlayer.tsx`, `src/components/SignVideo.tsx`).
+- **Gesture Layer** – Pointer-based swipe heuristics for navigation plus MediaPipe Hands detector with HUD, hold-to-emit logic, per-device calibration thresholds, kid/adult pacing, and BroadcastChannel posts (`src/hooks/useGestureInput.ts`, `src/components/CameraFeed.tsx`, `src/gestures/gestureBus.ts`, `src/gestures/gestureEvaluator.ts`, `src/components/calibration/CalibrationFlow.tsx`).
+- **Voice Layer** – Web Speech integration handling control commands, Kid Mode, level navigation, and toast hints on uncertainty, with hashed transcript telemetry and ARIA-live guidance (`src/hooks/useVoiceInput.ts`, `src/hooks/voiceCommandParser.ts`, `src/components/VoiceGuide.tsx`, `src/utils/logger.ts`).
 - **Gesture Runtime Spike (in progress)** – MediaPipe Tasks `GestureRecognizer` running inside a worker with throttling, smoothing, hysteresis, shared countdown path, and perf telemetry (`src/workers/gesture-worker/*`, shared config TBD).
-- **Progress & Rewards** – Unlock confetti, stickers, toast sequencing, and Kid-friendly copy tied to store state (`src/App.tsx`, `src/components/ConfettiOverlay.tsx`, `src/components/UnlockSticker.tsx`).
+- **Progress & Rewards** – Unlock confetti, stickers, toast sequencing, and Kid-friendly copy tied to store state; Sticker board and milestone cards surface gentle gamification and streaks (`src/App.tsx`, `src/components/ConfettiOverlay.tsx`, `src/components/UnlockSticker.tsx`, `src/state/progress.ts`, `src/components/progress/StickerBoard.tsx`, `src/components/progress/MilestoneCard.tsx`).
 - **Subagents & Telemetry** – BroadcastChannel bus, planner attribution tagging, logging buffer with download, and right-rail console (`src/agents/planner.ts`, `src/utils/logger.ts`, `src/components/SubagentsPanel.tsx`).
 - **MCP Mock Server** – Express server exposes packs, next-item suggestions, and license endpoints to mirror production APIs (`server/mcpServer.ts`, `src/services/practiceApi.ts`).
 - **Data Pipeline Foundations** – MS-ASL adapter, filter/download/trim/labels/stats scripts, and CLI wrappers documented in `docs/msasl-pipeline.md`, fulfilling Sections 0–13 of the MVP task tracker (`adapters/msasl.ts`, `scripts/msasl_*.ts`).
@@ -52,7 +53,7 @@ Hello Hands offers a guided, multimodal ASL micro-lesson focused on a five-star 
 
 ## Observability & QA
 
-- Logger posts structured events (`info`/`warn`/`error`) to the bus and retains a download buffer for post-run analysis.
+- Logger posts structured events (`info`/`warn`/`error`) to the bus and retains a download buffer for post-run analysis; UI 2.0 telemetry covers permissions, countdowns, HUD states, voice transcripts (hashed), calibration completion, Kid Mode, stickers, milestones, and mascot/countdown state changes.
 - Manual QA checklist and bug triage template live in `docs/`; new checklist will add fps/drop-frame gates plus ASLLVD framing/coverage review.
 - `pnpm practice:all` chain validates whitelist, regenerates packs, and flags missing assets; `pnpm msasl:*` scripts provide end-to-end pipeline coverage; upcoming `pnpm asllvd:*` scripts will mirror this flow.
 

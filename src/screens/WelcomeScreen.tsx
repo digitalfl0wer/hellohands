@@ -1,5 +1,4 @@
 import { AppButton } from '../components/Button';
-import { LevelCard } from '../components/LevelCard';
 import IntroMessage from '../components/IntroMessage';
 
 type WelcomeScreenProps = {
@@ -7,8 +6,8 @@ type WelcomeScreenProps = {
   level: number;
   stars: number;
   totalStars: number;
-  onStart: () => void;
-  onLockedLevel: (level: number) => void;
+  onSelectLesson: () => void;
+  onSelectPractice: () => void;
 };
 
 export function WelcomeScreen({
@@ -16,69 +15,56 @@ export function WelcomeScreen({
   level,
   stars,
   totalStars,
-  onStart,
-  onLockedLevel,
+  onSelectLesson,
+  onSelectPractice,
 }: WelcomeScreenProps) {
   const levelTwoLocked = level < 2;
-  const levelThreeLocked = level < 3;
   // Intro message is always visible (permanent)
 
   return (
     <section className="space-y-lg">
       <header className="space-y-sm">
         <IntroMessage />
-        <p className="max-w-xl text-base text-text-secondary">
-          Earn five stars to unlock the next pack. Manual controls always work; gestures
-          and voice are optional power-ups.
-        </p>
-        <p className="text-xs text-text-muted">
-          Kid Mode is {kidMode ? 'on' : 'off'} — toggle anytime from the top-right
-          control.
-        </p>
       </header>
-      <div className="grid gap-md md:grid-cols-3">
-        <LevelCard
-          title="Level 1"
-          description="Start practicing friendly ASL signs."
-          starsEarned={stars}
-          totalStars={totalStars}
-          locked={false}
-          action={
-            <AppButton onClick={onStart} type="button" variant="adult">
-              Begin lesson
+      <div className="grid gap-lg md:grid-cols-2">
+        <article className="flex flex-col justify-between rounded-3xl border border-white/10 bg-surface-900/70 p-lg pt-8 shadow-lg ring-1 ring-white/10">
+          <div className="space-y-sm">
+            <h2 className="text-2xl font-semibold text-text-primary">Lesson path</h2>
+            <p className="text-sm text-text-secondary">
+              Follow the guided lesson trajectory with paced sign demos, countdowns, and
+              voice/gesture milestones. Earn stars to keep unlocking new packs.
+            </p>
+            <div className="flex items-center gap-sm text-sm text-text-secondary">
+              <span className="font-semibold text-text-primary">Level {level}</span>
+              <span>
+                {stars} / {totalStars} stars (Level requirements progress)
+              </span>
+              <span className="inline-flex h-2 w-2 rounded-full bg-accent-lime" />
+            </div>
+          </div>
+          <div className="mt-6">
+            <AppButton onClick={onSelectLesson} type="button" variant="adult">
+              Begin lesson path
             </AppButton>
-          }
-        />
-        <LevelCard
-          title="Level 2"
-          description="Unlock to learn social basics and quick replies."
-          starsEarned={levelTwoLocked ? 0 : 5}
-          totalStars={5}
-          locked={levelTwoLocked}
-          action={
-            levelTwoLocked ? (
-              <AppButton onClick={() => onLockedLevel(2)} type="button" variant="adult">
-                Locked
-              </AppButton>
-            ) : (
-              <AppButton onClick={onStart} type="button" variant="adult">
-                Continue
-              </AppButton>
-            )
-          }
-        />
-        <LevelCard
-          title="Level 3"
-          description="Coming soon: storyteller basics and quick phrases."
-          starsEarned={0}
-          totalStars={5}
-          locked={levelThreeLocked}
-          action={
-            <AppButton onClick={() => onLockedLevel(3)} type="button" variant="adult">
-              Locked
+          </div>
+        </article>
+        <article className="flex flex-col justify-between rounded-3xl border border-white/10 bg-surface-800/70 p-lg pt-8 shadow-lg ring-1 ring-white/10">
+          <div className="space-y-sm">
+            <h2 className="text-2xl font-semibold text-text-primary">Practice path</h2>
+            <p className="text-sm text-text-secondary">
+              Jump into hands-on practice with dynamic sign drills, on-the-fly challenges,
+              and camera feedback so you can rehearse gestures at your own pace.
+            </p>
+            <p className="text-xs text-text-muted">
+              Independent flow, same lessons, perfect for warming up.
+            </p>
+          </div>
+          <div className="mt-6">
+            <AppButton onClick={onSelectPractice} type="button" variant="kid">
+              Try practice path
             </AppButton>
-          }
-        />
+          </div>
+        </article>
       </div>
     </section>
   );

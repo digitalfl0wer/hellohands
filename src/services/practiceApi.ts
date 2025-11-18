@@ -231,7 +231,18 @@ export interface LicenseInfo {
 }
 
 export async function fetchLicenseInfo(): Promise<LicenseInfo | null> {
+  const dataset = import.meta.env.VITE_DATASET || 'MSASL';
+
   if (!USE_MCP) {
+    if (dataset === 'ASLLVD') {
+      return {
+        dataset: 'ASLLVD',
+        license: 'Boston University License',
+        url: 'https://www.bu.edu/av/asllvd/',
+        attribution:
+          'American Sign Language Lexicon Video Dataset (ASLLVD). Athitsos, V., Neidle, C., Sclaroff, S., Nash, J., Stefan, A., Yuan, Q., & Thangali, A. (2008). Proceedings of the IEEE International Conference on Computer Vision Workshops.',
+      };
+    }
     return {
       dataset: 'MS-ASL',
       license: 'C-UDA (Computational Use of Data Agreement)',
