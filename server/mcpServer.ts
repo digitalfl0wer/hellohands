@@ -91,12 +91,24 @@ async function getAvailablePacks(): Promise<PracticePack[]> {
   return packs;
 }
 
-const licenseInfo = {
-  dataset: 'MS-ASL',
-  license: 'C-UDA (Computational Use of Data Agreement)',
-  url: 'https://ms-asl.cs.rochester.edu/',
-  attribution:
-    'MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language. BMVC 2019.',
+const getLicenseInfo = () => {
+  const dataset = process.env.DATASET || 'MSASL';
+  if (dataset === 'ASLLVD') {
+    return {
+      dataset: 'ASLLVD',
+      license: 'Boston University License',
+      url: 'https://www.bu.edu/av/asllvd/',
+      attribution:
+        'American Sign Language Lexicon Video Dataset (ASLLVD). Athitsos, V., Neidle, C., Sclaroff, S., Nash, J., Stefan, A., Yuan, Q., & Thangali, A. (2008). Proceedings of the IEEE International Conference on Computer Vision Workshops.',
+    };
+  }
+  return {
+    dataset: 'MS-ASL',
+    license: 'C-UDA (Computational Use of Data Agreement)',
+    url: 'https://ms-asl.cs.rochester.edu/',
+    attribution:
+      'MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language. BMVC 2019.',
+  };
 };
 
 app.get(`${BASE_PATH}/packs`, async (_req, res) => {
@@ -130,7 +142,7 @@ app.post(`${BASE_PATH}/practice/next`, async (req, res) => {
 });
 
 app.get(`${BASE_PATH}/license`, (_req, res) => {
-  res.json(licenseInfo);
+  res.json(getLicenseInfo());
 });
 
 app.use((_req, res) => {

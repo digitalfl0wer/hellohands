@@ -91,12 +91,71 @@ License
 This repo’s code is MIT unless noted otherwise. Media and datasets are governed by their original licenses and are not included here.
 Datasets & Attribution
 
+## Dataset Selection
+
+HelloHands supports multiple ASL datasets via the `DATASET` environment variable:
+
+- `DATASET=MSASL` (default): Uses MS-ASL dataset
+- `DATASET=ASLLVD`: Uses ASLLVD dataset (requires separate ingestion)
+
 ## Dataset Attribution (MS-ASL)
 
 This project uses the MS-ASL dataset for research and prototyping purposes.
 Please review and comply with the Computational Use of Data Agreement (C-UDA)
 included with the dataset. All credits and rights remain with the original
 authors and institutions.
+
+## Dataset Attribution (ASLLVD)
+
+This project uses the American Sign Language Lexicon Video Dataset (ASLLVD) for research and prototyping purposes.
+
+**Citation:**
+```
+@article{athitsos2008american,
+  title={American sign language lexicon video dataset},
+  author={Athitsos, Vassilis and Neidle, Carol and Sclaroff, Stan and Nash, Joan and Stefan, Alexandra and Yuan, Quan and Thangali, Ashwin},
+  journal={Proceedings of the IEEE International Conference on Computer Vision Workshops},
+  pages={1--8},
+  year={2008},
+  publisher={IEEE}
+}
+```
+
+ASLLVD is distributed under the terms specified by Boston University. Please refer to the original dataset documentation for complete licensing information.
+
+## ASLLVD Pipeline via Goose
+
+**⚠️ Security Warning:** ASLLVD ingestion requires authentication. Set `ASLLVD_COOKIE` environment variable with your Boston University credentials. Never commit credentials to git.
+
+**One-command pipeline:**
+```bash
+# 1. Ingest raw videos
+goose run --recipe goose/recipes/asllvd_ingest.yaml
+
+# 2. Normalize assets (trim, fps, size)
+goose run --recipe goose/recipes/asllvd_normalize.yaml
+
+# 3. Build packs and labels
+goose run --recipe goose/recipes/asllvd_build_packs.yaml
+
+# 4. Verify coverage (≥90% per pack)
+goose run --recipe goose/recipes/asllvd_verify.yaml
+```
+
+**Environment Setup:**
+```bash
+# Copy and configure environment
+cp .env.example .env
+# Edit .env with your ASLLVD_COOKIE and set DATASET=ASLLVD
+
+# Optional: Set custom data root
+export DATA_ROOT=/path/to/large/storage
+```
+
+**Storage Requirements:**
+- Raw videos: `data/raw/asllvd/` (~50GB, not in git)
+- Processed clips: `data/processed/asllvd/clips/` (git-tracked)
+- Posters: `data/processed/asllvd/posters/` (git-tracked)
 
 Reference:
 Vaezi Joze, H. R., & Koller, O. (2019). MS-ASL: A Large-Scale Data Set and
@@ -180,17 +239,19 @@ goose run --recipe goose/recipes/asl_mvp.yaml --values subset=100 fps=30 size=25
 
 The practice view expects a local copy of the MediaPipe hand landmarker model.
 
+We load the model **locally** from `/models/hand_landmarker.task` in dev and prod
+so there are no runtime CDN calls. To fetch the model, run:
+
 ```
 pnpm hand:model
 # or
 curl -L \
-  -o public/hand_landmarker.task \
+  -o public/models/hand_landmarker.task \
   https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
 ```
 
 If your network blocks the CDN, download the file manually and place it at
-`public/hand_landmarker.task`. The app falls back to the CDN when the local copy
-is missing.
+`public/models/hand_landmarker.task`.
 
 ## MCP mock server
 

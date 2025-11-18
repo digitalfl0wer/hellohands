@@ -1,0 +1,8 @@
+# Let goose work with data (we do NOT ignore it here)
+
+# Still keep goose away from the usual junk:
+node_modules/
+dist/
+.git/
+.pnpm-store/
+artifacts/
