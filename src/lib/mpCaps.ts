@@ -27,7 +27,8 @@ export function getMediaPipeCaps(): MediaPipeCaps {
   try {
     if (hasWindow) {
       const video = document.createElement('video') as any;
-      hasRequestVideoFrameCallback = typeof video.requestVideoFrameCallback === 'function';
+      hasRequestVideoFrameCallback =
+        typeof video.requestVideoFrameCallback === 'function';
       // OffscreenCanvas is undefined on many platforms; feature-detect safely.
       hasOffscreenCanvas = typeof (window as any).OffscreenCanvas !== 'undefined';
 
@@ -45,8 +46,7 @@ export function getMediaPipeCaps(): MediaPipeCaps {
     if (hasNavigator) {
       const ua = navigator.userAgent ?? '';
       isSafariIos =
-        /Safari/.test(ua) &&
-        (!/Chrome/.test(ua) || /iPhone|iPad|iPod/.test(ua));
+        /Safari/.test(ua) && (!/Chrome/.test(ua) || /iPhone|iPad|iPod/.test(ua));
       hasWebGPU = typeof (navigator as any).gpu !== 'undefined';
     }
   } catch {
@@ -68,4 +68,3 @@ export function getMediaPipeCaps(): MediaPipeCaps {
 
   return cachedCaps;
 }
-

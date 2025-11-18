@@ -93,7 +93,6 @@ const landmarks = handLandmarker.detect(image);
 
 For more information, refer to the [Hand Landmarker](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker/web_js) documentation.
 
-
 ## Holistic Landmarker
 
 The MediaPipe Holistic Landmarker task task lets you combine components of the

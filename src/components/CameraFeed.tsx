@@ -79,9 +79,9 @@ export function CameraFeed({
   const lastTypeRef = useRef<string | null>(null);
   const lastStableStartMsRef = useRef<number | null>(null);
   const lastPostMsRef = useRef<number>(0);
-  const handLandmarkerRef = useRef<Awaited<ReturnType<typeof createHandLandmarker>> | null>(
-    null,
-  );
+  const handLandmarkerRef = useRef<Awaited<
+    ReturnType<typeof createHandLandmarker>
+  > | null>(null);
   const workerClientRef = useRef<GestureWorkerClient | null>(null);
   const workerLastFrameSentRef = useRef<number>(0);
   const lastVideoTimeRef = useRef(-1);
@@ -358,10 +358,8 @@ export function CameraFeed({
         return;
       }
       const container = overlayRef.current?.parentElement as HTMLElement | null;
-      const cssW =
-        (container?.clientWidth ?? video.clientWidth) || video.videoWidth;
-      const cssH =
-        (container?.clientHeight ?? video.clientHeight) || video.videoHeight;
+      const cssW = (container?.clientWidth ?? video.clientWidth) || video.videoWidth;
+      const cssH = (container?.clientHeight ?? video.clientHeight) || video.videoHeight;
       const dpr = Math.max(1, window.devicePixelRatio || 1);
       const targetW = Math.floor(cssW * dpr);
       const targetH = Math.floor(cssH * dpr);
@@ -378,10 +376,7 @@ export function CameraFeed({
       const drawConnectors = (window as any).drawConnectors;
       const drawLandmarks = (window as any).drawLandmarks;
       const HAND_CONNECTIONS = (window as any).HAND_CONNECTIONS;
-      if (
-        typeof drawConnectors === 'function' &&
-        typeof drawLandmarks === 'function'
-      ) {
+      if (typeof drawConnectors === 'function' && typeof drawLandmarks === 'function') {
         for (const pts of handsToDraw) {
           try {
             drawConnectors(ctx, pts, HAND_CONNECTIONS, {
@@ -515,15 +510,7 @@ export function CameraFeed({
           )}%) · hold ${holdSeconds}s${goalSuffix}`,
         );
         const holdProgress =
-          holdMs > 0
-            ? Math.max(
-                0,
-                Math.min(
-                  1,
-                  (holdMs - remainingMs) / holdMs,
-                ),
-              )
-            : 0;
+          holdMs > 0 ? Math.max(0, Math.min(1, (holdMs - remainingMs) / holdMs)) : 0;
         emitStatus('holding', {
           confidence: classification.score,
           holdProgress,
@@ -809,7 +796,7 @@ export function CameraFeed({
         const mediaTime =
           typeof metadata?.mediaTime === 'number' && Number.isFinite(metadata.mediaTime)
             ? metadata.mediaTime
-            : videoElement.currentTime ?? 0;
+            : (videoElement.currentTime ?? 0);
         if (mediaTime === lastVideoTimeRef.current) {
           (videoElement as any).requestVideoFrameCallback(frameCallback);
           return;
@@ -865,7 +852,6 @@ export function CameraFeed({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [resetTimingState]);
-
 
   useEffect(() => {
     if (!enabled || !onNoHandTimeout) {
@@ -932,7 +918,10 @@ export function CameraFeed({
               type="button"
               className="rounded bg-white/10 px-2 py-1 font-semibold text-[10px]"
               onClick={() => {
-                logger.mp.info('recovery_action', { action: 'lower_res', code: mpErrorCode });
+                logger.mp.info('recovery_action', {
+                  action: 'lower_res',
+                  code: mpErrorCode,
+                });
                 setMpErrorCode(null);
               }}
             >
@@ -954,15 +943,9 @@ export function CameraFeed({
       ) : null}
       {devMeterEnabled && (
         <div className="pointer-events-none absolute top-2 right-2 rounded bg-black/60 px-2 py-1 text-[10px] font-mono text-white shadow-lg">
-          <div className="leading-none">
-            fps: {devMeterState.fps.toFixed(1)}
-          </div>
-          <div className="leading-none">
-            avg dt: {devMeterState.avgDt.toFixed(1)}ms
-          </div>
-          <div className="leading-none">
-            tsClamp: {devMeterState.tsClamp}
-          </div>
+          <div className="leading-none">fps: {devMeterState.fps.toFixed(1)}</div>
+          <div className="leading-none">avg dt: {devMeterState.avgDt.toFixed(1)}ms</div>
+          <div className="leading-none">tsClamp: {devMeterState.tsClamp}</div>
         </div>
       )}
       {!suppressHud ? (

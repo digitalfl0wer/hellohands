@@ -11,4 +11,3 @@ export interface MpStatusPayload {
   confidence?: number;
   holdProgress?: number;
 }
-

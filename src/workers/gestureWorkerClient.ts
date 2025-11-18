@@ -100,13 +100,16 @@ export class GestureWorkerClient {
     if (this.worker) return;
     const create = this.options.createWorker ?? createDefaultWorker;
     this.worker = create();
-    this.worker!.addEventListener('message', (event: MessageEvent<GestureWorkerEvent>) => {
-      const data = event.data;
-      if (data.type === 'status') {
-        this.status = data.status;
-      }
-      this.options.onEvent?.(data);
-    });
+    this.worker!.addEventListener(
+      'message',
+      (event: MessageEvent<GestureWorkerEvent>) => {
+        const data = event.data;
+        if (data.type === 'status') {
+          this.status = data.status;
+        }
+        this.options.onEvent?.(data);
+      },
+    );
     this.worker!.addEventListener('error', (error) => {
       this.status = 'error';
       this.options.onEvent?.({
