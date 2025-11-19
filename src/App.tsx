@@ -179,7 +179,7 @@ function App(): JSX.Element | null {
   const handleSelectLessonPath = () => {
     setSelectedPath('lesson');
     setSideMenuOpen(false);
-    setView('lesson-pack-stack');
+    setView('level-stack'); // Go to level selection, then lesson
   };
 
   const handleSelectPracticePath = () => {
