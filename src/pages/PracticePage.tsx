@@ -188,22 +188,27 @@ export function PracticePage({ selectedPack }: PracticePageProps) {
           Mirror your gesture to the example. Hold it steady for a moment so the model can
           recognise it.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           {currentItem ? (
-            <SignMedia
-              sign={currentItem.sign}
-              expectedGesture={currentItem.expectedGesture}
-              clipUrl={currentItem.clipUrl}
-              posterUrl={
-                currentItem.posterUrl ??
-                currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')
-              }
-            />
-          ) : null}
-          {currentItem ? (
-            <p className="mt-2 text-sm text-text-secondary">
-              {getSignDescription(currentItem.sign)}
-            </p>
+            <>
+              <SignMedia
+                sign={currentItem.sign}
+                expectedGesture={currentItem.expectedGesture}
+                clipUrl={currentItem.clipUrl}
+                posterUrl={
+                  currentItem.posterUrl ??
+                  currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')
+                }
+              />
+              <div className="rounded-lg border border-white/10 bg-surface-800/70 p-4 shadow-sm">
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-accent-teal mb-2">
+                  How to sign: {currentItem.sign}
+                </h4>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {getSignDescription(currentItem.sign)}
+                </p>
+              </div>
+            </>
           ) : null}
         </div>
         {SHOW_CAMERA ? (

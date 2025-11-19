@@ -328,17 +328,27 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         </div>
 
         <div className="grid gap-lg md:grid-cols-[minmax(0,1fr)_minmax(0,420px)] items-start">
-          <LessonPlayer
-            kidMode={kidMode}
-            onNext={goToNextClip}
-            onReplay={handleReplay}
-            onSlowMo={handleSlowMo}
-            paused={paused}
-            poster={currentClip.poster}
-            ref={playerRef}
-            title={currentClip.title}
-            videoSrc={currentClip.video}
-          />
+          <div className="space-y-4">
+            <LessonPlayer
+              kidMode={kidMode}
+              onNext={goToNextClip}
+              onReplay={handleReplay}
+              onSlowMo={handleSlowMo}
+              paused={paused}
+              poster={currentClip.poster}
+              ref={playerRef}
+              title={currentClip.title}
+              videoSrc={currentClip.video}
+            />
+            <div className="rounded-lg border border-white/10 bg-surface-800/70 p-4 shadow-sm">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-accent-teal mb-2">
+                How to sign: {currentClip.title}
+              </h4>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {getSignDescription(currentClip.title)}
+              </p>
+            </div>
+          </div>
 
           {gesturesOn ? (
             <aside className="relative flex min-h-[420px] flex-1 flex-col rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
@@ -430,12 +440,6 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           ) : (
             <div />
           )}
-
-          <div className="md:col-span-2">
-            <p className="text-sm text-text-secondary">
-              {getSignDescription(currentClip.title)}
-            </p>
-          </div>
         </div>
 
         {paused ? (
