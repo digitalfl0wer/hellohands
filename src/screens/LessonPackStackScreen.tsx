@@ -76,9 +76,11 @@ export function LessonPackStackScreen({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className={`min-h-screen flex items-center justify-center ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'}`}
+      >
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-2 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-text-secondary">Loading lesson packs…</p>
         </div>
       </div>
@@ -86,25 +88,53 @@ export function LessonPackStackScreen({
   }
 
   return (
-    <div className={`min-h-screen flex flex-col gap-6 p-6 ${kidMode ? 'bg-transparent' : 'bg-surface-900/90'}`}>
-      <header className="flex items-center justify-between">
+    <div
+      className={`min-h-screen flex flex-col ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'}`}
+    >
+      {/* Header */}
+      <header className="flex items-center justify-between p-6">
         <button
           type="button"
           onClick={onBack}
-          className="text-sm font-semibold uppercase tracking-wide text-text-secondary hover:text-text-primary"
+          className="flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors"
         >
-          Back
+          <span className="text-lg">←</span>
+          <span>Back</span>
         </button>
         <h1 className="text-3xl font-bold text-text-primary">Lesson Packs</h1>
-        <div className="w-16" />
+        <div className="w-16" /> {/* Spacer for centering */}
       </header>
 
-      <main className="flex-1">
-        <CardStack renderChild={renderPackCard} className="py-4">
-          {packs.map((pack) => (
-            <div key={pack.id} />
-          ))}
-        </CardStack>
+      {/* Pack Stack */}
+      <main className="flex-1 flex items-center justify-center px-6 pb-12">
+        <div className="w-full">
+          {packs.length > 0 ? (
+            <>
+              <CardStack renderChild={renderPackCard} className="py-8">
+                {packs.map((pack) => (
+                  <div key={pack.id} />
+                ))}
+              </CardStack>
+
+              {/* Instructions */}
+              <div className="text-center mt-8">
+                <p className="text-sm text-text-secondary">
+                  Tap a pack to start your lesson
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  Learn ASL signs step by step with guided lessons
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="text-center">
+              <p className="text-text-secondary">No lesson packs available yet.</p>
+              <p className="text-xs text-text-muted mt-2">
+                Check back after more content is processed.
+              </p>
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
