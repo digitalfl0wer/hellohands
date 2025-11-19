@@ -1,0 +1,47 @@
+I'm working on HelloHands, an ASL learning web app (React + TypeScript + Vite). I just reorganized the practice packs and need to continue implementing ASLLVD dataset integration.
+
+## JUST COMPLETED ✅
+1. Switched dataset attribution from MS-ASL to ASLLVD (added VITE_DATASET=ASLLVD to .env.local)
+2. Created gesture mapping config: /practice/sign-gestures.json (maps 50 ASL signs → 4 confirmation gestures: open_palm, thumbs_up, pinch, point)
+3. Reorganized 47 local videos into 3 structured packs using script: /scripts/organize_local_packs.ts
+4. Generated /public/local/local_packs.json with proper pack structure
+5. Updated /src/services/practiceApi.ts to load multiple packs
+
+## CURRENT STATE 📊
+- L1-ESSENTIALS: 6/17 signs (HELLO, PLEASE, YES, NO, EAT, DRINK) - 41 videos
+- L1-SOCIAL-BASICS: 0/17 signs (empty)
+- L2-INTERMEDIATE: 1/16 signs (HELP) - 6 videos
+- Overall: 7/50 signs (14% coverage, need 90%)
+
+## THE PROBLEM 🎯
+ASLLVD videos not downloaded yet! Pipeline configured but data/processed/asllvd/clips/ is empty.
+
+Manifest exists at data/asllvd_manifest.csv with 51 rows (50 signs) but URLs are in 3 formats:
+- Format 1: Direct MP4 URLs (first 3 entries) - might work
+- Format 2: DAI page URLs (entries 4-9) - need scraping  
+- Format 3: Placeholder URLs (entries 10-51) - fake, will 404
+
+## NEXT STEPS 🚀
+Need to:
+1. Test current state: `pnpm dev` → verify 2 packs work in UI
+2. Analyze which URL formats in manifest actually work
+3. Download ASLLVD videos using pipeline: ./run_asllvd.sh all
+4. OR manually discover real URLs from DAI: https://dai.cs.rutgers.edu/dai/s/dai
+5. Process videos: ./run_asllvd.sh normalize
+6. Reach 90% coverage across all packs
+
+## KEY FILES 📂
+- .env.local - has ASLLVD_COOKIE and VITE_DATASET=ASLLVD
+- practice/packs.manual.json - defines 50 target signs across 3 packs
+- practice/sign-gestures.json - gesture mappings (created)
+- public/local/local_packs.json - organized pack structure (generated)
+- data/asllvd_manifest.csv - has URLs but many are placeholders
+- run_asllvd.sh - wrapper script that loads env vars
+
+## IMPORTANT NOTE 📝
+The "expectedGesture" field (open_palm, thumbs_up, etc.) is NOT for detecting actual ASL signs. MediaPipe can't do that. These are simple confirmation gestures learners make AFTER practicing the sign to indicate they're done.
+
+Read full details in: /docs/CONTINUATION_PROMPT.md
+
+Ready to continue! What should we tackle first?
+

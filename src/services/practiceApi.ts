@@ -144,12 +144,16 @@ async function safeFetch<T>(path: string, init?: RequestInit): Promise<T | null>
 
 export async function listPracticePacks(): Promise<PracticePackSummary[]> {
   if (!USE_MCP) {
-    // Try local published pack under /public/local/local_pack.json (if present)
+    // Try local published packs under /public/local/local_packs.json (if present)
     try {
-      const resp = await fetch('/local/local_pack.json', { cache: 'no-store' });
+      const resp = await fetch('/local/local_packs.json', { cache: 'no-store' });
       if (resp.ok) {
-        const localPack = normalizePack((await resp.json()) as PracticePackSummary);
-        return [localPack, ...FALLBACK_SANITISED];
+        const localPacks = (await resp.json()) as PracticePackSummary[];
+        // Filter out empty packs and normalize
+        const validPacks = localPacks
+          .map(normalizePack)
+          .filter((pack) => (pack.items?.length ?? 0) > 0);
+        return validPacks.length > 0 ? validPacks : FALLBACK_SANITISED;
       }
     } catch {
       // ignore and fall back
