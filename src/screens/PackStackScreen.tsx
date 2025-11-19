@@ -75,7 +75,7 @@ export function PackStackScreen({ onSelectPack, onBack }: PackStackScreenProps) 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900 flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'}`}>
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-text-secondary">Loading practice packs...</p>
@@ -85,7 +85,7 @@ export function PackStackScreen({ onSelectPack, onBack }: PackStackScreenProps) 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900 flex flex-col">
+    <div className={`min-h-screen flex flex-col ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'}`}>
       {/* Header */}
       <header className="flex items-center justify-between p-6">
         <button

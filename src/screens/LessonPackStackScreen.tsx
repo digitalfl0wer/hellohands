@@ -86,7 +86,7 @@ export function LessonPackStackScreen({
   }
 
   return (
-    <div className="min-h-screen bg-surface-900/90 flex flex-col gap-6 p-6">
+    <div className={`min-h-screen flex flex-col gap-6 p-6 ${kidMode ? 'bg-transparent' : 'bg-surface-900/90'}`}>
       <header className="flex items-center justify-between">
         <button
           type="button"
