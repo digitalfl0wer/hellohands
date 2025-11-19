@@ -38,10 +38,10 @@ export function PackCard({
         unlocked
           ? selected
             ? kidMode
-              ? 'bg-surface-800 border-yellow-400 shadow-lg shadow-yellow-400/30'
+              ? 'bg-transparent border-yellow-400 shadow-lg shadow-yellow-400/30'
               : 'bg-surface-800 border-accent-teal shadow-lg shadow-accent-teal/20'
             : kidMode
-              ? 'bg-surface-800/85 border-surface-700 hover:border-yellow-400/70'
+              ? 'bg-transparent border-surface-700 hover:border-yellow-400/70'
               : 'bg-surface-800/85 border-surface-700 hover:border-accent-teal/60'
           : 'cursor-not-allowed opacity-60'
       } ${className}`}
