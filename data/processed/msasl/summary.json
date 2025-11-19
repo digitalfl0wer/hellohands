@@ -1,0 +1,161 @@
+{
+  "total": 5737,
+  "bySplit": {
+    "train": 3790,
+    "val": 1190,
+    "test": 757
+  },
+  "perClass": {
+    "book": 58,
+    "school": 68,
+    "bored": 56,
+    "like": 71,
+    "france": 48,
+    "day": 51,
+    "happy": 72,
+    "sad": 63,
+    "want": 69,
+    "know": 48,
+    "need": 62,
+    "how": 52,
+    "yellow": 55,
+    "teacher": 77,
+    "deaf": 69,
+    "again": 64,
+    "sick": 53,
+    "mother": 64,
+    "father": 60,
+    "milk": 60,
+    "eat": 77,
+    "drink": 54,
+    "help": 56,
+    "you": 52,
+    "hurt": 51,
+    "hungry": 55,
+    "tired": 66,
+    "where": 60,
+    "play": 49,
+    "sister": 67,
+    "brother": 59,
+    "grandmother": 49,
+    "grandfather": 47,
+    "cousin": 59,
+    "blue": 53,
+    "hearing": 57,
+    "english": 52,
+    "forget": 60,
+    "fish": 64,
+    "brown": 51,
+    "work": 49,
+    "live": 47,
+    "black": 57,
+    "green": 52,
+    "here": 50,
+    "orange": 70,
+    "pink": 48,
+    "red": 53,
+    "spring": 65,
+    "white": 67,
+    "same": 52,
+    "dance": 49,
+    "bird": 67,
+    "read": 49,
+    "lost": 57,
+    "big": 49,
+    "sorry": 49,
+    "paper": 60,
+    "girl": 58,
+    "understand": 53,
+    "what": 66,
+    "who": 51,
+    "finish": 68,
+    "hello": 64,
+    "yes": 65,
+    "no": 73,
+    "fine": 57,
+    "thanks": 51,
+    "water": 56,
+    "nothing": 59,
+    "student": 65,
+    "computer": 56,
+    "sign": 49,
+    "bathroom": 54,
+    "name": 52,
+    "friend": 66,
+    "nice": 85,
+    "learn": 65,
+    "please": 57,
+    "when": 48,
+    "write": 55,
+    "table": 62,
+    "pencil": 50,
+    "night": 48,
+    "boy": 56,
+    "but": 55,
+    "doctor": 55,
+    "walk": 50,
+    "right": 48,
+    "now": 51,
+    "sit": 66,
+    "man": 54,
+    "family": 57,
+    "bad": 49,
+    "good": 65,
+    "beautiful": 53,
+    "nurse": 51,
+    "draw": 49,
+    "woman": 48,
+    "go": 49
+  },
+  "perSignerTop10": [
+    [
+      "0",
+      248
+    ],
+    [
+      "12",
+      217
+    ],
+    [
+      "26",
+      216
+    ],
+    [
+      "24",
+      179
+    ],
+    [
+      "32",
+      175
+    ],
+    [
+      "124",
+      154
+    ],
+    [
+      "94",
+      150
+    ],
+    [
+      "125",
+      138
+    ],
+    [
+      "80",
+      137
+    ],
+    [
+      "265",
+      133
+    ]
+  ],
+  "durationHist": {
+    "<=3s": 1773,
+    "<=2s": 1301,
+    "<=5s": 1888,
+    "<=8s": 559,
+    "<=1s": 202,
+    "<=13s": 13,
+    "<=0s": 1
+  }
+}

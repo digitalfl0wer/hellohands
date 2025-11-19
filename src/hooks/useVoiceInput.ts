@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { parseVoiceCommand, VoiceParseResult } from './voiceCommandParser';
-import { logger } from '../utils/logger';
+import { hashForTelemetry, logger } from '../utils/logger';
 
 interface VoiceInputOptions {
   enabled: boolean;
@@ -41,6 +41,20 @@ export function useVoiceInput({
   onError,
 }: VoiceInputOptions) {
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const callbacksRef = useRef({
+    onCommand,
+    onUnrecognized,
+    onError,
+  });
+  const optionsRef = useRef({ enabled, paused });
+
+  useEffect(() => {
+    callbacksRef.current = { onCommand, onUnrecognized, onError };
+  }, [onCommand, onUnrecognized, onError]);
+
+  useEffect(() => {
+    optionsRef.current = { enabled, paused };
+  }, [enabled, paused]);
 
   useEffect(() => {
     const SpeechRecognitionImpl = (window as any).SpeechRecognition as
@@ -65,60 +79,63 @@ export function useVoiceInput({
       const last = event.results[event.results.length - 1];
       const transcript = last[0]?.transcript ?? '';
       const parsed = parseVoiceCommand(transcript);
+      const { onCommand: handleCommand, onUnrecognized: handleUnrecognized } =
+        callbacksRef.current;
+
+      const hashed = hashForTelemetry(transcript);
+
       if (parsed === 'uncertain') {
-        logger.info('voice', 'uncertain', { transcript });
-        onUnrecognized();
+        logger.info('voice', 'voice:heard', { textHash: hashed });
+        handleUnrecognized();
       } else {
-        logger.info('voice', 'recognized', parsed);
-        onCommand(parsed);
+        logger.info('voice', 'voice:heard', { textHash: hashed, intent: parsed });
+        handleCommand(parsed);
       }
     };
 
     recognition.onerror = (event) => {
-      logger.warn('voice', 'error', { error: event.error ?? event.message });
-      onError(event.error ?? event.message);
+      const message = event.error ?? event.message;
+      logger.warn('voice', 'error', { error: message });
+      callbacksRef.current.onError(message);
     };
 
     recognition.onend = () => {
-      if (recognitionRef.current && enabled && !paused) {
-        try {
-          recognitionRef.current.start();
-        } catch (error) {
-          logger.warn('voice', 'restart_failed', { reason: (error as Error).message });
-          onError((error as Error).message);
-        }
+      const { enabled: shouldRun, paused: isPaused } = optionsRef.current;
+      if (!shouldRun || isPaused) {
+        return;
+      }
+      try {
+        recognition.start();
+      } catch (error) {
+        const reason = (error as Error).message;
+        logger.warn('voice', 'restart_failed', { reason });
+        callbacksRef.current.onError(reason);
       }
     };
 
     recognitionRef.current = recognition;
 
-    if (enabled && !paused) {
-      try {
-        recognition.start();
-      } catch (error) {
-        logger.warn('voice', 'start_failed', { reason: (error as Error).message });
-        onError((error as Error).message);
-      }
-    }
-
     return () => {
       recognitionRef.current?.stop();
       recognitionRef.current = null;
     };
-  }, [enabled, paused, onCommand, onUnrecognized, onError]);
+  }, []);
 
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
 
-    if (enabled && !paused) {
-      try {
-        recognition.start();
-      } catch (error) {
-        // ignore errors when already started
-      }
-    } else {
+    if (!enabled || paused) {
       recognition.stop();
+      return;
+    }
+
+    try {
+      recognition.start();
+    } catch (error) {
+      const reason = (error as Error).message;
+      logger.warn('voice', 'start_failed', { reason });
+      callbacksRef.current.onError(reason);
     }
   }, [enabled, paused]);
 }

@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CameraFeed from '../components/CameraFeed';
 import SignMedia from '../components/SignMedia';
+import { Toast } from '../components/Toast';
+import { ConfettiOverlay } from '../components/ConfettiOverlay';
 import { setExpectedGesture } from '../agents/planner';
 import {
+  GestureType,
   PracticeItem,
   PracticePackSummary,
   fetchLicenseInfo,
@@ -10,10 +13,20 @@ import {
   getPracticePack,
   listPracticePacks,
 } from '../services/practiceApi';
+import { useLessonStore } from '../state/useLessonStore';
+import { logger } from '../utils/logger';
+import { getSignDescription } from '../utils/signDescriptions';
 
-export function PracticePage() {
+interface PracticePageProps {
+  selectedPack?: string | null;
+}
+
+export function PracticePage({ selectedPack }: PracticePageProps) {
+  const gesturesOn = useLessonStore((state) => state.gesturesOn);
   const [packs, setPacks] = useState<PracticePackSummary[]>([]);
-  const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
+  const [selectedPackId, setSelectedPackId] = useState<string | null>(
+    selectedPack || null,
+  );
   const [items, setItems] = useState<PracticeItem[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [license, setLicense] = useState<{
@@ -22,6 +35,30 @@ export function PracticePage() {
     url: string;
   } | null>(null);
   const SHOW_CAMERA = import.meta.env.VITE_SHOW_CAMERA === '1';
+  const [toast, setToast] = useState<{ message: string; duration?: number } | null>(null);
+  const [confetti, setConfetti] = useState(false);
+  const matchGuardRef = useRef<number>(0);
+  const confettiTimerRef = useRef<number | null>(null);
+  const advanceTimerRef = useRef<number | null>(null);
+
+  useEffect(
+    () => () => {
+      if (confettiTimerRef.current) {
+        window.clearTimeout(confettiTimerRef.current);
+      }
+      if (advanceTimerRef.current) {
+        window.clearTimeout(advanceTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  // Update selected pack when prop changes
+  useEffect(() => {
+    if (selectedPack !== undefined) {
+      setSelectedPackId(selectedPack);
+    }
+  }, [selectedPack]);
 
   useEffect(() => {
     let mounted = true;
@@ -93,18 +130,50 @@ export function PracticePage() {
     }
   };
 
-  const handleSuggestNext = async () => {
+  const handleSuggestNext = useCallback(async () => {
     if (!selectedPackId) return;
     const result = await getNextPracticeItem(selectedPackId, selectedItemId ?? undefined);
     if (!result?.item) return;
 
-    if (!items.find((entry) => entry.id === result.item.id)) {
-      setItems((prev) => [...prev, result.item]);
-    }
+    setItems((prev) => {
+      if (prev.find((entry) => entry.id === result.item.id)) {
+        return prev;
+      }
+      return [...prev, result.item];
+    });
     setSelectedPackId(result.pack.id);
     setSelectedItemId(result.item.id);
     setExpectedGesture(result.item.expectedGesture);
-  };
+  }, [selectedPackId, selectedItemId]);
+
+  const handleGestureMatch = useCallback(
+    ({ gesture, score }: { gesture: GestureType; score: number }) => {
+      const now = Date.now();
+      if (now - matchGuardRef.current < 1200) {
+        return;
+      }
+      matchGuardRef.current = now;
+      setToast({ message: 'Great match!', duration: 1400 });
+      setConfetti(true);
+      if (confettiTimerRef.current) {
+        window.clearTimeout(confettiTimerRef.current);
+      }
+      confettiTimerRef.current = window.setTimeout(() => setConfetti(false), 1400);
+      logger.info('practice', 'correct_gesture', {
+        packId: selectedPackId,
+        itemId: selectedItemId,
+        gesture,
+        score,
+      });
+      if (!advanceTimerRef.current) {
+        advanceTimerRef.current = window.setTimeout(() => {
+          advanceTimerRef.current = null;
+          void handleSuggestNext();
+        }, 1600);
+      }
+    },
+    [handleSuggestNext, selectedItemId, selectedPackId],
+  );
 
   const expectedGestureLabel = items
     .find((item) => item.id === selectedItemId)
@@ -119,19 +188,47 @@ export function PracticePage() {
           Mirror your gesture to the example. Hold it steady for a moment so the model can
           recognise it.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           {currentItem ? (
-            <SignMedia
-              sign={currentItem.sign}
-              expectedGesture={currentItem.expectedGesture}
-            />
+            <>
+              <SignMedia
+                sign={currentItem.sign}
+                expectedGesture={currentItem.expectedGesture}
+                clipUrl={currentItem.clipUrl}
+                posterUrl={
+                  currentItem.posterUrl ??
+                  currentItem.clipUrl?.replace('/front.mp4', '/poster.jpg')
+                }
+              />
+              <div className="rounded-lg border border-white/10 bg-surface-800/70 p-4 shadow-sm">
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-accent-teal mb-2">
+                  How to sign: {currentItem.sign}
+                </h4>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {getSignDescription(currentItem.sign)}
+                </p>
+              </div>
+            </>
           ) : null}
         </div>
         {SHOW_CAMERA ? (
           <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
-            <CameraFeed />
+            <CameraFeed
+              enabled={gesturesOn}
+              expectedGesture={currentItem?.expectedGesture ?? null}
+              onMatch={handleGestureMatch}
+            />
           </div>
-        ) : null}
+        ) : (
+          // Run the sensor offscreen so gestures still work in practice
+          <div className="absolute h-px w-px overflow-hidden opacity-0">
+            <CameraFeed
+              enabled={gesturesOn}
+              expectedGesture={currentItem?.expectedGesture ?? null}
+              onMatch={handleGestureMatch}
+            />
+          </div>
+        )}
       </section>
       <section className="flex flex-col gap-4">
         <div>
@@ -216,6 +313,16 @@ export function PracticePage() {
           </p>
         ) : null}
       </section>
+      {confetti ? (
+        <ConfettiOverlay message="Great match!" onEnd={() => setConfetti(false)} />
+      ) : null}
+      {toast ? (
+        <Toast
+          duration={toast.duration ?? 1400}
+          message={toast.message}
+          variant="success"
+        />
+      ) : null}
     </div>
   );
 }

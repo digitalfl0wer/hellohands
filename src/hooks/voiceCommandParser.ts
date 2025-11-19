@@ -18,12 +18,12 @@ const kidOnPhrases = ['kid mode on', 'kid on', 'kids mode on'];
 const kidOffPhrases = ['kid mode off', 'kid off', 'kids mode off'];
 
 const controlMatches: Array<{ phrases: string[]; action: VoiceControlAction }> = [
-  { phrases: ['next', 'continue', 'go on'], action: 'next' },
   { phrases: ['replay', 'again', 'repeat'], action: 'replay' },
+  { phrases: ['resume', 'play', 'continue lesson', 'continue'], action: 'resume' },
+  { phrases: ['next', 'go on'], action: 'next' },
   { phrases: ['slow motion', 'slow-mo', 'slow'], action: 'slow' },
   { phrases: ['help', 'show help'], action: 'help' },
   { phrases: ['pause', 'hold on', 'stop'], action: 'pause' },
-  { phrases: ['resume', 'play', 'continue lesson'], action: 'resume' },
 ];
 
 export function parseVoiceCommand(transcript: string): VoiceParseResult | 'uncertain' {

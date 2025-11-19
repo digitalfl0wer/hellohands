@@ -10,6 +10,8 @@ type GestureKind =
 type Props = {
   sign: string;
   expectedGesture?: GestureKind;
+  clipUrl?: string;
+  posterUrl?: string;
 };
 
 const mediaFor = (name: string) => ({
@@ -18,22 +20,39 @@ const mediaFor = (name: string) => ({
   png: `/signs/${name}.png`,
 });
 
-export default function SignMedia({ sign, expectedGesture }: Props) {
+import SignVideo from './SignVideo';
+
+export default function SignMedia({ sign, expectedGesture, clipUrl, posterUrl }: Props) {
   const normalized = sign.toUpperCase();
   const m = mediaFor(normalized);
+  const lower = normalized.toLowerCase();
+  const captionsPath = `/signs/level1/${lower}/captions.vtt`;
+
   return (
     <figure className="w-64">
-      <picture>
-        <source srcSet={m.webp} type="image/webp" />
-        <source srcSet={m.gif} type="image/gif" />
-        <img
-          src={m.png}
-          alt={`${normalized} demonstration`}
-          width={256}
-          height={256}
-          className="h-64 w-64 rounded-xl border border-zinc-800 bg-zinc-900 object-cover"
-        />
-      </picture>
+      {clipUrl ? (
+        <div className="h-64 w-64">
+          <SignVideo
+            src={clipUrl}
+            poster={posterUrl}
+            autoPlay
+            captionsSrc={captionsPath}
+            captionsLang="en"
+          />
+        </div>
+      ) : (
+        <picture>
+          <source srcSet={m.webp} type="image/webp" />
+          <source srcSet={m.gif} type="image/gif" />
+          <img
+            src={m.png}
+            alt={`${normalized} demonstration`}
+            width={256}
+            height={256}
+            className="h-64 w-64 rounded-xl border border-zinc-800 bg-zinc-900 object-cover"
+          />
+        </picture>
+      )}
       <figcaption className="mt-2 flex items-center gap-2 text-sm text-zinc-300">
         <span className="font-medium">{normalized}</span>
         {expectedGesture && (

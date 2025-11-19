@@ -4,8 +4,16 @@ import React from 'react';
 
 import { useGestureInput } from '../useGestureInput';
 
-function TestHarness({ onGesture }: { onGesture: (gesture: string) => void }) {
-  useGestureInput({ enabled: true, paused: false, onGesture });
+function TestHarness({
+  onGesture,
+  enabled = true,
+  paused = false,
+}: {
+  onGesture: (gesture: string) => void;
+  enabled?: boolean;
+  paused?: boolean;
+}) {
+  useGestureInput({ enabled, paused, onGesture });
   return <div data-testid="root">root</div>;
 }
 
@@ -58,5 +66,20 @@ describe('useGestureInput', () => {
     vi.advanceTimersByTime(3100);
 
     expect(onGesture).toHaveBeenCalledWith('pause');
+  });
+
+  it('does not emit gestures when disabled', () => {
+    const onGesture = vi.fn();
+    render(<TestHarness onGesture={onGesture} enabled={false} paused={false} />);
+
+    const start = new PointerEvent('pointerdown', { clientX: 100, clientY: 100 });
+    const move = new PointerEvent('pointermove', { clientX: 120, clientY: 100 });
+    const end = new PointerEvent('pointerup', { clientX: 320, clientY: 100 });
+
+    window.dispatchEvent(start);
+    window.dispatchEvent(move);
+    window.dispatchEvent(end);
+
+    expect(onGesture).not.toHaveBeenCalled();
   });
 });

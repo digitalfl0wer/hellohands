@@ -1,0 +1,27 @@
+version: "1.0.0"
+title: "ASLLVD_Attribution_Check"
+description: "Verify ASLLVD attribution compliance"
+
+instructions: |
+  Check ASLLVD attribution requirements:
+  1. Verify ATTRIBUTION_ASLLVD.md exists with correct citation
+  2. Check README.md includes ASLLVD attribution section
+  3. Validate attribution modal includes ASLLVD citation
+  4. Confirm license text matches requirements
+
+prompt: |
+  Execute ASLLVD attribution verification:
+  - Check citation text in ATTRIBUTION_ASLLVD.md
+  - Verify README attribution section
+  - Validate modal attribution copy
+  - Ensure all required text is present
+
+  Output: Attribution compliance status.
+
+parameters: []
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

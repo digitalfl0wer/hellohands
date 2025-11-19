@@ -1,4 +1,7 @@
 import express from 'express';
+import { DEMO_SIGN_CLIPS } from '../src/data/demoClips';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 const app = express();
 const PORT = Number(process.env.MCP_PORT ?? 5175);
@@ -21,6 +24,7 @@ type PracticeItem = {
   sign: string;
   expectedGesture: 'thumbs_up' | 'open_palm' | 'point' | 'pinch';
   clipUrl: string;
+  posterUrl?: string;
 };
 
 type PracticePack = {
@@ -30,89 +34,115 @@ type PracticePack = {
   items: PracticeItem[];
 };
 
-const practicePacks: PracticePack[] = [
+const defaultPacks: PracticePack[] = [
   {
     id: 'L1-ESSENTIALS',
     title: 'Level 1 · Essentials',
     level: 1,
-    items: [
-      {
-        id: 'hello',
-        sign: 'HELLO',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/hello/front.mp4',
-      },
-      {
-        id: 'thank-you',
-        sign: 'THANK YOU',
-        expectedGesture: 'open_palm',
-        clipUrl: '/signs/level1/thank-you/front.mp4',
-      },
-      {
-        id: 'yes',
-        sign: 'YES',
-        expectedGesture: 'thumbs_up',
-        clipUrl: '/signs/level1/yes/front.mp4',
-      },
-      {
-        id: 'no',
-        sign: 'NO',
-        expectedGesture: 'point',
-        clipUrl: '/signs/level1/no/front.mp4',
-      },
-      {
-        id: 'more',
-        sign: 'MORE',
-        expectedGesture: 'pinch',
-        clipUrl: '/signs/level1/more/front.mp4',
-      },
-    ],
+    items: DEMO_SIGN_CLIPS.map((clip) => ({
+      id: clip.sign.toLowerCase().replace(/\s+/g, '-'),
+      sign: clip.sign,
+      expectedGesture: clip.expectedGesture,
+      clipUrl: clip.clipUrl,
+      posterUrl: clip.posterUrl,
+    })),
   },
 ];
 
-const licenseInfo = {
-  dataset: 'MS-ASL',
-  license: 'C-UDA (Computational Use of Data Agreement)',
-  url: 'https://ms-asl.cs.rochester.edu/',
-  attribution:
-    'MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language. BMVC 2019.',
+function normalizeItems(items?: PracticeItem[]): PracticeItem[] {
+  if (!Array.isArray(items)) return [];
+  const seen = new Set<string>();
+  return items
+    .filter((it): it is PracticeItem => Boolean(it && it.sign && it.clipUrl))
+    .map((it) => ({
+      ...it,
+      sign: it.sign.trim().toUpperCase(),
+      id: it.id || it.sign.trim().toLowerCase().replace(/\s+/g, '-'),
+    }))
+    .filter((it) => {
+      const key = (it.clipUrl || it.id).toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+async function loadLocalPack(): Promise<PracticePack | null> {
+  try {
+    const path = resolve(process.cwd(), 'public', 'local', 'local_pack.json');
+    const raw = await readFile(path, 'utf8');
+    const pack = JSON.parse(raw) as PracticePack;
+    const items = normalizeItems(pack.items);
+    if (!items.length) return null;
+    return { ...pack, items };
+  } catch {
+    return null;
+  }
+}
+
+async function getAvailablePacks(): Promise<PracticePack[]> {
+  const local = await loadLocalPack();
+  const packs: PracticePack[] = [];
+  if (local) packs.push(local);
+  for (const p of defaultPacks) {
+    const items = normalizeItems(p.items);
+    if (items.length) packs.push({ ...p, items });
+  }
+  return packs;
+}
+
+const getLicenseInfo = () => {
+  const dataset = process.env.DATASET || 'MSASL';
+  if (dataset === 'ASLLVD') {
+    return {
+      dataset: 'ASLLVD',
+      license: 'Boston University License',
+      url: 'https://www.bu.edu/av/asllvd/',
+      attribution:
+        'American Sign Language Lexicon Video Dataset (ASLLVD). Athitsos, V., Neidle, C., Sclaroff, S., Nash, J., Stefan, A., Yuan, Q., & Thangali, A. (2008). Proceedings of the IEEE International Conference on Computer Vision Workshops.',
+    };
+  }
+  return {
+    dataset: 'MS-ASL',
+    license: 'C-UDA (Computational Use of Data Agreement)',
+    url: 'https://ms-asl.cs.rochester.edu/',
+    attribution:
+      'MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language. BMVC 2019.',
+  };
 };
 
-app.get(`${BASE_PATH}/packs`, (_req, res) => {
+app.get(`${BASE_PATH}/packs`, async (_req, res) => {
+  const packs = await getAvailablePacks();
   res.json({
-    packs: practicePacks.map(({ items, ...pack }) => ({
-      ...pack,
-      itemCount: items.length,
-    })),
+    packs: packs.map(({ items, ...pack }) => ({ ...pack, itemCount: items.length })),
   });
 });
 
-app.get(`${BASE_PATH}/packs/:id`, (req, res) => {
-  const pack = practicePacks.find((entry) => entry.id === req.params.id);
+app.get(`${BASE_PATH}/packs/:id`, async (req, res) => {
+  const packs = await getAvailablePacks();
+  const pack = packs.find((entry) => entry.id === req.params.id) ?? packs[0];
   if (!pack) {
-    res.status(404).json({ error: 'Pack not found' });
+    res.status(404).json({ error: 'No packs available' });
     return;
   }
   res.json({ pack });
 });
 
-app.post(`${BASE_PATH}/practice/next`, (req, res) => {
-  const { packId, cursor } = req.body ?? {};
-  const pack = practicePacks.find((entry) => entry.id === packId) ?? practicePacks[0];
-  if (!pack) {
-    res.status(404).json({ error: 'Pack unavailable' });
+app.post(`${BASE_PATH}/practice/next`, async (req, res) => {
+  const { packId, cursor } = (req.body ?? {}) as { packId?: string; cursor?: string };
+  const packs = await getAvailablePacks();
+  const pack = packs.find((entry) => entry.id === packId) ?? packs[0];
+  if (!pack || !pack.items?.length) {
+    res.status(404).json({ error: 'No items available' });
     return;
   }
   const currentIndex = pack.items.findIndex((item) => item.id === cursor);
   const nextItem = pack.items[(currentIndex + 1) % pack.items.length];
-  res.json({
-    item: nextItem,
-    pack: { id: pack.id, title: pack.title, level: pack.level },
-  });
+  res.json({ item: nextItem, pack: { id: pack.id, title: pack.title, level: pack.level } });
 });
 
 app.get(`${BASE_PATH}/license`, (_req, res) => {
-  res.json(licenseInfo);
+  res.json(getLicenseInfo());
 });
 
 app.use((_req, res) => {

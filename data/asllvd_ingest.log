@@ -1,0 +1,101 @@
+ATTEMPT: water_signer001_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=8779&type=separate&datasource=T
+SUCCESS: water_signer001_1_front_a
+ATTEMPT: eat_signer004_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=3160&type=separate&datasource=T
+SUCCESS: eat_signer004_1_front_a
+ATTEMPT: drink_signer001_1_front_b -> https://dai.cs.rutgers.edu/dai/s/video?id=3040&type=separate&datasource=T
+SUCCESS: drink_signer001_1_front_b
+ATTEMPT: bathroom_signer001_2_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=8418&type=separate&datasource=T
+SUCCESS: bathroom_signer001_2_front_a
+ATTEMPT: like_signer002_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=5446&type=separate&datasource=T
+SUCCESS: like_signer002_1_front_a
+ATTEMPT: home_signer002_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=5446&type=separate&datasource=T
+SUCCESS: home_signer002_1_front_a
+ATTEMPT: sleep_signer002_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=7828&type=separate&datasource=T
+SUCCESS: sleep_signer002_1_front_a
+ATTEMPT: where_signer004_1_front_a -> https://dai.cs.rutgers.edu/dai/s/video?id=8834&type=separate&datasource=T
+SUCCESS: where_signer004_1_front_a
+ATTEMPT: who_signer002_1_front_b -> https://dai.cs.rutgers.edu/dai/s/video?id=8857&type=separate&datasource=T
+SUCCESS: who_signer002_1_front_b
+ATTEMPT: no_signer003_1_front_a -> https://www.bu.edu/asllvd/videos/no_signer003_1.mp4
+HTTP_FAIL: no_signer003_1_front_a (http 404)
+ATTEMPT: hot_signer001_1_front_a -> https://www.bu.edu/asllvd/videos/hot_signer001_1.mp4
+HTTP_FAIL: hot_signer001_1_front_a (http 404)
+ATTEMPT: clean_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/clean_signer003_1.mp4
+HTTP_FAIL: clean_signer003_1_front_b (http 404)
+ATTEMPT: dirty_signer005_1_front_b -> https://www.bu.edu/asllvd/videos/dirty_signer005_1.mp4
+HTTP_FAIL: dirty_signer005_1_front_b (http 404)
+ATTEMPT: pay_signer001_1_front_a -> https://www.bu.edu/asllvd/videos/pay_signer001_1.mp4
+HTTP_FAIL: pay_signer001_1_front_a (http 404)
+ATTEMPT: hello_signer002_1_front_a -> https://www.bu.edu/asllvd/videos/hello_signer002_1.mp4
+HTTP_FAIL: hello_signer002_1_front_a (http 404)
+ATTEMPT: goodbye_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/goodbye_signer003_1.mp4
+HTTP_FAIL: goodbye_signer003_1_front_b (http 404)
+ATTEMPT: please_signer005_2_front_a -> https://www.bu.edu/asllvd/videos/please_signer005_2.mp4
+HTTP_FAIL: please_signer005_2_front_a (http 404)
+ATTEMPT: thank_you_signer003_1_front_a -> https://www.bu.edu/asllvd/videos/thank_you_signer003_1.mp4
+HTTP_FAIL: thank_you_signer003_1_front_a (http 404)
+ATTEMPT: nice_signer005_2_front_a -> https://www.bu.edu/asllvd/videos/nice_signer005_2.mp4
+HTTP_FAIL: nice_signer005_2_front_a (http 404)
+ATTEMPT: later_signer002_1_front_a -> https://www.bu.edu/asllvd/videos/later_signer002_1.mp4
+HTTP_FAIL: later_signer002_1_front_a (http 404)
+ATTEMPT: now_signer002_1_front_b -> https://www.bu.edu/asllvd/videos/now_signer002_1.mp4
+HTTP_FAIL: now_signer002_1_front_b (http 404)
+ATTEMPT: ok_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/ok_signer003_1.mp4
+HTTP_FAIL: ok_signer003_1_front_b (http 404)
+ATTEMPT: cool_signer002_1_front_b -> https://www.bu.edu/asllvd/videos/cool_signer002_1.mp4
+HTTP_FAIL: cool_signer002_1_front_b (http 404)
+ATTEMPT: busy_signer001_1_front_b -> https://www.bu.edu/asllvd/videos/busy_signer001_1.mp4
+HTTP_FAIL: busy_signer001_1_front_b (http 404)
+ATTEMPT: ready_signer002_1_front_a -> https://www.bu.edu/asllvd/videos/ready_signer002_1.mp4
+HTTP_FAIL: ready_signer002_1_front_a (http 404)
+ATTEMPT: family_signer001_1_front_b -> https://www.bu.edu/asllvd/videos/family_signer001_1.mp4
+HTTP_FAIL: family_signer001_1_front_b (http 404)
+ATTEMPT: friend_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/friend_signer003_1.mp4
+HTTP_FAIL: friend_signer003_1_front_b (http 404)
+ATTEMPT: help_signer002_1_front_b -> https://www.bu.edu/asllvd/videos/help_signer002_1.mp4
+HTTP_FAIL: help_signer002_1_front_b (http 404)
+ATTEMPT: want_signer003_2_front_a -> https://www.bu.edu/asllvd/videos/want_signer003_2.mp4
+HTTP_FAIL: want_signer003_2_front_a (http 404)
+ATTEMPT: go_signer001_1_front_b -> https://www.bu.edu/asllvd/videos/go_signer001_1.mp4
+HTTP_FAIL: go_signer001_1_front_b (http 404)
+ATTEMPT: school_signer003_1_front_a -> https://www.bu.edu/asllvd/videos/school_signer003_1.mp4
+HTTP_FAIL: school_signer003_1_front_a (http 404)
+ATTEMPT: work_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/work_signer003_1.mp4
+HTTP_FAIL: work_signer003_1_front_b (http 404)
+ATTEMPT: happy_signer004_2_front_a -> https://www.bu.edu/asllvd/videos/happy_signer004_2.mp4
+HTTP_FAIL: happy_signer004_2_front_a (http 404)
+ATTEMPT: sick_signer003_1_front_a -> https://www.bu.edu/asllvd/videos/sick_signer003_1.mp4
+HTTP_FAIL: sick_signer003_1_front_a (http 404)
+ATTEMPT: tired_signer003_2_front_b -> https://www.bu.edu/asllvd/videos/tired_signer003_2.mp4
+HTTP_FAIL: tired_signer003_2_front_b (http 404)
+ATTEMPT: finish_signer004_1_front_a -> https://www.bu.edu/asllvd/videos/finish_signer004_1.mp4
+HTTP_FAIL: finish_signer004_1_front_a (http 404)
+ATTEMPT: time_signer003_1_front_b -> https://www.bu.edu/asllvd/videos/time_signer003_1.mp4
+HTTP_FAIL: time_signer003_1_front_b (http 404)
+ATTEMPT: don't_like_signer005_1_side -> https://www.bu.edu/asllvd/videos/don't_like_signer005_1.mp4
+HTTP_FAIL: don't_like_signer005_1_side (http 404)
+ATTEMPT: hungry_signer003_1_side -> https://www.bu.edu/asllvd/videos/hungry_signer003_1.mp4
+HTTP_FAIL: hungry_signer003_1_side (http 404)
+ATTEMPT: why_signer001_1_side -> https://www.bu.edu/asllvd/videos/why_signer001_1.mp4
+HTTP_FAIL: why_signer001_1_side (http 404)
+ATTEMPT: yes_signer002_1_side -> https://www.bu.edu/asllvd/videos/yes_signer002_1.mp4
+HTTP_FAIL: yes_signer002_1_side (http 404)
+ATTEMPT: phone_signer004_1_side -> https://www.bu.edu/asllvd/videos/phone_signer004_1.mp4
+HTTP_FAIL: phone_signer004_1_side (http 404)
+ATTEMPT: wait_signer004_1_side -> https://www.bu.edu/asllvd/videos/wait_signer004_1.mp4
+HTTP_FAIL: wait_signer004_1_side (http 404)
+ATTEMPT: sorry_signer001_1_side -> https://www.bu.edu/asllvd/videos/sorry_signer001_1.mp4
+HTTP_FAIL: sorry_signer001_1_side (http 404)
+ATTEMPT: again_signer002_1_side -> https://www.bu.edu/asllvd/videos/again_signer002_1.mp4
+HTTP_FAIL: again_signer002_1_side (http 404)
+ATTEMPT: excuse-me_signer001_1_side -> https://www.bu.edu/asllvd/videos/excuse-me_signer001_1.mp4
+HTTP_FAIL: excuse-me_signer001_1_side (http 404)
+ATTEMPT: see-you_signer005_1_side -> https://www.bu.edu/asllvd/videos/see-you_signer005_1.mp4
+HTTP_FAIL: see-you_signer005_1_side (http 404)
+ATTEMPT: come_signer001_1_side -> https://www.bu.edu/asllvd/videos/come_signer001_1.mp4
+HTTP_FAIL: come_signer001_1_side (http 404)
+ATTEMPT: sad_signer001_1_side -> https://www.bu.edu/asllvd/videos/sad_signer001_1.mp4
+HTTP_FAIL: sad_signer001_1_side (http 404)
+ATTEMPT: love_signer005_1_side -> https://www.bu.edu/asllvd/videos/love_signer005_1.mp4
+HTTP_FAIL: love_signer005_1_side (http 404)
+SUMMARY: attempted=50, completed=9, failed=      41

@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-16T09:08:57.877843",
+    "script_version": "1.0",
+    "files_analyzed": {
+      "packs_file": "/Users/digitalflower/Desktop/hellohands/practice/packs.generated.json",
+      "labels_file": "/Users/digitalflower/Desktop/hellohands/data/processed/asllvd/labels.jsonl",
+      "vocab_map_file": "/Users/digitalflower/Desktop/hellohands/practice/vocab.map.json"
+    }
+  },
+  "coverage": {
+    "packs": {
+      "L1-ESSENTIALS": {
+        "expected_count": 20,
+        "found_count": 0,
+        "coverage_percentage": 0.0,
+        "found_items": [],
+        "missing_items": [
+          "BATHROOM",
+          "HOT",
+          "WAIT",
+          "PHONE",
+          "WHY",
+          "WHO",
+          "DON'T LIKE",
+          "HUNGRY",
+          "DIRTY",
+          "YES",
+          "WHERE",
+          "CLEAN",
+          "NO",
+          "PAY",
+          "DRINK",
+          "EAT",
+          "HOME",
+          "WATER",
+          "LIKE",
+          "SLEEP"
+        ]
+      },
+      "L1-SOCIAL-BASICS": {
+        "expected_count": 15,
+        "found_count": 0,
+        "coverage_percentage": 0.0,
+        "found_items": [],
+        "missing_items": [
+          "PLEASE",
+          "EXCUSE-ME",
+          "OK",
+          "LATER",
+          "AGAIN",
+          "NOW",
+          "GOODBYE",
+          "THANK YOU",
+          "COOL",
+          "READY",
+          "SORRY",
+          "SEE-YOU",
+          "BUSY",
+          "HELLO",
+          "NICE"
+        ]
+      }
+    },
+    "overall": {
+      "total_expected": 35,
+      "total_found": 0,
+      "coverage_percentage": 0.0
+    }
+  },
+  "alignment": {
+    "total_entries": 0,
+    "entries_with_poster": 0,
+    "entries_with_clip": 0,
+    "entries_with_both": 0,
+    "entries_with_neither": 0
+  },
+  "attribution": {
+    "ATTRIBUTION_ASLLVD.md": true,
+    "ATTRIBUTION.md": false,
+    "LICENSE": false,
+    "LICENSE.txt": false,
+    "CREDITS.md": false
+  },
+  "validation": {
+    "pass_threshold": 90.0,
+    "overall_coverage": 0.0,
+    "passes_validation": false
+  }
+}

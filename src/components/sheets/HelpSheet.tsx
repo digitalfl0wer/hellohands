@@ -5,6 +5,7 @@ type HelpSheetProps = {
   mediaAlt: string;
   tip: string;
   kidMode?: boolean;
+  onHowToUse?: () => void;
   onReplaySlow: () => void;
   onResume: () => void;
 };
@@ -14,6 +15,7 @@ export function HelpSheet({
   mediaAlt,
   tip,
   kidMode = false,
+  onHowToUse,
   onReplaySlow,
   onResume,
 }: HelpSheetProps) {
@@ -30,7 +32,7 @@ export function HelpSheet({
         </figure>
         <div className="flex-1 space-y-md">
           <p className="text-sm text-text-secondary">{tip}</p>
-          <div className="flex gap-sm">
+          <div className="flex flex-wrap gap-sm">
             <AppButton
               onClick={onReplaySlow}
               type="button"
@@ -41,6 +43,15 @@ export function HelpSheet({
             <AppButton onClick={onResume} type="button" variant="adult">
               Resume
             </AppButton>
+            {onHowToUse && (
+              <button
+                type="button"
+                className="text-xs font-semibold text-accent-teal underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+                onClick={onHowToUse}
+              >
+                How to use Hello Hands
+              </button>
+            )}
           </div>
           <p className="text-xs text-text-muted">
             {kidMode

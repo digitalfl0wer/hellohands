@@ -4,14 +4,19 @@ dist/
 .DS_Store
 
 # Dataset assets
-data/**
-!data/.gitkeep
-!data/processed/
-data/processed/**
-!data/processed/msasl/
-data/processed/msasl/**
-!data/processed/msasl/labels.jsonl
-data/processed/msasl/clips/**
+# data/**
+# !data/.gitkeep
+# !data/processed/
+# data/processed/**
+# !data/processed/msasl/
+# data/processed/msasl/**
+# !data/processed/msasl/labels.jsonl
+# data/processed/msasl/clips/**
+# !data/processed/asllvd/
+# data/processed/asllvd/**
+# !data/processed/asllvd/labels.jsonl
+# data/processed/asllvd/clips/**
+# data/processed/asllvd/posters/**
 
 # Media artifacts
 *.mp4

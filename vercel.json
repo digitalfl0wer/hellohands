@@ -3,8 +3,10 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "devCommand": "pnpm dev",
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/((?!api|assets|signs|local).*)",
+      "destination": "/index.html"
+    }
   ]
 }

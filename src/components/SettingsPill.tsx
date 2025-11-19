@@ -3,11 +3,20 @@ import { FocusEvent, useEffect, useRef, useState } from 'react';
 import { AppButton } from './Button';
 import { useLessonStore } from '../state/useLessonStore';
 
-export function SettingsPill() {
+interface SettingsPillProps {
+  onOpenHowToUse?: () => void;
+  onOpenCalibration?: () => void;
+}
+
+export function SettingsPill({ onOpenHowToUse, onOpenCalibration }: SettingsPillProps) {
   const voiceOn = useLessonStore((state) => state.voiceOn);
   const toggleVoice = useLessonStore((state) => state.toggleVoice);
   const gesturesOn = useLessonStore((state) => state.gesturesOn);
   const toggleGestures = useLessonStore((state) => state.toggleGestures);
+  const countdownOn = useLessonStore((state) => state.countdownOn);
+  const toggleCountdown = useLessonStore((state) => state.toggleCountdown);
+  const refractoryOn = useLessonStore((state) => state.refractoryOn);
+  const toggleRefractory = useLessonStore((state) => state.toggleRefractory);
 
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -84,6 +93,64 @@ export function SettingsPill() {
             <span>Gestures</span>
             <span>{gesturesOn ? 'On' : 'Off'}</span>
           </AppButton>
+          <div className="mt-4 space-y-2">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-accent-teal">
+              Runtime flags
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <AppButton
+                onClick={toggleCountdown}
+                type="button"
+                variant="adult"
+                className={`justify-between px-4 py-2 text-sm font-semibold shadow-md transition ${
+                  countdownOn
+                    ? 'border border-accent-teal bg-accent-teal/30 text-accent-teal'
+                    : 'border border-white/15 bg-surface-800/80 text-text-primary hover:border-accent-teal/60'
+                }`}
+              >
+                <span>Countdown</span>
+                <span>{countdownOn ? 'On' : 'Off'}</span>
+              </AppButton>
+              <AppButton
+                onClick={toggleRefractory}
+                type="button"
+                variant="adult"
+                className={`justify-between px-4 py-2 text-sm font-semibold shadow-md transition ${
+                  refractoryOn
+                    ? 'border border-accent-teal bg-accent-teal/30 text-accent-teal'
+                    : 'border border-white/15 bg-surface-800/80 text-text-primary hover:border-accent-teal/60'
+                }`}
+              >
+                <span>Refractory</span>
+                <span>{refractoryOn ? 'On' : 'Off'}</span>
+              </AppButton>
+            </div>
+          </div>
+          {(onOpenHowToUse || onOpenCalibration) && (
+            <div className="mt-2 space-y-2 border-t border-white/10 pt-3">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-text-muted">
+                Help &amp; tuning
+              </p>
+              {onOpenHowToUse && (
+                <button
+                  type="button"
+                  className="w-full rounded-md bg-surface-800/80 px-3 py-2 text-left text-xs font-medium text-text-primary hover:bg-surface-700/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+                  onClick={onOpenHowToUse}
+                >
+                  How to use Hello Hands
+                </button>
+              )}
+              {onOpenCalibration && (
+                <button
+                  type="button"
+                  className="w-full rounded-md bg-surface-800/80 px-3 py-2 text-left text-xs font-medium text-text-primary hover:bg-surface-700/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-teal"
+                  onClick={onOpenCalibration}
+                >
+                  Re-calibrate gestures
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

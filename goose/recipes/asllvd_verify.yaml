@@ -1,0 +1,45 @@
+version: "1.0.0"
+title: "ASLLVD_Verify"
+description: "Verify ASLLVD pack coverage and generate reports"
+
+instructions: |
+  Verify ASLLVD dataset coverage:
+  1. Check packs.generated.json against frozen sign lists
+  2. Validate labels.jsonl completeness
+  3. Calculate coverage percentages per pack
+  4. Generate coverage report to artifacts/reports/
+  5. Exit with code 0 if ≥90% coverage, non-zero otherwise
+
+prompt: |
+  Execute ASLLVD coverage verification:
+  - Check packs at {{ packs_path }}
+  - Verify labels at {{ labels_path }}
+  - Compare expected vs found items per pack
+  - Generate detailed coverage report to {{ report_dir }}
+  - Check poster/clip alignment
+  - Validate attribution presence
+
+  Output: Coverage percentages and pass/fail status.
+
+parameters:
+  - key: packs_path
+    input_type: string
+    requirement: optional
+    default: "practice/packs.generated.json"
+    description: "Path to pack definitions"
+  - key: labels_path
+    input_type: string
+    requirement: optional
+    default: "data/processed/asllvd/labels.jsonl"
+    description: "Path to generated labels"
+  - key: report_dir
+    input_type: string
+    requirement: optional
+    default: "artifacts/reports"
+    description: "Directory for coverage reports"
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300

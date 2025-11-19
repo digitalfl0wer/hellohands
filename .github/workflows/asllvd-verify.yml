@@ -1,0 +1,39 @@
+name: ASLLVD Coverage Verification
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/processed/asllvd/**'
+      - 'practice/packs.generated.json'
+  pull_request:
+    paths:
+      - 'data/processed/asllvd/**'
+      - 'practice/packs.generated.json'
+
+jobs:
+  verify-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify ASLLVD coverage
+        run: pnpm exec tsx scripts/asllvd_coverage.ts
+        env:
+          DATASET: ASLLVD
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: asllvd-coverage-report
+          path: artifacts/reports/asllvd_*.md

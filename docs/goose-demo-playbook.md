@@ -48,3 +48,50 @@ Use this flow when narrating the parallel subagents story:
    - CLI outputs from the listeners and conductor recipes.
 
 With these artifacts you can demonstrate multi-agent readiness without hitting live APIs.
+
+## ASLLVD Pipeline Demo
+
+Use this flow to demonstrate the ASLLVD dataset ingestion pipeline:
+
+1. **Environment setup**
+   ```bash
+   export DATASET=ASLLVD
+   export ASLLVD_COOKIE=your_cookie_here  # ⚠️ Never commit to git
+   export DATA_ROOT=/path/to/large/storage
+   ```
+
+2. **Ingest phase**
+   ```bash
+   goose run --recipe goose/recipes/asllvd_ingest.yaml
+   ```
+   Shows auth check and bulk download orchestration.
+
+3. **Normalize phase**
+   ```bash
+   goose run --recipe goose/recipes/asllvd_normalize.yaml
+   ```
+   Demonstrates ffmpeg pipeline for standardization.
+
+4. **Pack building**
+   ```bash
+   goose run --recipe goose/recipes/asllvd_build_packs.yaml
+   ```
+   Illustrates metadata generation and pack assembly.
+
+5. **Coverage verification**
+   ```bash
+   goose run --recipe goose/recipes/asllvd_verify.yaml
+   ```
+   Shows automated quality gates (≥90% coverage requirement).
+
+6. **App integration test**
+   ```bash
+   pnpm dev
+   # Visit app and confirm DATASET=ASLLVD attribution modal
+   ```
+
+**Demo artifacts:**
+- Pipeline execution logs showing progress
+- Generated `data/processed/asllvd/labels.jsonl`
+- Coverage report in `artifacts/reports/`
+- Attribution modal screenshot with ASLLVD citation

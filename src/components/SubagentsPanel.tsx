@@ -29,10 +29,16 @@ const formatTimestamp = () => {
 };
 
 export function SubagentsPanel() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<LogRow[]>([]);
-  const [activity, setActivity] = useState<Record<AgentKey, number>>({});
+  const [activity, setActivity] = useState<Partial<Record<AgentKey, number>>>({});
   const [heartbeat, setHeartbeat] = useState(() => Date.now());
+  const [metrics, setMetrics] = useState<{
+    fps: number;
+    latencyMs: number;
+    droppedFrames: number;
+    ts: number;
+  } | null>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setHeartbeat(Date.now()), 1000);
@@ -119,6 +125,23 @@ export function SubagentsPanel() {
       if (agentKey) {
         markActivity(agentKey);
       }
+      if (
+        data &&
+        typeof data === 'object' &&
+        (data as Record<string, unknown>).intent === 'log' &&
+        (data as Record<string, unknown>).tag === 'gesture_worker_metrics'
+      ) {
+        const payload = data as Record<string, unknown>;
+        const payloadData = payload.data as Record<string, unknown>;
+        if (payloadData) {
+          setMetrics({
+            fps: Number(payloadData.fps ?? 0),
+            latencyMs: Number(payloadData.latencyMs ?? 0),
+            droppedFrames: Number(payloadData.droppedFrames ?? 0),
+            ts: Date.now(),
+          });
+        }
+      }
     };
 
     bus.addEventListener('message', handleMessage);
@@ -147,6 +170,33 @@ export function SubagentsPanel() {
             Parallel activity monitor
           </p>
         </header>
+
+        {metrics ? (
+          <section className="grid gap-2 text-xs">
+            <div className="rounded border border-zinc-800 bg-zinc-900/60 p-2">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">FPS</p>
+              <p className="text-2xl font-semibold text-sky-400">
+                {metrics.fps.toFixed(1)}
+              </p>
+            </div>
+            <div className="rounded border border-zinc-800 bg-zinc-900/60 p-2">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">
+                latency
+              </p>
+              <p className="text-2xl font-semibold text-emerald-400">
+                {metrics.latencyMs.toFixed(0)}ms
+              </p>
+            </div>
+            <div className="rounded border border-zinc-800 bg-zinc-900/60 p-2">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">
+                dropped frames
+              </p>
+              <p className="text-2xl font-semibold text-rose-400">
+                {metrics.droppedFrames}
+              </p>
+            </div>
+          </section>
+        ) : null}
 
         <section className="space-y-3">
           {agentStatuses.map((agent) => (

@@ -1,0 +1,37 @@
+version: "1.0.0"
+title: "ASLLVD_Build_Packs"
+description: "Generate labels.jsonl and packs.generated.json for ASLLVD"
+
+instructions: |
+  Build ASLLVD pack artifacts:
+  1. Read processed clips and manifest
+  2. Generate labels.jsonl with checksums
+  3. Create packs.generated.json for Essentials/Social Basics
+  4. Validate pack completeness
+
+prompt: |
+  Execute ASLLVD pack building pipeline:
+  - Scan processed clips in {{ processed_dir }}
+  - Generate labels with metadata and checksums
+  - Build pack definitions matching frozen sign lists
+  - Output labels.jsonl and packs.generated.json to {{ packs_path }}
+
+  Output: Generation summary with item counts.
+
+parameters:
+  - key: processed_dir
+    input_type: string
+    requirement: optional
+    default: "data/processed/asllvd"
+    description: "Directory containing processed assets"
+  - key: packs_path
+    input_type: string
+    requirement: optional
+    default: "practice/packs.generated.json"
+    description: "Path to output pack definitions"
+
+extensions:
+  - type: builtin
+    name: developer
+    bundled: true
+    timeout: 300
