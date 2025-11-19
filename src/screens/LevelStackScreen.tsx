@@ -10,6 +10,7 @@ interface LevelStackScreenProps {
 
 export function LevelStackScreen({ onSelectLevel, onBack }: LevelStackScreenProps) {
   const currentLevel = useLessonStore((state) => state.level);
+  const kidMode = useLessonStore((state) => state.kidMode);
 
   // Generate levels up to current level + 2 (to show some upcoming locked levels as corners)
   const maxLevel = Math.min(currentLevel + 2, 10); // Cap at a reasonable maximum
@@ -34,7 +35,9 @@ export function LevelStackScreen({ onSelectLevel, onBack }: LevelStackScreenProp
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900 flex flex-col">
+    <div
+      className={`min-h-screen flex flex-col ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'}`}
+    >
       {/* Header */}
       <header className="flex items-center justify-between p-6">
         <button
