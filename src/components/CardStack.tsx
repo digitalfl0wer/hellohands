@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react';
+import { useLessonStore } from '../state/useLessonStore';
 
 interface CardStackProps {
   children?: ReactNode[];
@@ -17,6 +18,7 @@ export function CardStack({
   renderChild,
 }: CardStackProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const kidMode = useLessonStore((state) => state.kidMode);
 
   const totalCards = children.length;
 
@@ -26,7 +28,7 @@ export function CardStack({
 
   return (
     <div
-      className={`relative w-full bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900 border border-white/10 rounded-2xl p-8 shadow-lg ring-1 ring-white/10 ${className}`}
+      className={`relative w-full border border-white/10 rounded-2xl p-8 shadow-lg ring-1 ring-white/10 ${kidMode ? 'bg-transparent' : 'bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900'} ${className}`}
     >
       <div className="relative flex items-center justify-center min-h-[300px]">
         {children.map((child, index) => {
