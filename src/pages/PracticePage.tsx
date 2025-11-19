@@ -15,6 +15,7 @@ import {
 } from '../services/practiceApi';
 import { useLessonStore } from '../state/useLessonStore';
 import { logger } from '../utils/logger';
+import { getSignDescription } from '../utils/signDescriptions';
 
 interface PracticePageProps {
   selectedPack?: string | null;
@@ -121,20 +122,6 @@ export function PracticePage({ selectedPack }: PracticePageProps) {
     return items.find((entry) => entry.id === selectedItemId) ?? items[0];
   }, [items, selectedItemId]);
 
-  const SIGN_TIPS: Record<string, string> = {
-    HELLO: 'Open palm near temple; small outward wave.',
-    'THANK YOU': 'Open palm from chin outward.',
-    YES: 'Thumbs-up; hold steady.',
-    NO: 'Pinch index + middle to thumb; small bite-like motion.',
-    WHERE: 'Point with index finger; keep other fingers curled.',
-    EAT: 'Pinch fingertips together near mouth.',
-    DRINK: 'Pinch like holding a cup; small tilt toward mouth.',
-    MORE: 'Pinch both hands; bring fingertips together.',
-    STOP: 'Open palm facing forward; hold steady.',
-    HELP: 'Open palm; slight lift to signal help.',
-    PLEASE: 'Open palm on chest; small circle.',
-  };
-
   const handleSignSelect = (itemId: string) => {
     setSelectedItemId(itemId);
     const item = items.find((entry) => entry.id === itemId);
@@ -215,8 +202,7 @@ export function PracticePage({ selectedPack }: PracticePageProps) {
           ) : null}
           {currentItem ? (
             <p className="mt-2 text-sm text-text-secondary">
-              {SIGN_TIPS[currentItem.sign.toUpperCase()] ??
-                'Mirror the poster and hold your gesture steady for a moment.'}
+              {getSignDescription(currentItem.sign)}
             </p>
           ) : null}
         </div>

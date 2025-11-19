@@ -13,6 +13,7 @@ import { LessonPlayer, LessonPlayerHandle } from './LessonPlayer';
 import { HelpSheet } from '../sheets/HelpSheet';
 import { SAMPLE_CLIPS, LessonClip, lessonClipsFromPracticeItems } from './sampleClips';
 import { setExpectedGesture } from '../../agents/planner';
+import { getSignDescription } from '../../utils/signDescriptions';
 import { useLessonStore } from '../../state/useLessonStore';
 import { AttributionChip } from '../attribution/AttributionChip';
 import { CameraFeed } from '../CameraFeed';
@@ -432,22 +433,7 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
 
           <div className="md:col-span-2">
             <p className="text-sm text-text-secondary">
-              {(() => {
-                const TIPS: Record<string, string> = {
-                  HELLO: 'Open palm near temple; small outward wave.',
-                  'THANK YOU': 'Open palm from chin outward.',
-                  YES: 'Thumbs-up; hold steady.',
-                  NO: 'Pinch index + middle to thumb; hold briefly.',
-                  WHERE: 'Point with index; keep other fingers curled.',
-                  EAT: 'Pinch fingertips together near mouth.',
-                  DRINK: 'Pinch like holding a cup; slight tilt.',
-                  MORE: 'Pinch both hands; bring fingertips together.',
-                };
-                return (
-                  TIPS[currentClip.title.toUpperCase()] ??
-                  'Mirror the poster and hold your gesture steady for a moment.'
-                );
-              })()}
+              {getSignDescription(currentClip.title)}
             </p>
           </div>
         </div>
