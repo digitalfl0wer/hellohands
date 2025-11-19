@@ -314,7 +314,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
       <section className="space-y-lg">
         {/* Star Progress Display */}
         <div className="flex justify-center">
-          <div className="rounded-2xl border border-white/10 bg-surface-800/70 p-4 shadow-lg ring-1 ring-white/5">
+          <div
+            className={`rounded-2xl border border-white/10 p-4 shadow-lg ring-1 ring-white/5 ${kidMode ? 'bg-transparent' : 'bg-surface-800/70'}`}
+          >
             <div className="text-center">
               <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-2">
                 Level {currentLevel} Progress
@@ -340,7 +342,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
               title={currentClip.title}
               videoSrc={currentClip.video}
             />
-            <div className="rounded-lg border border-white/10 bg-surface-800/70 p-4 shadow-sm">
+            <div
+              className={`rounded-lg border border-white/10 p-4 shadow-sm ${kidMode ? 'bg-transparent' : 'bg-surface-800/70'}`}
+            >
               <h4 className="text-xs font-semibold uppercase tracking-wide text-accent-teal mb-2">
                 How to sign: {currentClip.title}
               </h4>
@@ -351,7 +355,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
           </div>
 
           {gesturesOn ? (
-            <aside className="relative flex min-h-[420px] flex-1 flex-col rounded-lg border border-white/10 bg-surface-800/70 p-md text-text-primary shadow-brand ring-1 ring-white/5">
+            <aside
+              className={`relative flex min-h-[420px] flex-1 flex-col rounded-lg border border-white/10 p-md text-text-primary shadow-brand ring-1 ring-white/5 ${kidMode ? 'bg-transparent' : 'bg-surface-800/70'}`}
+            >
               <header className="mb-sm flex items-center justify-between">
                 <h3 className="text-base font-semibold">Gesture camera</h3>
                 <span className="text-xs uppercase tracking-wide text-accent-teal">
@@ -361,7 +367,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
               <p className="text-xs text-text-secondary">
                 Keep within the frame and hold each gesture briefly for the best match.
               </p>
-              <div className="mt-sm flex-1 overflow-hidden rounded-xl border border-white/10 bg-surface-900/90 relative">
+              <div
+                className={`mt-sm flex-1 overflow-hidden rounded-xl border border-white/10 relative ${kidMode ? 'bg-transparent' : 'bg-surface-900/90'}`}
+              >
                 {demoMode ? (
                   <DemoVideoFeed />
                 ) : cameraError ? (
@@ -443,7 +451,9 @@ export const LessonScreen = forwardRef<LessonScreenHandle, LessonScreenProps>(
         </div>
 
         {paused ? (
-          <div className="rounded-lg border border-white/10 bg-surface-800/80 p-lg shadow-brand ring-1 ring-white/5">
+          <div
+            className={`rounded-lg border border-white/10 p-lg shadow-brand ring-1 ring-white/5 ${kidMode ? 'bg-transparent' : 'bg-surface-800/80'}`}
+          >
             <h3 className="text-lg font-semibold text-text-primary">Paused</h3>
             <p className="mt-sm text-sm text-text-secondary">
               Hold a thumbs-up (or tap resume) to continue. Manual controls remain
